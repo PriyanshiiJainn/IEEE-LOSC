@@ -1,15 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { getAboutContent } from "@/lib/data";
 import { AboutHero } from "@/components/home/AboutHero";
 import { AboutContent } from "@/components/home/AboutContent";
 
 export default async function HomePage() {
-  let about = null;
-  try {
-    about = await prisma.aboutContent.findFirst();
-  } catch {
-    // DB not set up yet
-  }
-
+  const about = await getAboutContent();
   return (
     <>
       <AboutHero />

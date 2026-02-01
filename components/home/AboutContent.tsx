@@ -1,5 +1,5 @@
 type AboutContentProps = {
-  content: { aboutUs: string; aboutOptica: string } | null;
+  content: { aboutUs: string; aboutOptica: string };
 };
 
 const defaultAboutUs = `
@@ -14,8 +14,8 @@ with Optica to promote light-based technologies and research among students.
 `.trim();
 
 export function AboutContent({ content }: AboutContentProps) {
-  const aboutUs = content?.aboutUs || defaultAboutUs;
-  const aboutOptica = content?.aboutOptica || defaultAboutOptica;
+  const aboutUs = content.aboutUs || defaultAboutUs;
+  const aboutOptica = content.aboutOptica || defaultAboutOptica;
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
