@@ -1,0 +1,124 @@
+// IEEE Student Chapter Website — Prisma schema
+// Run: npx prisma migrate dev
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin login only
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// About us / About Optica (home page content)
+model AboutContent {
+  id          String   @id @default(cuid())
+  aboutUs     String   @db.LongText // markdown or plain
+  aboutOptica String   @db.LongText
+  updatedAt   DateTime @updatedAt
+}
+
+// Events: workshop, hackathon, quiz, webinar, invited talk
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.LongText
+  date        DateTime @db.Date
+  time        String?
+  venue       String?
+  category    String   // WORKSHOP | HACKATHON | QUIZ | WEBINAR | INVITED_TALK
+  brochureUrl String?
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
+
+  flashAnnouncement FlashAnnouncement?
+  registrations     EventRegistration[]
+  report            EventReport?
+}
+
+// One active "flash" banner on home (links to event or custom URL)
+model FlashAnnouncement {
+  id           String   @id @default(cuid())
+  eventId      String?  @unique
+  event        Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  title        String
+  shortMessage String?  @db.Text
+  link         String?
+  active       Boolean  @default(false)
+  startsAt     DateTime?
+  endsAt       DateTime?
+  updatedAt    DateTime @updatedAt
+}
+
+// Event registration: name, roll number, email, phone (when user clicks "Register now")
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name      String
+  rollNo    String
+  email     String
+  phone     String
+  createdAt DateTime @updatedAt
+
+  @@index([eventId])
+}
+
+// Event reports (separate tab)
+model EventReport {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  title       String
+  content     String   @db.LongText
+  coverImageUrl String?
+  publishedAt DateTime?
+  createdAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
+}
+
+// Team: faculty advisor, core, functional; post-wise
+model TeamMember {
+  id           String   @id @default(cuid())
+  name         String
+  classification String // FACULTY_ADVISOR | CORE | FUNCTIONAL
+  post         String?  // e.g. Chair, Vice-Chair, Secretary
+  imageUrl     String?
+  email        String?
+  phone        String?
+  linkedin     String?
+  order        Int      @default(0)
+  createdAt    DateTime @updatedAt
+  updatedAt    DateTime @updatedAt
+}
+
+// Contact form submissions (public form)
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  createdAt DateTime @updatedAt
+}
+
+// Footer useful links (admin-editable)
+model FooterLink {
+  id        String   @id @default(cuid())
+  label     String
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @updatedAt
+}

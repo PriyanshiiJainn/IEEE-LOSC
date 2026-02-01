@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ieee-red: #c41230;
+  --ieee-navy: #0a1628;
+  --ieee-gray: #4a4a4a;
+}
+
+body {
+  @apply bg-white text-gray-900 antialiased;
+}
