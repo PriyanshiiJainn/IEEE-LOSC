@@ -52,9 +52,21 @@ git push
 
 ## Local development
 
-1. **Install:** `npm install`
-2. **DB:** Create MySQL DB, set `DATABASE_URL` in `.env`, run `npx prisma migrate dev`
-3. **Seed admin:** `npx prisma db seed`
+### Frontend only (no database yet)
+
+You can run and develop the full UI without a real MySQL server:
+
+1. **Env:** Copy `.env.example` to `.env` and set **`USE_MOCK_DATA=true`** (and a placeholder `DATABASE_URL` if you like). With `USE_MOCK_DATA=true` the app never connects to the DB, so no connection errors and fast loads.
+2. **Install:** `npm install`
+3. **Run:** `npm run dev` → http://localhost:3000
+
+All pages use **mock data** when the DB is unreachable. Contact form and event registration will show a “database not configured” message until you add a real MySQL and run migrations.
+
+### With database (admin, forms, real data)
+
+1. Create a MySQL database and set `DATABASE_URL` in `.env` (copy from `.env.example`)
+2. **Migrations:** `npx prisma migrate dev --name init`
+3. **Seed admin:** `npm run db:seed`
 4. **Run:** `npm run dev` → http://localhost:3000  
    - Admin: http://localhost:3000/admin (login at `/admin/login`)
 

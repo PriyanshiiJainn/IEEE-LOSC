@@ -1,21 +1,7 @@
-import Link from "next/link";
-
-type FooterLink = { label: string; url: string };
-
-const defaultLinks: FooterLink[] = [
-  { label: "IEEE", url: "https://www.ieee.org/" },
-  { label: "LNMIIT", url: "https://www.lnmiit.ac.in/" },
-];
+import { getFooterLinks } from "@/lib/data";
 
 export async function Footer() {
-  let links: FooterLink[] = defaultLinks;
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    const dbLinks = await prisma.footerLink.findMany({ orderBy: { order: "asc" } });
-    if (dbLinks.length > 0) links = dbLinks.map((l) => ({ label: l.label, url: l.url }));
-  } catch {
-    // no DB or not migrated yet
-  }
+  const links = await getFooterLinks();
 
   return (
     <footer className="border-t border-gray-200 bg-gray-50 mt-auto">
