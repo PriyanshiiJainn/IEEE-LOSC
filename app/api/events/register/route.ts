@@ -1,27 +1,68 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-
-const bodySchema = z.object({
-  eventId: z.string().min(1),
-  name: z.string().min(1).max(200),
-  rollNo: z.string().min(1).max(50),
-  email: z.string().email(),
-  phone: z.string().min(1).max(20),
-});
+import { eventRegistrationSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
-  const parsed = bodySchema.safeParse(await request.json());
+  const body = await request.json();
+  const parsed = eventRegistrationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const raw = parsed.error.flatten().fieldErrors;
+    const errors: Record<string, string> = {};
+    for (const [k, v] of Object.entries(raw)) {
+      const msg = Array.isArray(v) ? v[0] : v;
+      if (msg) errors[k] = msg;
+    }
+    const first = Object.values(errors)[0] ?? "Invalid input";
+    return NextResponse.json({ error: first, errors }, { status: 400 });
   }
 
   try {
+    const eventRow = await prisma.event.findUnique({
+      where: { id: parsed.data.eventId },
+      select: { id: true, registrationClosed: true },
+    });
+    if (!eventRow) {
+      return NextResponse.json(
+        {
+          error:
+            "This event doesn't exist in the database. Add events in Admin → Events and set USE_MOCK_DATA=false in .env so the site shows real events.",
+        },
+        { status: 400 }
+      );
+    }
+    if (eventRow.registrationClosed) {
+      return NextResponse.json(
+        { error: "Registration for this event is closed." },
+        { status: 400 }
+      );
+    }
     await prisma.eventRegistration.create({ data: parsed.data });
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (e) {
+    const isPrisma = e && typeof e === "object" && "code" in e;
+    const code = isPrisma ? (e as { code?: string }).code : undefined;
+
+    if (code === "P2003") {
+      return NextResponse.json(
+        { error: "This event is no longer available. Try another event." },
+        { status: 400 }
+      );
+    }
+    if (code === "P1001" || code === "P1017" || code === "P2024") {
+      return NextResponse.json(
+      {
+        error:
+          "Database is not reachable. Check DATABASE_URL in .env, run migrations, and if using Neon, resume the project in the dashboard.",
+      },
+      { status: 503 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Database not configured or unavailable" },
+      {
+        error:
+          "Registration could not be saved. Check that the database is set up and migrations have been run.",
+      },
       { status: 503 }
     );
   }

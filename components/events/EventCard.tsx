@@ -24,12 +24,18 @@ export function EventCard({ event }: { event: EventItem }) {
       {event.venue && <p className="text-sm text-gray-600 mt-1">{event.venue}</p>}
       <p className="text-sm text-gray-600 mt-2 line-clamp-2">{event.description}</p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <Link
-          href={`/events/${event.id}/register`}
-          className="inline-flex items-center rounded bg-ieee-red px-3 py-1.5 text-sm font-medium text-white hover:bg-ieee-red/90 transition"
-        >
-          Register now
-        </Link>
+        {event.registrationClosed ? (
+          <span className="inline-flex items-center rounded border border-gray-300 bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600">
+            Registration closed
+          </span>
+        ) : (
+          <Link
+            href={`/events/${event.id}/register`}
+            className="inline-flex items-center rounded bg-ieee-red px-3 py-1.5 text-sm font-medium text-white hover:bg-ieee-red/90 transition"
+          >
+            Register now
+          </Link>
+        )}
         {event.brochureUrl && (
           <a
             href={event.brochureUrl}

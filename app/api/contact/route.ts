@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-
-const bodySchema = z.object({
-  name: z.string().min(1).max(200),
-  email: z.string().email(),
-  subject: z.string().max(300).optional(),
-  message: z.string().min(1).max(5000),
-});
+import { contactFormSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
-  const parsed = bodySchema.safeParse(await request.json());
+  const body = await request.json();
+  const parsed = contactFormSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    const raw = parsed.error.flatten().fieldErrors;
+    const errors: Record<string, string> = {};
+    for (const [k, v] of Object.entries(raw)) {
+      const msg = Array.isArray(v) ? v[0] : v;
+      if (msg) errors[k] = msg;
+    }
+    const first = Object.values(errors)[0] ?? "Invalid input";
+    return NextResponse.json({ error: first, errors }, { status: 400 });
   }
 
   try {

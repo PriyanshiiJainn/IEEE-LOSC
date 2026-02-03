@@ -1,8 +1,8 @@
 # IEEE Student Chapter Website
 
-Next.js 14 (App Router) + TypeScript + Tailwind + MySQL + Prisma + NextAuth. Public site (About, Team, Events, Event Reports, Contact) with admin-only dashboard for content management.
+Next.js 14 (App Router) + TypeScript + Tailwind + PostgreSQL + Prisma + NextAuth. Public site (About, Team, Events, Event Reports, Contact) with admin-only dashboard for content management.
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for stack and data model.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for stack and data model. Using **PostgreSQL**; to switch to MySQL see [DATABASE-SWITCH.md](./DATABASE-SWITCH.md).
 
 ---
 
@@ -54,21 +54,28 @@ git push
 
 ### Frontend only (no database yet)
 
-You can run and develop the full UI without a real MySQL server:
+You can run and develop the full UI without a real database:
 
 1. **Env:** Copy `.env.example` to `.env` and set **`USE_MOCK_DATA=true`** (and a placeholder `DATABASE_URL` if you like). With `USE_MOCK_DATA=true` the app never connects to the DB, so no connection errors and fast loads.
 2. **Install:** `npm install`
 3. **Run:** `npm run dev` → http://localhost:3000
 
-All pages use **mock data** when the DB is unreachable. Contact form and event registration will show a “database not configured” message until you add a real MySQL and run migrations.
+All pages use **mock data** when the DB is unreachable. Contact form and event registration will show a “database not configured” message until you add a real database and run migrations.
 
 ### With database (admin, forms, real data)
 
-1. Create a MySQL database and set `DATABASE_URL` in `.env` (copy from `.env.example`)
-2. **Migrations:** `npx prisma migrate dev --name init`
-3. **Seed admin:** `npm run db:seed`
-4. **Run:** `npm run dev` → http://localhost:3000  
-   - Admin: http://localhost:3000/admin (login at `/admin/login`)
+1. Create a database — **PostgreSQL** (e.g. [Neon](https://neon.tech), Supabase, Railway). *(To use MySQL instead, see [DATABASE-SWITCH.md](./DATABASE-SWITCH.md).)*
+2. **Env:** Copy `.env.example` to `.env` and set:
+   - **`DATABASE_URL`** — PostgreSQL: `postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require`
+   - **`USE_MOCK_DATA`** — remove this line or set to **`false`** so the app uses the real database instead of mock data
+   - **`NEXTAUTH_URL`** — e.g. `http://localhost:3000`
+   - **`NEXTAUTH_SECRET`** — a long random string (e.g. run `openssl rand -base64 32`)
+3. **Migrations:** `npx prisma migrate dev --name init`
+4. **Seed admin:** `npm run db:seed` (creates admin user and default About content)
+5. **Run:** `npm run dev` → http://localhost:3000  
+
+**Admin:** http://localhost:3000/admin — log in at `/admin/login`.  
+Default seeded admin: **email** `admin@ieee.lnmiit.ac.in` / **password** `admin123` (change after first login).
 
 ---
 
