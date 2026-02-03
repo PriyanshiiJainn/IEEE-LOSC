@@ -4,18 +4,20 @@ const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
 async function main() {
-  const hash = await bcrypt.hash("admin123", 12);
+  const adminEmail = "admin@ieee.lnmiit.ac.in";
+  const adminPassword = "admin123";
+  const hash = await bcrypt.hash(adminPassword, 12);
   await prisma.user.upsert({
-    where: { email: "admin@ieee.lnmiit.ac.in" },
-    update: {},
+    where: { email: adminEmail },
+    update: { passwordHash: hash, name: "Admin", role: "ADMIN" },
     create: {
-      email: "admin@ieee.lnmiit.ac.in",
+      email: adminEmail,
       passwordHash: hash,
       name: "Admin",
       role: "ADMIN",
     },
   });
-  console.log("Seeded admin user: admin@ieee.lnmiit.ac.in / admin123");
+  console.log("Admin login — Email:", adminEmail, "| Password:", adminPassword);
 
   const first = await prisma.aboutContent.findFirst();
   if (!first) {
@@ -33,7 +35,10 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error(e.message || e);
+    if (String(e.message || "").includes("Can't reach database") || e.code === "P1001") {
+      console.error("\n→ Cannot reach database. Try: 1) Resume your Neon project at https://console.neon.tech  2) Check DATABASE_URL in .env  3) Check network. Then run: npm run db:seed");
+    }
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

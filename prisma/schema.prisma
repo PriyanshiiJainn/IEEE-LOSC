@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -24,8 +24,8 @@ model User {
 // About us / About Optica (home page content)
 model AboutContent {
   id          String   @id @default(cuid())
-  aboutUs     String   @db.LongText // markdown or plain
-  aboutOptica String   @db.LongText
+  aboutUs     String   @db.Text // markdown or plain
+  aboutOptica String   @db.Text
   updatedAt   DateTime @updatedAt
 }
 
@@ -33,15 +33,16 @@ model AboutContent {
 model Event {
   id          String   @id @default(cuid())
   title       String
-  description String   @db.LongText
-  date        DateTime @db.Date
+  description String   @db.Text
+  date        DateTime
   time        String?
   venue       String?
   category    String   // WORKSHOP | HACKATHON | QUIZ | WEBINAR | INVITED_TALK
-  brochureUrl String?
-  isFeatured  Boolean  @default(false)
-  createdAt   DateTime @updatedAt
-  updatedAt   DateTime @updatedAt
+  brochureUrl       String?
+  isFeatured        Boolean  @default(false)
+  registrationClosed Boolean @default(false)
+  createdAt         DateTime @updatedAt
+  updatedAt         DateTime @updatedAt
 
   flashAnnouncement FlashAnnouncement?
   registrations     EventRegistration[]
@@ -82,7 +83,7 @@ model EventReport {
   eventId     String   @unique
   event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   title       String
-  content     String   @db.LongText
+  content     String   @db.Text
   coverImageUrl String?
   publishedAt DateTime?
   createdAt   DateTime @updatedAt

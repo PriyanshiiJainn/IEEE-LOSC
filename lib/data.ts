@@ -1,6 +1,7 @@
 /**
  * Data layer: tries DB first, falls back to mock data when no MySQL.
  * Set USE_MOCK_DATA=true in .env to skip DB entirely (fast, no connection errors).
+ * Database: PostgreSQL (see DATABASE-SWITCH.md to use MySQL).
  */
 
 import { prisma } from "./prisma";
@@ -28,15 +29,22 @@ const MOCK_FOOTER_LINKS = [
 
 const MOCK_TEAM = [
   { id: "1", name: "Dr. Faculty Advisor", classification: "FACULTY_ADVISOR", post: "Faculty Advisor", imageUrl: null, email: "advisor@lnmiit.ac.in", phone: null, linkedin: null, order: 0 },
-  { id: "2", name: "Student Chair", classification: "CORE", post: "Chair", imageUrl: null, email: "chair@lnmiit.ac.in", phone: null, linkedin: null, order: 1 },
-  { id: "3", name: "Student Vice Chair", classification: "CORE", post: "Vice Chair", imageUrl: null, email: "vicechair@lnmiit.ac.in", phone: null, linkedin: null, order: 2 },
-  { id: "4", name: "Member One", classification: "FUNCTIONAL", post: "Member", imageUrl: null, email: "member1@lnmiit.ac.in", phone: null, linkedin: null, order: 3 },
+  { id: "2", name: "Core Chair", classification: "CORE", post: "Chair", imageUrl: null, email: "chair@lnmiit.ac.in", phone: null, linkedin: null, order: 1 },
+  { id: "3", name: "Core Vice Chair", classification: "CORE", post: "Vice Chair", imageUrl: null, email: "vicechair@lnmiit.ac.in", phone: null, linkedin: null, order: 2 },
+  { id: "4", name: "Core Secretary", classification: "CORE", post: "Secretary", imageUrl: null, email: "secretary@lnmiit.ac.in", phone: null, linkedin: null, order: 3 },
+  { id: "5", name: "Core Treasurer", classification: "CORE", post: "Treasurer", imageUrl: null, email: "treasurer@lnmiit.ac.in", phone: null, linkedin: null, order: 4 },
+  { id: "6", name: "Core Member", classification: "CORE", post: "Member", imageUrl: null, email: "core5@lnmiit.ac.in", phone: null, linkedin: null, order: 5 },
+  { id: "7", name: "Web Dev Lead", classification: "FUNCTIONAL", post: "Web Development", imageUrl: null, email: "webdev@lnmiit.ac.in", phone: null, linkedin: null, order: 6 },
+  { id: "8", name: "Web Dev Member", classification: "FUNCTIONAL", post: "Web Development", imageUrl: null, email: "webdev2@lnmiit.ac.in", phone: null, linkedin: null, order: 7 },
+  { id: "9", name: "Content Lead", classification: "FUNCTIONAL", post: "Content", imageUrl: null, email: "content@lnmiit.ac.in", phone: null, linkedin: null, order: 8 },
+  { id: "10", name: "Content Member", classification: "FUNCTIONAL", post: "Content", imageUrl: null, email: "content2@lnmiit.ac.in", phone: null, linkedin: null, order: 9 },
+  { id: "11", name: "Event Manager", classification: "FUNCTIONAL", post: "Event Management", imageUrl: null, email: "events@lnmiit.ac.in", phone: null, linkedin: null, order: 10 },
 ];
 
 const MOCK_EVENTS = [
-  { id: "e1", title: "Annual Workshop 2025", description: "Hands-on workshop on emerging technologies.", date: new Date("2025-03-15"), time: "10:00 AM", venue: "LNMIIT Campus", category: "WORKSHOP", brochureUrl: null, isFeatured: true },
-  { id: "e2", title: "IEEE Hackathon", description: "24-hour hackathon for students.", date: new Date("2025-04-20"), time: "9:00 AM", venue: "Lab Block", category: "HACKATHON", brochureUrl: null, isFeatured: false },
-  { id: "e3", title: "Tech Quiz", description: "Technical quiz competition.", date: new Date("2025-05-10"), time: "2:00 PM", venue: "Seminar Hall", category: "QUIZ", brochureUrl: null, isFeatured: false },
+  { id: "e1", title: "Annual Workshop 2025", description: "Hands-on workshop on emerging technologies.", date: new Date("2025-03-15"), time: "10:00 AM", venue: "LNMIIT Campus", category: "WORKSHOP", brochureUrl: null, isFeatured: true, registrationClosed: false },
+  { id: "e2", title: "IEEE Hackathon", description: "24-hour hackathon for students.", date: new Date("2025-04-20"), time: "9:00 AM", venue: "Lab Block", category: "HACKATHON", brochureUrl: null, isFeatured: false, registrationClosed: false },
+  { id: "e3", title: "Tech Quiz", description: "Technical quiz competition.", date: new Date("2025-05-10"), time: "2:00 PM", venue: "Seminar Hall", category: "QUIZ", brochureUrl: null, isFeatured: false, registrationClosed: false },
 ];
 
 const MOCK_REPORTS = [
@@ -120,6 +128,7 @@ export type EventItem = {
   category: string;
   brochureUrl: string | null;
   isFeatured: boolean;
+  registrationClosed: boolean;
 };
 
 export async function getEvents(): Promise<EventItem[]> {

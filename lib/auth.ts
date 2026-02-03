@@ -13,13 +13,24 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-        if (!user || user.role !== "ADMIN") return null;
-        const ok = await compare(credentials.password, user.passwordHash);
-        if (!ok) return null;
-        return { id: user.id, email: user.email, name: user.name };
+        const email = String(credentials.email).trim().toLowerCase();
+        const password = String(credentials.password).trim();
+        if (!email || !password) return null;
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
+          if (!user || user.role !== "ADMIN") return null;
+          const ok = await compare(password, user.passwordHash);
+          if (!ok) return null;
+          return { id: user.id, email: user.email, name: user.name };
+        } catch {
+          // Dev-only fallback when DB unreachable (e.g. Neon paused / network): allow seed credentials so you can view admin portal
+          if (process.env.NODE_ENV === "development" && email === "admin@ieee.lnmiit.ac.in" && password === "admin123") {
+            return { id: "dev-admin", email: "admin@ieee.lnmiit.ac.in", name: "Admin (demo)" };
+          }
+          return null;
+        }
       },
     }),
   ],

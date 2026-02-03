@@ -14,7 +14,7 @@ npm install
 
 # 2. Environment: copy example and fill in
 cp .env.example .env
-# Edit .env: set DATABASE_URL (MySQL), NEXTAUTH_URL, NEXTAUTH_SECRET
+# Edit .env: set DATABASE_URL (PostgreSQL), NEXTAUTH_URL, NEXTAUTH_SECRET
 
 # 3. Database: create schema and seed admin
 npx prisma migrate dev --name init
@@ -27,7 +27,7 @@ npm run build
 
 **Hiccup?**  
 - `npm install` fails → check Node (v18+), network, or run without optional deps.  
-- `prisma migrate dev` fails → ensure MySQL is running and `DATABASE_URL` in `.env` is correct.  
+- `prisma migrate dev` fails → ensure the database is reachable (e.g. Neon project not paused) and `DATABASE_URL` in `.env` is correct.  
 - `db:seed` fails → run migrations first; check DB connection.
 
 ---
@@ -112,6 +112,6 @@ Commit the new migration files under `prisma/migrations/`. Never edit existing m
 
 - **Command fails:** Note the exact command and error. Fix the cause (env, DB, Node version), then re-run.  
 - **Build/lint fails:** Fix the reported file/line; run the command again.  
-- **DB connection error:** Check `DATABASE_URL` and that MySQL is reachable.
+- **DB connection error:** Check `DATABASE_URL` and that the database is reachable (PostgreSQL: e.g. Neon project resumed; MySQL: server running).
 
 When in doubt, run in this order: `npm install` → set `.env` → `prisma migrate dev` → `npm run dev`.

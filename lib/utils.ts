@@ -14,6 +14,13 @@ export const EVENT_CATEGORIES = [
 
 export const TEAM_CLASSIFICATIONS = [
   { value: "FACULTY_ADVISOR", label: "Faculty Advisor" },
-  { value: "CORE", label: "Core Member" },
-  { value: "FUNCTIONAL", label: "Functional Member" },
+  { value: "CORE", label: "Core Team" },
+  { value: "FUNCTIONAL", label: "Functional Team" },
+] as const;
+
+/** Sub-roles under Functional Team (used for grouping / labels). */
+export const FUNCTIONAL_ROLES = [
+  "Web Development",
+  "Content",
+  "Event Management",
 ] as const;
