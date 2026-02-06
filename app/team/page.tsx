@@ -10,8 +10,8 @@ export default async function TeamPage() {
   const functional = members.filter((m) => m.classification === "FUNCTIONAL");
 
   return (
-    <section className="container mx-auto px-4 py-12 md:py-16">
-      <h1 className="text-3xl font-bold text-ieee-navy mb-12">Our Team</h1>
+    <section className="container mx-auto px-4 py-12 md:py-16  font-times text-3xl">
+      <h1 className="text-4xl font-bold text-ieee-navy mb-12 font-times">Our Team</h1>
       <div className="space-y-14">
         <TeamSection title="Faculty Advisor" members={faculty} singleCard />
         <TeamSection title="Core Team" members={core} />

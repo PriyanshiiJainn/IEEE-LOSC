@@ -11,7 +11,7 @@ export default async function AdminFooterPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-ieee-navy mb-6">Footer useful links</h1>
+      <h1 className="text-2xl font-bold text-ieee-navy mb-6 font-times">Footer useful links</h1>
       <FooterLinksManager initialLinks={links} />
     </div>
   );

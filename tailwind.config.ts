@@ -15,6 +15,10 @@ const config: Config = {
           gray: "#4a4a4a",
         },
       },
+      fontFamily: {
+        times: ['"Times New Roman"', "Times", "serif"], // ✅ Added Times New Roman
+        sans: ["ui-sans-serif", "system-ui"], // Optional: default sans
+      },
     },
   },
   plugins: [],

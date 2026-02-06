@@ -19,10 +19,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-ieee-navy">
-          <span className="text-ieee-red">IEEE</span>
-          <span>Student Chapter</span>
-        </Link>
+        <img src="/optica_logo.png" alt="Optica_logo" className=" h-12 object-contain" />
+        
 
         <nav className="hidden md:flex md:items-center md:gap-6">
           {nav.map(({ href, label }) => (

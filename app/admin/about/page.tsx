@@ -22,7 +22,7 @@ export default async function AdminAboutPage() {
           Database unreachable. Data will appear when the database is reachable.
         </div>
       )}
-      <h1 className="text-2xl font-bold text-ieee-navy mb-6">About us / About Optica</h1>
+      <h1 className="text-2xl font-bold text-ieee-navy mb-6 font-times">About us / About Optica / Recent Updates</h1>
       <AboutEditor initial={content} />
     </div>
   );

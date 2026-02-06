@@ -12,10 +12,12 @@ const USE_MOCK = process.env.USE_MOCK_DATA === "true";
 
 const MOCK_ABOUT = {
   id: "mock",
-  aboutUs:
-    "We are the IEEE Student Chapter at The LNM Institute of Information Technology (LNMIIT), Jaipur. Our chapter fosters technical learning, innovation, and industry engagement through workshops, hackathons, webinars, and invited talks.",
-  aboutOptica:
-    "Optica (formerly OSA) is a leading society in optics and photonics. Our chapter collaborates with Optica to promote light-based technologies and research among students.",
+  aboutUs: `
+We are the Optica Student Chapter at The LNM Institute of Information Technology (LNMIIT), Jaipur, a vibrant community of students passionate about technology, innovation, and professional growth.Through workshops, hackathons, webinars, expert talks, and hands-on sessions, we foster curiosity, collaboration, and continuous learning.By promoting innovation, leadership, and teamwork, we empower students to become skilled professionals and contributors to the global tech community.
+  `.trim(),
+  aboutOptica: `
+Optica (formerly OSA), Advancing Optics and Photonics Worldwide, is the society dedicated to promoting the generation, application, archiving and dissemination of knowledge in the field. Our chapter collaborates with Optica to promote research and technologies in light-based sciences.
+  `.trim(),
   updatedAt: new Date(),
 };
 
@@ -24,21 +26,21 @@ const MOCK_FLASH = null; // no banner when no DB
 const MOCK_FOOTER_LINKS = [
   { label: "IEEE", url: "https://www.ieee.org/" },
   { label: "LNMIIT", url: "https://www.lnmiit.ac.in/" },
-  { label: "Optica", url: "https://www.optica.org/" },
+  { label: "ASME", url: "https://asme.lnmiit.ac.in/" },
 ];
 
 const MOCK_TEAM = [
-  { id: "1", name: "Dr. Faculty Advisor", classification: "FACULTY_ADVISOR", post: "Faculty Advisor", imageUrl: null, email: "advisor@lnmiit.ac.in", phone: null, linkedin: null, order: 0 },
-  { id: "2", name: "Core Chair", classification: "CORE", post: "Chair", imageUrl: null, email: "chair@lnmiit.ac.in", phone: null, linkedin: null, order: 1 },
-  { id: "3", name: "Core Vice Chair", classification: "CORE", post: "Vice Chair", imageUrl: null, email: "vicechair@lnmiit.ac.in", phone: null, linkedin: null, order: 2 },
-  { id: "4", name: "Core Secretary", classification: "CORE", post: "Secretary", imageUrl: null, email: "secretary@lnmiit.ac.in", phone: null, linkedin: null, order: 3 },
-  { id: "5", name: "Core Treasurer", classification: "CORE", post: "Treasurer", imageUrl: null, email: "treasurer@lnmiit.ac.in", phone: null, linkedin: null, order: 4 },
-  { id: "6", name: "Core Member", classification: "CORE", post: "Member", imageUrl: null, email: "core5@lnmiit.ac.in", phone: null, linkedin: null, order: 5 },
-  { id: "7", name: "Web Dev Lead", classification: "FUNCTIONAL", post: "Web Development", imageUrl: null, email: "webdev@lnmiit.ac.in", phone: null, linkedin: null, order: 6 },
-  { id: "8", name: "Web Dev Member", classification: "FUNCTIONAL", post: "Web Development", imageUrl: null, email: "webdev2@lnmiit.ac.in", phone: null, linkedin: null, order: 7 },
-  { id: "9", name: "Content Lead", classification: "FUNCTIONAL", post: "Content", imageUrl: null, email: "content@lnmiit.ac.in", phone: null, linkedin: null, order: 8 },
-  { id: "10", name: "Content Member", classification: "FUNCTIONAL", post: "Content", imageUrl: null, email: "content2@lnmiit.ac.in", phone: null, linkedin: null, order: 9 },
-  { id: "11", name: "Event Manager", classification: "FUNCTIONAL", post: "Event Management", imageUrl: null, email: "events@lnmiit.ac.in", phone: null, linkedin: null, order: 10 },
+  { id: "1", name: "Dr. Harshvardhan Kumar", classification: "FACULTY_ADVISOR", post: "Advisor of LOSC, Assistant Professor, ECE & Head of Silicon Photonics Research Group, LNMIIT", imageUrl: "/faculty_advisor.jpeg", email: "harshvardhan.kumar@lnmiit.ac.in ", phone: "+917276373776", linkedin: null, order: 0 },
+  { id: "2", name: "Neha Soni", classification: "CORE", post: "President, Postgraduate Researcher, Silicon Photonics Research Group, LNMIIT", imageUrl: "/President.jpeg", email: "21dec008@lnmiit.ac.in", phone: "+917665125804", linkedin: null, order: 1 },
+  { id: "3", name: "Yash Bijawat", classification: "CORE", post: "Vice President, Undergradate Researcher of Silicon Photonics Research Group, LNMIIT", imageUrl: "/Vice_President.jpeg", email: "22uec146@lnmiit.ac.in", phone:  "+917597309945", linkedin: null, order: 2 },
+  { id: "4", name: "Sonali Rana", classification: "CORE", post: "Secretary at LOSC", imageUrl: "/Secretary.jpeg", email: "25mec003@lnmiit.ac.in", phone: null, linkedin: null, order: 3 },
+  { id: "5", name: "Som Mudgil", classification: "CORE", post: "Treasurer, Postgraduate Researcher, Silicon Photonics Research Group, LNMIIT", imageUrl: "/treasurer.jpeg", email: "22uec133@lnmiit.ac.in", phone: " +918957858317", linkedin: null, order: 4 },
+  { id: "6", name: "Jyoti Tater", classification: "CORE", post: "Other Officer, Undergraduate researcher at Silicon Photonics Research Group, LNMIIT", imageUrl: "/officer.jpeg", email: "22uec059@lnmiit.ac.in", phone: "+917073781288", linkedin: null, order: 5 },
+  { id: "7", name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development lead at LOSC", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", linkedin: null, order: 6 },
+  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Member in Web Development and Content Creation at LOSC", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
+  { id: "9", name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation Lead at LOSC", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", linkedin: null, order: 8 },
+  { id: "10", name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management Lead at LOSC", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", linkedin: null, order: 9 },
+  { id: "11", name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management Member at LOSC", imageUrl: "/EventMember.jpeg", email:"24dec051@lnmiit.ac.in" , phone:null , linkedin:null , order :10 },
 ];
 
 const MOCK_EVENTS = [

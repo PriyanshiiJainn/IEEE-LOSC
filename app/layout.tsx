@@ -5,8 +5,8 @@ import { Footer } from "@/components/layout/Footer";
 import { FlashBanner } from "@/components/layout/FlashBanner";
 
 export const metadata: Metadata = {
-  title: "IEEE Student Chapter | LNMIIT",
-  description: "IEEE Student Chapter at The LNM Institute of Information Technology, Jaipur",
+  title: "Optica Student Chapter | LNMIIT",
+  description: "Optica Student Chapter at The LNM Institute of Information Technology, Jaipur",
 };
 
 export default function RootLayout({
