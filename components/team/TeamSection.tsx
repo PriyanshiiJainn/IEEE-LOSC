@@ -14,7 +14,7 @@ export function TeamSection({
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-ieee-navy border-b-2 border-ieee-red/30 pb-2 mb-8">
+      <h2 className="text-3xl font-bold text-ieee-navy border-b-2 border-ieee-red/30 pb-2 mb-8">
         {title}
       </h2>
       <div
