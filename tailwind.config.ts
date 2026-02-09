@@ -16,9 +16,20 @@ const config: Config = {
         },
       },
       fontFamily: {
-        times: ['"Times New Roman"', "Times", "serif"], // ✅ Added Times New Roman
-        sans: ["ui-sans-serif", "system-ui"], // Optional: default sans
+        times: ['"Times New Roman"', "Times", "serif", "georgia","garamond"],
+        sans: ["ui-sans-serif", "system-ui"],
       },
+    keyframes: {
+  marqueeLeftToRight: {
+    "0%": { transform: "translateX(-100%)" },  // Start fully off-screen left
+    "100%": { transform: "translateX(100%)" }, // End fully off-screen right
+  },
+},
+animation: {
+  marqueeLeftToRight: "marqueeLeftToRight 10s linear infinite",
+},
+
+
     },
   },
   plugins: [],

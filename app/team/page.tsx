@@ -5,18 +5,37 @@ import { FunctionalTeamSection } from "@/components/team/FunctionalTeamSection";
 export default async function TeamPage() {
   const members = await getTeamMembers();
 
-  const faculty = members.filter((m) => m.classification === "FACULTY_ADVISOR");
+  const faculty = members.filter(
+    (m) => m.classification === "FACULTY_ADVISOR"
+  );
   const core = members.filter((m) => m.classification === "CORE");
-  const functional = members.filter((m) => m.classification === "FUNCTIONAL");
+  const functional = members.filter(
+    (m) => m.classification === "FUNCTIONAL"
+  );
 
   return (
-    <section className="container mx-auto px-4 py-12 md:py-16  font-times text-3xl">
-      <h1 className="text-4xl font-bold text-ieee-navy mb-12 font-times">Our Team</h1>
-      <div className="space-y-14">
-        <TeamSection title="Faculty Advisor" members={faculty} singleCard />
-        <TeamSection title="Core Team" members={core} />
-        <FunctionalTeamSection members={functional} />
-      </div>
+    <section className="container mx-auto px-4 py-12 md:py-16 font-times">
+      <h1 className="flex justify-center text-5xl font-bold text-ieee-navy mb-12">
+        Our Team
+      </h1>
+
+      {/* Faculty Advisor section */}
+      <TeamSection
+        title="Faculty Advisor"
+        className="mb-16"
+        members={faculty}
+        singleCard
+      />
+
+      {/* Core Team section */}
+      <TeamSection
+        title="Core Team"
+        className="mb-16"
+        members={core}
+      />
+
+      {/* Functional Team section */}
+      <FunctionalTeamSection members={functional} />
     </section>
   );
 }

@@ -9,6 +9,20 @@ import { prisma } from "./prisma";
 const USE_MOCK = process.env.USE_MOCK_DATA === "true";
 
 // --- Mock data (used when DB is not configured) ---
+const FUNCTIONAL_TEAMS = [
+  {
+    name: "Web Development",
+    keywords: ["web"],
+  },
+  {
+    name: "Content Creation",
+    keywords: ["content"],
+  },
+  {
+    name: "Event Management",
+    keywords: ["event"],
+  },
+] as const;
 
 const MOCK_ABOUT = {
   id: "mock",
@@ -31,16 +45,17 @@ const MOCK_FOOTER_LINKS = [
 
 const MOCK_TEAM = [
   { id: "1", name: "Dr. Harshvardhan Kumar", classification: "FACULTY_ADVISOR", post: "Advisor of LOSC, Assistant Professor, ECE & Head of Silicon Photonics Research Group, LNMIIT", imageUrl: "/faculty_advisor.jpeg", email: "harshvardhan.kumar@lnmiit.ac.in ", phone: "+917276373776", linkedin: null, order: 0 },
-  { id: "2", name: "Neha Soni", classification: "CORE", post: "President, Postgraduate Researcher, Silicon Photonics Research Group, LNMIIT", imageUrl: "/President.jpeg", email: "21dec008@lnmiit.ac.in", phone: "+917665125804", linkedin: null, order: 1 },
-  { id: "3", name: "Yash Bijawat", classification: "CORE", post: "Vice President, Undergradate Researcher of Silicon Photonics Research Group, LNMIIT", imageUrl: "/Vice_President.jpeg", email: "22uec146@lnmiit.ac.in", phone:  "+917597309945", linkedin: null, order: 2 },
-  { id: "4", name: "Sonali Rana", classification: "CORE", post: "Secretary at LOSC", imageUrl: "/Secretary.jpeg", email: "25mec003@lnmiit.ac.in", phone: null, linkedin: null, order: 3 },
-  { id: "5", name: "Som Mudgil", classification: "CORE", post: "Treasurer, Postgraduate Researcher, Silicon Photonics Research Group, LNMIIT", imageUrl: "/treasurer.jpeg", email: "22uec133@lnmiit.ac.in", phone: " +918957858317", linkedin: null, order: 4 },
-  { id: "6", name: "Jyoti Tater", classification: "CORE", post: "Other Officer, Undergraduate researcher at Silicon Photonics Research Group, LNMIIT", imageUrl: "/officer.jpeg", email: "22uec059@lnmiit.ac.in", phone: "+917073781288", linkedin: null, order: 5 },
-  { id: "7", name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development lead at LOSC", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", linkedin: null, order: 6 },
-  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Member in Web Development and Content Creation at LOSC", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
-  { id: "9", name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation Lead at LOSC", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", linkedin: null, order: 8 },
-  { id: "10", name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management Lead at LOSC", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", linkedin: null, order: 9 },
-  { id: "11", name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management Member at LOSC", imageUrl: "/EventMember.jpeg", email:"24dec051@lnmiit.ac.in" , phone:null , linkedin:null , order :10 },
+  { id: "2", name: "Neha Soni", classification: "CORE", post: "President",imageUrl: "/President.jpeg", email: "21dec008@lnmiit.ac.in", phone: "+917665125804", linkedin: null, order: 1 },
+  { id: "3", name: "Yash Bijawat", classification: "CORE", post: "Vice President", imageUrl: "/Vice_President.jpeg", email: "22uec146@lnmiit.ac.in", phone:  "+917597309945", linkedin: null, order: 2 },
+  { id: "4", name: "Sonali Rana", classification: "CORE", post: "Secretary", imageUrl: "/Secretary.jpeg", email: "25mec003@lnmiit.ac.in", phone: "+919418240014", linkedin: null, order: 3 },
+  { id: "5", name: "Som Mudgil", classification: "CORE", post: "Treasurer", imageUrl: "/treasurer.jpeg", email: "22uec133@lnmiit.ac.in", phone: " +918957858317", linkedin: null, order: 4 },
+  { id: "6", name: "Jyoti Tater", classification: "CORE", post: "Officer", imageUrl: "/officer.jpeg", email: "22uec059@lnmiit.ac.in", phone: "+917073781288", linkedin: null, order: 5 },
+  { id: "7", name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development lead ", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", linkedin: null, order: 6 },
+  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Member in Web Development ", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
+  { id: "9", name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation Lead", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", linkedin: null, order: 8 },
+  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Member in Content Creation ", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
+  { id: "10", name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management Lead", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", linkedin: null, order: 9 },
+  { id: "11", name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management Member", imageUrl: "/EventMember.jpeg", email:"24dec051@lnmiit.ac.in" , phone:"+917217427440" , linkedin:null , order :10 },
 ];
 
 const MOCK_EVENTS = [

@@ -5,29 +5,42 @@ export function TeamSection({
   title,
   members,
   singleCard,
+  className,
 }: {
   title: string;
   members: TeamMemberItem[];
   singleCard?: boolean;
+  className?: string;
 }) {
   if (members.length === 0) return null;
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold text-ieee-navy border-b-2 border-ieee-red/30 pb-2 mb-8">
+    <section className={className ?? "mb-16"}>
+      {/* Center the title */}
+      <h2 className="text-4xl font-bold text-ieee-navy border-b-2 border-ieee-red/30 pb-3 mb-10 text-center">
         {title}
       </h2>
+
       <div
         className={
           singleCard
-            ? "grid gap-6 max-w-sm mx-auto"
-            : "grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+            ? "flex justify-center"
+            : "grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         }
       >
         {members.map((m) => (
-          <TeamCard key={m.id} member={m} />
+          <div
+            key={m.id}
+            className={
+              singleCard
+                ? "w-56 md:w-64"  // smaller fixed width for single card (adjust as needed)
+                : ""
+            }
+          >
+            <TeamCard member={m} />
+          </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

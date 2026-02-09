@@ -18,7 +18,7 @@ export function TeamCard({ member }: { member: TeamMemberItem }) {
 
 
       <div className="p-4 text-center">
-        <h3 className="font-semibold text-ieee-navy">{member.name}</h3>
+        <h3 className="font-semibold text-ieee-navy text-2xl">{member.name}</h3>
         {member.post && (
           <p className="text-sm text-ieee-red mt-1">{member.post}</p>
         )}

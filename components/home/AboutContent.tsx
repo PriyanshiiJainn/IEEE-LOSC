@@ -46,11 +46,11 @@ export function AboutContent({ content }: AboutContentProps) {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
-      <div className="max-w-3xl mx-auto space-y-12 font-times">
+      <div className="max-w-3xl mx-auto space-y-12 ">
         {/* About Us */}
         <div>
-          <h2 className="text-3xl font-bold text-ieee-navy font-times mb-4">About Us</h2>
-          <div className="text-gray-600 flex flex-col gap-4 font-times">
+          <h2 className="text-3xl font-bold text-ieee-navy mb-4 font-times">About Us</h2>
+          <div className="text-gray-600 flex flex-col gap-4 font-georgia">
             {aboutUs.split("\n\n").map((para, idx) => (
               <p key={idx}>{renderHighlighted(para)}</p>
             ))}
@@ -60,7 +60,7 @@ export function AboutContent({ content }: AboutContentProps) {
         {/* About Optica */}
         <div>
           <h2 className="text-3xl font-bold text-ieee-navy font-times mb-4">About Optica</h2>
-          <div className="text-gray-600 font-times">
+          <div className="text-gray-600 font-georgia">
             {aboutOptica.split("\n\n").map((para, idx) => (
               <p key={idx}>{renderHighlighted(para)}</p>
             ))}
@@ -70,7 +70,7 @@ export function AboutContent({ content }: AboutContentProps) {
         {/* Recent Updates */}
         <div>
           <h2 className="text-3xl font-bold text-ieee-navy font-times mb-4">Recent Updates</h2>
-          <div className="text-gray-600 font-times">
+          <div className="text-gray-600 font-georgia">
             {aboutOptica.split("\n\n").map((para, idx) => (
               <p key={idx}>{renderHighlighted(para)}</p>
             ))}
