@@ -8,10 +8,10 @@ export async function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p className="text-sm text-gray-600">
-            IEEE Student Chapter · The LNM Institute of Information Technology, Jaipur
+            LNMIIT Optica Student Chapter &copy; LNMIIT 2026
           </p>
           <div className="flex flex-wrap gap-6">
-            <span className="text-sm font-medium text-gray-700">Useful links</span>
+            <span className="text-sm font-medium text-gray-700">Other links</span>
             {links.map((l) => (
               <a
                 key={l.url}

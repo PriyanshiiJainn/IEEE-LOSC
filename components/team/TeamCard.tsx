@@ -7,14 +7,16 @@ export function TeamCard({ member }: { member: TeamMemberItem }) {
 
   return (
     <article className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
-      <div className="aspect-[3/4] relative bg-gray-100">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageSrc}
-          alt=""
-          className="w-full h-full object-cover"
-        />
-      </div>
+  <div className="aspect-square w-50 mx-auto rounded-full overflow-hidden bg-gray-100">
+  <img
+    src={imageSrc}
+    alt=""
+    className="w-full h-full object-cover block"
+  />
+</div>
+
+
+
       <div className="p-4 text-center">
         <h3 className="font-semibold text-ieee-navy">{member.name}</h3>
         {member.post && (
