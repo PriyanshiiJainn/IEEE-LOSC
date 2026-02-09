@@ -21,7 +21,7 @@ export function FunctionalTeamSection({
 
   return (
     <div>
-      <h2 className="flex justify-center text-4xl font-bold text-ieee-navy border-b-2 border-ieee-red/30 pb-2 mb-8 font-times">
+      <h2 className="flex justify-center items-center text-4xl font-bold text-ieee-navy border-b-2 border-ieee-red/30 pb-2 mb-8 font-times">
         Functional Team
       </h2>
 

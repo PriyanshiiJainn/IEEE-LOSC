@@ -6,8 +6,8 @@ export function TeamCard({ member }: { member: TeamMemberItem }) {
   const imageSrc = member.imageUrl || PLACEHOLDER_AVATAR;
 
   return (
-    <article className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition">
-  <div className="aspect-square w-50 mx-auto rounded-full overflow-hidden bg-gray-100">
+    <article className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md p-3 transition">
+  <div className="aspect-square w-50 mx-auto border-2 border-gray-300  rounded-full overflow-hidden bg-gray-100">
   <img
     src={imageSrc}
     alt=""

@@ -8,8 +8,11 @@ const nav = [
   { href: "/", label: "About" },
   { href: "/team", label: "Team" },
   { href: "/events", label: "Events" },
+  { href: "/recent-activity", label: "Activity" },
   { href: "/event-reports", label: "Event Reports" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
+  { href: "/links", label: "Useful Links" },
 ];
 
 export function Header() {

@@ -55,7 +55,7 @@ const MOCK_TEAM = [
   { id: "9", name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation Lead", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", linkedin: null, order: 8 },
   { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Member in Content Creation ", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
   { id: "10", name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management Lead", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", linkedin: null, order: 9 },
-  { id: "11", name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management Member", imageUrl: "/EventMember.jpeg", email:"24dec051@lnmiit.ac.in" , phone:"+917217427440" , linkedin:null , order :10 },
+  { id: "11", name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Member in Event Management", imageUrl: "/EventMember.jpeg", email:"24dec051@lnmiit.ac.in" , phone:"+917217427440" , linkedin:null , order :10 },
 ];
 
 const MOCK_EVENTS = [
