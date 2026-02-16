@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type Flash = {
+export type Flash = {
   id: string;
   eventId: string | null;
   title: string;

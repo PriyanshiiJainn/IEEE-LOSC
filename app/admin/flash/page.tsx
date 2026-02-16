@@ -1,23 +1,25 @@
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
-import { FlashManager } from "@/components/admin/FlashManager";
+import { FlashManager, type Flash } from "@/components/admin/FlashManager";
 
 export default async function AdminFlashPage() {
   const session = await getAdminSession();
   if (!session) redirect("/admin/login");
 
-  let flashItems: Awaited<ReturnType<typeof prisma.flashAnnouncement.findMany>> = [];
+  let flashItems: Flash[] = [];
   let events: { id: string; title: string }[] = [];
   let dbReachable = true;
   try {
-    [flashItems, events] = await Promise.all([
+    const [flashData, eventsData] = await Promise.all([
       prisma.flashAnnouncement.findMany({
         include: { event: { select: { id: true, title: true } } },
         orderBy: { updatedAt: "desc" },
       }),
       prisma.event.findMany({ orderBy: { date: "desc" }, select: { id: true, title: true } }),
     ]);
+    flashItems = flashData as Flash[];
+    events = eventsData;
   } catch {
     dbReachable = false;
   }

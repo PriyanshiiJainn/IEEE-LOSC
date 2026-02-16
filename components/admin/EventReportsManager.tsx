@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-type Report = {
+export type Report = {
   id: string;
   eventId: string;
   title: string;

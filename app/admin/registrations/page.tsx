@@ -11,11 +11,18 @@ export default async function AdminRegistrationsPage({ searchParams }: Props) {
 
   const { eventId: filterEventId } = await searchParams;
 
-  let registrations: Awaited<ReturnType<typeof prisma.eventRegistration.findMany>> = [];
+  type RegistrationWithEvent = Awaited<
+    ReturnType<
+      typeof prisma.eventRegistration.findMany<{
+        include: { event: { select: { id: true; title: true; date: true } } };
+      }>
+    >
+  >[number];
+  let registrations: RegistrationWithEvent[] = [];
   let events: { id: string; title: string }[] = [];
   let dbReachable = true;
   try {
-    [registrations, events] = await Promise.all([
+    const [regData, eventsData] = await Promise.all([
       prisma.eventRegistration.findMany({
         where: filterEventId ? { eventId: filterEventId } : undefined,
         include: { event: { select: { id: true, title: true, date: true } } },
@@ -23,6 +30,8 @@ export default async function AdminRegistrationsPage({ searchParams }: Props) {
       }),
       prisma.event.findMany({ orderBy: { date: "desc" }, select: { id: true, title: true } }),
     ]);
+    registrations = regData;
+    events = eventsData;
   } catch {
     dbReachable = false;
   }

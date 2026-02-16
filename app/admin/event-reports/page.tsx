@@ -1,26 +1,32 @@
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
-import { EventReportsManager } from "@/components/admin/EventReportsManager";
+import { EventReportsManager, type Report } from "@/components/admin/EventReportsManager";
+import Btnupload from "./button";
 
 export default async function AdminEventReportsPage() {
   const session = await getAdminSession();
   if (!session) redirect("/admin/login");
 
-  let reports: Awaited<ReturnType<typeof prisma.eventReport.findMany>> = [];
+  let reports: Report[] = [];
   let events: { id: string; title: string }[] = [];
   let dbReachable = true;
   try {
-    [reports, events] = await Promise.all([
+    const [reportsData, eventsData] = await Promise.all([
       prisma.eventReport.findMany({
         include: { event: { select: { id: true, title: true } } },
         orderBy: { publishedAt: "desc" },
       }),
       prisma.event.findMany({ orderBy: { date: "desc" }, select: { id: true, title: true } }),
     ]);
+    reports = reportsData as Report[];
+    events = eventsData;
   } catch {
     dbReachable = false;
   }
+
+  
+
 
   return (
     <div>
@@ -31,6 +37,12 @@ export default async function AdminEventReportsPage() {
       )}
       <h1 className="text-2xl font-bold text-ieee-navy mb-6">Manage event reports</h1>
       <EventReportsManager initialReports={reports} events={events} />
+
+      <div>
+
+      <Btnupload></Btnupload>
+ 
+    </div>
     </div>
   );
 }

@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -12,6 +14,11 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+  const { data: session } = useSession();
+
+  if (session) {
+    redirect("/admin");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -24,6 +24,9 @@ const FUNCTIONAL_TEAMS = [
   },
 ] as const;
 
+
+
+
 const MOCK_ABOUT = {
   id: "mock",
   aboutUs: `

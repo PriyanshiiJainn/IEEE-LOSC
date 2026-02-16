@@ -27,7 +27,7 @@ export function EventsManager({ initialEvents, categories }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const empty: Partial<Event> = {
+  const empty = {
     title: "",
     description: "",
     date: "",
