@@ -24,17 +24,33 @@ const FUNCTIONAL_TEAMS = [
   },
 ] as const;
 
-
-
-
 const MOCK_ABOUT = {
   id: "mock",
+
+  // Paragraph content (NO BULLETS)
   aboutUs: `
-We are the Optica Student Chapter at The LNM Institute of Information Technology (LNMIIT), Jaipur, a vibrant community of students passionate about technology, innovation, and professional growth.Through workshops, hackathons, webinars, expert talks, and hands-on sessions, we foster curiosity, collaboration, and continuous learning.By promoting innovation, leadership, and teamwork, we empower students to become skilled professionals and contributors to the global tech community.
-  `.trim(),
+The LNM Institute of Information Technology (LNMIIT), Jaipur, presently provides a range of optics and photonics programs.
+
+➤ The Physics Department at LNMIIT clearly identifies optics as one of its research interests, along with cosmology, high-energy physics, material science, photovoltaics, biosensors, and nanotechnology.
+
+➤ LNMIIT has three specialized research centres — Centre for Material Science and Nano Electronics, Centre for VLSI and Embedded System Design (C-VESD), and Centre for Quantum Computing, Communication, Sensing and Security.
+
+➤ LNMIIT has a specialized Silicon Photonics Research Group within the ECE Department. Their study domains encompass:
+`.trim(),
+
+  // ONLY bullet items here (if needed)
+  aboutPoints: [
+    "Integrated Photonics (design to fabrication)",
+    "Heterogeneous integration of Group-IV materials",
+    "Fiber-optic telecommunications and data communications",
+    "Photonic sensors (biological, chemical, gas)",
+    "Devices operating in NIR, MIR and THz bands"
+  ],
+
   aboutOptica: `
-Optica (formerly OSA), Advancing Optics and Photonics Worldwide, is the society dedicated to promoting the generation, application, archiving and dissemination of knowledge in the field. Our chapter collaborates with Optica to promote research and technologies in light-based sciences.
-  `.trim(),
+Optica, formerly known as OSA, is a leading organization dedicated to advancing optics and photonics worldwide, promoting knowledge generation, application, and dissemination in the field.
+`.trim(),
+
   updatedAt: new Date(),
 };
 
@@ -44,6 +60,7 @@ const MOCK_FOOTER_LINKS = [
   { label: "IEEE", url: "https://www.ieee.org/" },
   { label: "LNMIIT", url: "https://www.lnmiit.ac.in/" },
   { label: "ASME", url: "https://asme.lnmiit.ac.in/" },
+  { label: "ACM", url: "https://lnmiit.acm.org/" },
 ];
 
 const MOCK_TEAM = [
@@ -53,18 +70,19 @@ const MOCK_TEAM = [
   { id: "4", name: "Sonali Rana", classification: "CORE", post: "Secretary", imageUrl: "/Secretary.jpeg", email: "25mec003@lnmiit.ac.in", phone: "+919418240014", linkedin: null, order: 3 },
   { id: "5", name: "Som Mudgil", classification: "CORE", post: "Treasurer", imageUrl: "/treasurer.jpeg", email: "22uec133@lnmiit.ac.in", phone: " +918957858317", linkedin: null, order: 4 },
   { id: "6", name: "Jyoti Tater", classification: "CORE", post: "Officer", imageUrl: "/officer.jpeg", email: "22uec059@lnmiit.ac.in", phone: "+917073781288", linkedin: null, order: 5 },
-  { id: "7", name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development lead ", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", linkedin: null, order: 6 },
-  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Member in Web Development ", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
-  { id: "9", name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation Lead", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", linkedin: null, order: 8 },
-  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Member in Content Creation ", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
-  { id: "10", name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management Lead", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", linkedin: null, order: 9 },
-  { id: "11", name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Member in Event Management", imageUrl: "/EventMember.jpeg", email:"24dec051@lnmiit.ac.in" , phone:"+917217427440" , linkedin:null , order :10 },
+  { id: "7", name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development (Lead) ", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", linkedin: null, order: 6 },
+  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Web Development (Member) ", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
+  { id: "9", name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation (Lead)", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", linkedin: null, order: 8 },
+  { id: "8", name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Content Creation (Member) ", imageUrl: "/WebdMember.jpeg", email:"24uec222@lnmiit.ac.in" , phone:"+919782801181" , linkedin:null , order :7 },
+  { id: "10", name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management (Lead)", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", linkedin: null, order: 9 },
+  { id: "11", name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management (Member)", imageUrl: "/EventMember.jpeg", email:"24dec051@lnmiit.ac.in" , phone:"+917217427440" , linkedin:null , order :10 },
 ];
 
 const MOCK_EVENTS = [
-  { id: "e1", title: "Annual Workshop 2025", description: "Hands-on workshop on emerging technologies.", date: new Date("2025-03-15"), time: "10:00 AM", venue: "LNMIIT Campus", category: "WORKSHOP", brochureUrl: null, isFeatured: true, registrationClosed: false },
-  { id: "e2", title: "IEEE Hackathon", description: "24-hour hackathon for students.", date: new Date("2025-04-20"), time: "9:00 AM", venue: "Lab Block", category: "HACKATHON", brochureUrl: null, isFeatured: false, registrationClosed: false },
-  { id: "e3", title: "Tech Quiz", description: "Technical quiz competition.", date: new Date("2025-05-10"), time: "2:00 PM", venue: "Seminar Hall", category: "QUIZ", brochureUrl: null, isFeatured: false, registrationClosed: false },
+  { id: "e1", title: "Annual Workshop 2025", description: "An Annual Workshop will be organized to provide hands-on learning in emerging technologies. The session will offer expert guidance and practical exposure to enhance students’ technical skills.", date: new Date("2025-03-15"), time: "10:00 AM", venue: "LNMIIT Campus", category: "WORKSHOP", brochureUrl: null, isFeatured: true, registrationClosed: false },
+  { id: "e2", title: "IEEE Hackathon", description: "A 24-hour innovation challenge where students collaborate to build real-world tech solutions from scratch. Guided by mentors, teams design, develop, and pitch impactful prototypes in a fast-paced environment.", date: new Date("2025-04-20"), time: "9:00 AM", venue: "Lab Block", category: "HACKATHON", brochureUrl: null, isFeatured: true, registrationClosed: false },
+  { id: "e3", title: "Tech Quiz", description: "An exciting Tech Quiz will be organized to test students’ knowledge in technology and emerging trends, challenging their technical awareness and quick-thinking skills.", date: new Date("2025-05-10"), time: "2:00 PM", venue: "Seminar Hall", category: "QUIZ", brochureUrl: null, isFeatured: true, registrationClosed: false },
+  
 ];
 
 const MOCK_REPORTS = [

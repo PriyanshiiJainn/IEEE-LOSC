@@ -6,19 +6,16 @@ export default function GalleryPage() {
   const [fullImage, setFullImage] = useState<string | null>(null);
 
   const images = [
-   
-   "/faculty_advisor.jpeg",
-   "/faculty_advisor.jpeg",
-   "/faculty_advisor.jpeg",
-   "/faculty_advisor.jpeg",
-   "/faculty_advisor.jpeg",
-   "/faculty_advisor.jpeg", 
-   "/faculty_advisor.jpeg",
-   "/faculty_advisor.jpeg",
-   "/faculty_advisor.jpeg"
-
-  ];
-
+  { src: "/image1.png", caption: "The LNM Institute of Information Technology (LNMIIT), Jaipur" },
+  { src: "/image2.png", caption: "Aerial View of LNMIIT Jaipur Campus" },
+  { src: "/image4.png", caption: "Blooming Greens at LNMIIT Jaipur" },
+  { src: "/image5.png", caption: "LNMIIT AI Centre – Advancing Artificial Intelligence Research" },
+  { src: "/image.png", caption: "Academic Block at LNMIIT – A hub for innovation, research, and academic excellence" },
+  { src: "/image6.png", caption: "Central Plaza at LNMIIT – A vibrant space for student interaction and campus life." },
+  { src: "/image7.png", caption: "Green Lawns of LNMIIT Campus" },
+  { src: "/image8.png", caption: "Central Activity Area – LNMIIT" },
+  { src: "/image3.png", caption: "Lighting Up the Campus – Celebrating Success Together." },
+];
   return (
     <div className=" min-h-screen">
       <h1 className="text-4xl text-center font-semibold my-10">
@@ -42,15 +39,20 @@ export default function GalleryPage() {
       )}
 
       <div className="w-4/5 mx-auto grid grid-cols-[repeat(auto-fit,minmax(330px,1fr))] gap-8 pb-10">
-        {images.map((src, index) => (
-          <img
-            key={index}
-            src={src}
-            alt={`Image ${index + 1}`}
-            className="w-full h-[400px] cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105 rounded-2xl hover:rotate-[0deg] hover:rounded-2xl hover:shadow-2xl"
-            onClick={() => setFullImage(src)}
-          />
-        ))}
+        {images.map((image, index) => (
+  <div key={index} className="flex flex-col items-center">
+    <img
+      src={image.src}
+      alt={`Image ${index + 1}`}
+      className="w-full h-[400px] cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105 rounded-2xl hover:shadow-2xl"
+      onClick={() => setFullImage(image.src)}
+    />
+    <p className="mt-2 text-center text-ieee-red font-medium">
+      {image.caption}
+    </p>
+  </div>
+))}
+        
       </div>
     </div>
   );

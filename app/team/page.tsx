@@ -15,24 +15,29 @@ export default async function TeamPage() {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16 font-times">
-      <h1 className="flex justify-center text-5xl font-bold text-ieee-navy mb-12">
+      <h1 className="flex justify-center text-6xl font-bold text-ieee-navy mb-12">
         Our Team
-      </h1>
+      </h1> 
 
       {/* Faculty Advisor section */}
       <TeamSection
         title="Faculty Advisor"
         className="mb-16"
         members={faculty}
+        nameClassName="md:text-2xl"
         singleCard
       />
 
       {/* Core Team section */}
-      <TeamSection
-        title="Core Team"
-        className="mb-16"
-        members={core}
-      />
+      {/* Core Team section */}
+<TeamSection
+  title="Core Team"
+  className="mb-16"
+  members={core}
+  nameClassName="md:text-2xl" // only Core Team names bigger
+/>
+
+
 
       {/* Functional Team section */}
       <FunctionalTeamSection members={functional} />

@@ -20,12 +20,13 @@ export function FunctionalTeamSection({
   if (functionalMembers.length === 0) return null;
 
   return (
-    <div>
-      <h2 className="flex justify-center items-center text-4xl font-bold text-ieee-navy border-b-2 border-ieee-red/30 pb-2 mb-8 font-times">
+    <div className="w-full">
+      {/* Main Heading */}
+      <h2 className="text-center text-5xl font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-2 mb-12 font-times">
         Functional Team
       </h2>
 
-      <div className="space-y-16">
+      <div className="space-y-20">
         {FUNCTIONAL_TEAMS.map((team) => {
           const teamMembers = functionalMembers.filter((m) => {
             if (!m.post) return false;
@@ -36,16 +37,22 @@ export function FunctionalTeamSection({
           if (teamMembers.length === 0) return null;
 
           return (
-            <section key={team.name}>
-              <h3 className="text-3xl font-semibold text-ieee-navy mb-8">
+            <section key={team.name} className="text-center">
+              {/* Team Heading */}
+              <h3 className="text-3xl font-semibold text-ieee-navy mb-10">
                 {team.name} Team
               </h3>
 
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-                {teamMembers.map((m) => (
-                  <TeamCard key={m.id} member={m} />
-                ))}
-              </div>
+              {/* Centered Grid */}
+              <div className="flex flex-wrap justify-center gap-8">
+  {teamMembers.map((m) => (
+    <div key={m.id} className="w-64">
+      <TeamCard member={m} />
+    </div>
+  ))}
+</div>
+
+
             </section>
           );
         })}

@@ -2,23 +2,27 @@ import type { TeamMemberItem } from "@/lib/data";
 
 const PLACEHOLDER_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c41230' opacity='0.3'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
 
-export function TeamCard({ member }: { member: TeamMemberItem }) {
+export function TeamCard({
+  member,
+  nameClassName, // new optional prop
+}: {
+  member: TeamMemberItem;
+  nameClassName?: string;
+}) {
   const imageSrc = member.imageUrl || PLACEHOLDER_AVATAR;
 
   return (
     <article className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md p-3 transition">
-  <div className="aspect-square w-50 mx-auto border-2 border-gray-300  rounded-full overflow-hidden bg-gray-100">
-  <img
-    src={imageSrc}
-    alt=""
-    className="w-full h-full object-cover block"
-  />
-</div>
-
-
+      <div className="aspect-square w-50 mx-auto border-2 border-gray-300 rounded-full overflow-hidden bg-gray-100">
+        <img src={imageSrc} alt="" className="w-full h-full object-cover block" />
+      </div>
 
       <div className="p-4 text-center">
-        <h3 className="font-semibold text-ieee-navy text-2xl">{member.name}</h3>
+        {/* Only name gets conditional class */}
+        <h3 className={`font-semibold text-ieee-navy text-xl ${nameClassName ?? ""}`}>
+          {member.name}
+        </h3>
+
         {member.post && (
           <p className="text-sm text-ieee-red mt-1">{member.post}</p>
         )}
