@@ -1,6 +1,6 @@
 export function AboutHero() {
   return (
-    <section className="relative -mt-16 h-screen bg-cover bg-center bg-[url('/centralplaza.webp')]">
+    <section className="relative -mt-16 h-[85vh] bg-cover bg-center bg-[url('/centralplaza.webp')]">
       <div className="absolute inset-0 bg-black/25" />
 
       <div className="relative h-full flex flex-col items-center justify-center px-4 text-center text-white">
