@@ -8,6 +8,7 @@ export type Report = {
   title: string;
   content: string;
   coverImageUrl: string | null;
+  pdfUrl: string | null;
   publishedAt: Date | string | null;
   event: { id: string; title: string };
 };
@@ -23,7 +24,8 @@ export function EventReportsManager({ initialReports, events }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const empty = { eventId: events[0]?.id ?? "", title: "", content: "", coverImageUrl: "", publishedAt: "" };
+  const [uploading, setUploading] = useState(false);
+  const empty = { eventId: events[0]?.id ?? "", title: "", content: "", coverImageUrl: "", pdfUrl: "", publishedAt: "" };
   const [form, setForm] = useState(empty);
 
   function openAdd() {
@@ -38,9 +40,27 @@ export function EventReportsManager({ initialReports, events }: Props) {
       title: r.title,
       content: r.content,
       coverImageUrl: r.coverImageUrl ?? "",
+      pdfUrl: r.pdfUrl ?? "",
       publishedAt: r.publishedAt ? new Date(r.publishedAt).toISOString().slice(0, 10) : "",
     });
     setOpen(true);
+  }
+
+  async function handlePdfUpload(file: File) {
+    setUploading(true);
+    setError("");
+    try {
+      const formData = new FormData();
+      formData.append("pdf", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Upload failed");
+      const data = await res.json();
+      setForm((f) => ({ ...f, pdfUrl: data.url }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "PDF upload failed");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -48,7 +68,14 @@ export function EventReportsManager({ initialReports, events }: Props) {
     setError("");
     setLoading(true);
     try {
-      const body = { eventId: form.eventId, title: form.title, content: form.content, coverImageUrl: form.coverImageUrl || null, publishedAt: form.publishedAt || null };
+      const body = {
+        eventId: form.eventId,
+        title: form.title,
+        content: form.content,
+        coverImageUrl: form.coverImageUrl || null,
+        pdfUrl: form.pdfUrl || null,
+        publishedAt: form.publishedAt || null,
+      };
       if (editing) {
         const res = await fetch(`/api/admin/event-reports/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
         if (!res.ok) throw new Error(await res.text());
@@ -92,6 +119,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
             <div>
               <span className="font-medium">{r.title}</span>
               <span className="ml-2 text-sm text-gray-500">{r.event?.title}</span>
+              {r.pdfUrl && <span className="ml-2 text-xs text-green-600">PDF attached</span>}
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => openEdit(r)} className="text-sm text-ieee-red hover:underline">Edit</button>
@@ -120,12 +148,32 @@ export function EventReportsManager({ initialReports, events }: Props) {
                 <textarea value={form.content} onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))} required rows={4} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">PDF Report</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handlePdfUpload(file);
+                    }}
+                    className="text-sm"
+                  />
+                  {uploading && <span className="text-xs text-gray-500">Uploading…</span>}
+                </div>
+                {form.pdfUrl && (
+                  <p className="mt-1 text-xs text-green-600">
+                    Attached: <a href={form.pdfUrl} target="_blank" rel="noopener noreferrer" className="underline">{form.pdfUrl}</a>
+                  </p>
+                )}
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Published date</label>
                 <input type="date" value={form.publishedAt} onChange={(e) => setForm((f) => ({ ...f, publishedAt: e.target.value }))} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
               <div className="flex gap-2 pt-2">
-                <button type="submit" disabled={loading} className="rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90 disabled:opacity-50">{loading ? "Saving…" : "Save"}</button>
+                <button type="submit" disabled={loading || uploading} className="rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90 disabled:opacity-50">{loading ? "Saving…" : "Save"}</button>
                 <button type="button" onClick={() => setOpen(false)} className="rounded border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
               </div>
             </form>

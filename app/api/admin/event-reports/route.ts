@@ -8,6 +8,7 @@ const createSchema = z.object({
   title: z.string().min(1).max(200),
   content: z.string(),
   coverImageUrl: z.string().url().optional().nullable(),
+  pdfUrl: z.string().optional().nullable(),
   publishedAt: z.string().optional().nullable(),
 });
 
@@ -27,10 +28,15 @@ export async function POST(request: Request) {
   const body = await request.json();
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
-  const data = {
-    ...parsed.data,
-    publishedAt: parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null,
-  };
-  const report = await prisma.eventReport.create({ data });
-  return NextResponse.json(report);
+  try {
+    const data = {
+      ...parsed.data,
+      publishedAt: parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null,
+    };
+    const report = await prisma.eventReport.create({ data });
+    return NextResponse.json(report);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Failed to create report";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

@@ -1,9 +1,17 @@
 import type { TeamMemberItem } from "@/lib/data";
 
 export function ContactInfo({ members }: { members: TeamMemberItem[] }) {
+  const seen = new Set<string>();
+  const unique = members.filter((m) => {
+    const key = m.email ?? m.name;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
   return (
     <ul className="space-y-3">
-      {members.map((m) => (
+      {unique.map((m) => (
         <li key={m.id} className="rounded border border-gray-200 p-3">
           <span className="font-medium text-ieee-navy">{m.name}</span>
           {m.post && <span className="text-gray-600 text-sm ml-2">— {m.post}</span>}

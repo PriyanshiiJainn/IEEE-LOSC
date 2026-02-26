@@ -85,6 +85,7 @@ model EventReport {
   title       String
   content     String   @db.Text
   coverImageUrl String?
+  pdfUrl      String?
   publishedAt DateTime?
   createdAt   DateTime @updatedAt
   updatedAt   DateTime @updatedAt

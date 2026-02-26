@@ -22,8 +22,8 @@ export function FunctionalTeamSection({
   return (
     <div className="w-full">
       {/* Main Heading */}
-      <h2 className="text-center text-5xl font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-2 mb-12 font-times">
-        Functional Team
+      <h2 className="text-center text-4xl font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-2 mb-12">
+        FUNCTIONAL TEAM
       </h2>
 
       <div className="space-y-20">
@@ -39,18 +39,18 @@ export function FunctionalTeamSection({
           return (
             <section key={team.name} className="text-center">
               {/* Team Heading */}
-              <h3 className="text-3xl font-semibold text-ieee-navy mb-10">
+              <h3 className="text-3xl font-semibold text-ieee-navy mb-4">
                 {team.name} Team
               </h3>
 
               {/* Centered Grid */}
-              <div className="flex flex-wrap justify-center gap-8">
-  {teamMembers.map((m) => (
-    <div key={m.id} className="w-64">
-      <TeamCard member={m} />
-    </div>
-  ))}
-</div>
+              <div className="flex flex-wrap justify-center gap-5">
+                {teamMembers.map((m) => (
+                  <div key={m.id} className="w-52">
+                    <TeamCard member={m} splitName />
+                  </div>
+                ))}
+              </div>
 
 
             </section>

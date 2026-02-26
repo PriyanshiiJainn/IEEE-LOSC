@@ -22,7 +22,7 @@ export default async function EventsPage() {
       <div className="max-w-7xl mx-auto">
 
         {/* Main Page Heading */}
-        <h1 className="flex justify-center text-5xl font-semibold text-ieee-navy mb-2">Events</h1>
+        <h1 className="text-4xl font-bold text-ieee-navy text-center mb-2">Events</h1>
         <p className="text-gray-600 mb-10">
         We are the <span className="text-ieee-red">Optica Student Chapter</span> at <span className="text-ieee-red">The LNM Institute of Information Technology (LNMIIT)</span>, Jaipur, a vibrant community of students passionate about technology, innovation, and professional growth. Through workshops, hackathons, webinars, expert talks, and hands-on sessions, we foster curiosity, collaboration, and continuous learning. By promoting innovation, leadership, and teamwork, the <span className="text-ieee-red">LNMIIT Optica Student Chapter (LOSC) </span> strives to empower students to become skilled professionals and contributors to the global technological community.
 

@@ -63,18 +63,26 @@ export function AboutContent({ content }: AboutContentProps) {
 
         {/* ABOUT US */}
         <div>
-          <h2 className="text-3xl font-bold text-ieee-navy mb-4 font-times">
+          <h2 className="text-3xl font-bold text-ieee-navy mb-4">
             About Us
           </h2>
 
-          <div className="text-gray-600 flex flex-col gap-4 font-georgia">
-            {aboutUs.split("\n\n").map((para, idx) => (
-              <p key={idx}>{renderHighlightedText(para)}</p>
-            ))}
+          <div className="text-gray-600 flex flex-col gap-4">
+            {aboutUs.split("\n\n").map((para, idx) => {
+              const trimmed = para.trim();
+              if (trimmed.startsWith("➤")) {
+                return (
+                  <p key={idx} className="pl-6">
+                    {renderHighlightedText(trimmed)}
+                  </p>
+                );
+              }
+              return <p key={idx}>{renderHighlightedText(trimmed)}</p>;
+            })}
           </div>
 
           {aboutPoints.length > 0 && (
-            <ul className="list-disc pl-6 mt-6 space-y-2 text-gray-600 font-georgia">
+            <ul className="list-disc pl-6 mt-4 space-y-2 text-gray-600">
               {aboutPoints.map((point, idx) => (
                 <li key={idx}>{renderHighlightedText(point)}</li>
               ))}
@@ -84,10 +92,10 @@ export function AboutContent({ content }: AboutContentProps) {
 
         {/* ABOUT OPTICA */}
         <div>
-          <h2 className="text-3xl font-bold text-ieee-navy mb-4 font-times">
+          <h2 className="text-3xl font-bold text-ieee-navy mb-4">
             About Optica
           </h2>
-          <div className="text-gray-600 flex flex-col gap-4 font-georgia">
+          <div className="text-gray-600 flex flex-col gap-4">
             {aboutOptica.split("\n\n").map((para, idx) => (
               <p key={idx}>{renderHighlightedText(para)}</p>
             ))}
@@ -96,10 +104,10 @@ export function AboutContent({ content }: AboutContentProps) {
 
         {/* RECENT UPDATES */}
         <div>
-          <h2 className="text-3xl font-bold text-ieee-navy mb-4 font-times">
+          <h2 className="text-3xl font-bold text-ieee-navy mb-4">
             Recent Updates
           </h2>
-          <ul className="list-disc pl-6 space-y-2 text-gray-600 font-georgia">
+          <ul className="list-disc pl-6 space-y-2 text-gray-600">
             {recentUpdates.map((update, idx) => (
               <li key={idx}>{renderHighlightedText(update)}</li>
             ))}

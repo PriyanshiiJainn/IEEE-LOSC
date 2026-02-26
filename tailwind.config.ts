@@ -16,8 +16,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        times: ['"Times New Roman"', "Times", "serif", "georgia","garamond"],
-        sans: ["ui-sans-serif", "system-ui"],
+        figtree: ['"Figtree"', "sans-serif"],
+        heading: ['"DM Serif Display"', "serif"],
+        sans: ['"Figtree"', "ui-sans-serif", "system-ui"],
       },
     keyframes: {
   marqueeLeftToRight: {
@@ -26,7 +27,7 @@ const config: Config = {
   },
 },
 animation: {
-  marqueeLeftToRight: "marqueeLeftToRight 10s linear infinite",
+  marqueeLeftToRight: "marqueeLeftToRight 7s linear infinite",
 },
 
 

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error:
-            "This event doesn't exist in the database. Add events in Admin → Events and set USE_MOCK_DATA=false in .env so the site shows real events.",
+            "This event doesn't exist in the database. Add events via Admin → Events.",
         },
         { status: 400 }
       );

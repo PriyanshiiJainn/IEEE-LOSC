@@ -1,25 +1,14 @@
 export function AboutHero() {
   return (
-    <section
-      className="bg-ieee-navy text-white py-16 md:py-24 flex items-center justify-center"
-      style={{
-        backgroundImage: "url('/centralplaza.webp')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="container h-[50vh] px-4 text-center flex flex-col justify-center items-center">
-        <h1
-          className="text-5xl text-border border-black  text-[#FFFFFF] font-bold font-times"
-          style={{ textShadow: "2px 2px 6px rgba(0,0,0,0.2)" }}
-        >
+    <section className="relative -mt-16 h-screen bg-cover bg-center bg-[url('/centralplaza.webp')]">
+      <div className="absolute inset-0 bg-black/25" />
+
+      <div className="relative h-full flex flex-col items-center justify-center px-4 text-center text-white">
+        <h1 className="text-7xl font-heading drop-shadow-lg">
           LNMIIT OPTICA STUDENT CHAPTER
         </h1>
 
-        <p
-          className="text-2xl text-[#FFFFFF] max-w-3xl mx-auto font-times mt-6"
-          style={{ textShadow: "1px 1px 4px rgba(0,0,0,0.7)" }}
-        >
+        <p className="text-3xl max-w-4xl mt-6 drop-shadow-md">
           The LNM Institute of Information Technology, Jaipur (INDIA)
         </p>
       </div>

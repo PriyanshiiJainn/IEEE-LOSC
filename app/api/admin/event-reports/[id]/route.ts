@@ -8,6 +8,7 @@ const updateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   content: z.string().optional(),
   coverImageUrl: z.string().url().optional().nullable(),
+  pdfUrl: z.string().optional().nullable(),
   publishedAt: z.string().optional().nullable(),
 });
 
@@ -21,14 +22,19 @@ export async function PATCH(
   const body = await request.json();
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
-  const data: Record<string, unknown> = { ...parsed.data };
-  if (parsed.data.publishedAt !== undefined)
-    data.publishedAt = parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null;
-  const report = await prisma.eventReport.update({
-    where: { id },
-    data,
-  });
-  return NextResponse.json(report);
+  try {
+    const data: Record<string, unknown> = { ...parsed.data };
+    if (parsed.data.publishedAt !== undefined)
+      data.publishedAt = parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null;
+    const report = await prisma.eventReport.update({
+      where: { id },
+      data,
+    });
+    return NextResponse.json(report);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Failed to update report";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }
 
 export async function DELETE(

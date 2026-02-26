@@ -6,19 +6,21 @@ export function TeamSection({
   members,
   singleCard,
   className,
-  nameClassName, // new prop
+  nameClassName,
+  splitName,
 }: {
   title: string;
   members: TeamMemberItem[];
   singleCard?: boolean;
   className?: string;
   nameClassName?: string;
+  splitName?: boolean;
 }) {
   if (members.length === 0) return null;
 
   return (
     <section className={className ?? "mb-16"}>
-      <h2 className="text-5xl font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-3 mb-10 text-center">
+      <h2 className="text-4xl font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-3 mb-10 text-center">
         {title}
       </h2>
 
@@ -26,15 +28,12 @@ export function TeamSection({
         className={
           singleCard
             ? "flex justify-center"
-            : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-items-center"
+            : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 justify-items-center"
         }
       >
         {members.map((m) => (
-          <div
-            key={m.id}
-            className={singleCard ? "w-72 md:w-80 lg:w-96" : "w-60"}
-          >
-            <TeamCard member={m} nameClassName={nameClassName} />
+          <div key={m.id} className={singleCard ? "w-56" : "w-52"}>
+            <TeamCard member={m} nameClassName={nameClassName} splitName={splitName} />
           </div>
         ))}
       </div>

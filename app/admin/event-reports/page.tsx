@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { EventReportsManager, type Report } from "@/components/admin/EventReportsManager";
-import Btnupload from "./button";
 
 export default async function AdminEventReportsPage() {
   const session = await getAdminSession();
@@ -37,12 +36,6 @@ export default async function AdminEventReportsPage() {
       )}
       <h1 className="text-2xl font-bold text-ieee-navy mb-6">Manage event reports</h1>
       <EventReportsManager initialReports={reports} events={events} />
-
-      <div>
-
-      <Btnupload></Btnupload>
- 
-    </div>
     </div>
   );
 }

@@ -4,35 +4,42 @@ const PLACEHOLDER_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 
 export function TeamCard({
   member,
-  nameClassName, // new optional prop
+  nameClassName,
+  splitName,
 }: {
   member: TeamMemberItem;
   nameClassName?: string;
+  splitName?: boolean;
 }) {
   const imageSrc = member.imageUrl || PLACEHOLDER_AVATAR;
 
+  const renderedName = splitName
+    ? (() => {
+        const lastIdx = member.name.trim().lastIndexOf(" ");
+        if (lastIdx <= 0) return member.name;
+        return (
+          <>
+            {member.name.slice(0, lastIdx)}
+            <br />
+            {member.name.slice(lastIdx + 1)}
+          </>
+        );
+      })()
+    : member.name;
+
   return (
-    <article className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md p-3 transition">
-      <div className="aspect-square w-50 mx-auto border-2 border-gray-300 rounded-full overflow-hidden bg-gray-100">
+    <article className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md p-3 transition h-full flex flex-col">
+      <div className="aspect-square w-36 mx-auto border-2 border-gray-300 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 mt-2">
         <img src={imageSrc} alt="" className="w-full h-full object-cover block" />
       </div>
 
-      <div className="p-4 text-center">
-        {/* Only name gets conditional class */}
-        <h3 className={`font-semibold text-ieee-navy text-xl ${nameClassName ?? ""}`}>
-          {member.name}
+      <div className="p-3 text-center flex flex-col">
+        <h3 className={`font-semibold text-ieee-navy text-xl h-[3.5rem] flex items-center justify-center leading-tight ${nameClassName ?? ""}`}>
+          <span className="text-center">{renderedName}</span>
         </h3>
 
         {member.post && (
           <p className="text-sm text-ieee-red mt-1">{member.post}</p>
-        )}
-        {member.email && (
-          <a
-            href={`mailto:${member.email}`}
-            className="text-xs text-gray-500 hover:text-ieee-red mt-2 inline-block"
-          >
-            {member.email}
-          </a>
         )}
       </div>
     </article>

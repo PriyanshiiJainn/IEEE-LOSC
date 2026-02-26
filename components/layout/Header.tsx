@@ -20,9 +20,9 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <img src="/optica_logo.png" alt="Optica_logo" className=" h-12 object-contain" />
+    <header className="sticky top-2 z-50 mx-4 rounded-xl border border-gray-200 bg-white/95 backdrop-blur shadow-sm">
+      <div className="container mx-auto flex h-12 items-center justify-between px-4">
+        <img src="/optica_logo.png" alt="Optica_logo" className="h-9 object-contain" />
         
 
         <nav className="hidden md:flex md:items-center md:gap-6">
@@ -30,8 +30,8 @@ export function Header() {
             <Link
               key={href}
               href={href}
-              className={`text-sm font-medium transition ${
-                pathname === href ? "text-ieee-red" : "text-gray-600 hover:text-ieee-navy"
+              className={`text-base font-medium transition ${
+                pathname === href ? "text-ieee-red" : "text-gray-800 hover:text-ieee-navy"
               }`}
             >
               {label}
@@ -56,14 +56,14 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-gray-200 bg-white md:hidden">
+        <div className="border-t border-gray-200 bg-white rounded-b-xl md:hidden">
           <div className="container mx-auto flex flex-col gap-1 px-4 py-3">
             {nav.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
-                className={`rounded px-3 py-2 text-sm font-medium ${
-                  pathname === href ? "bg-ieee-red/10 text-ieee-red" : "text-gray-600 hover:bg-gray-50"
+                className={`rounded px-3 py-2 text-base font-medium ${
+                  pathname === href ? "bg-ieee-red/10 text-ieee-red" : "text-gray-800 hover:bg-gray-50"
                 }`}
                 onClick={() => setOpen(false)}
               >

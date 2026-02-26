@@ -9,7 +9,7 @@ export default async function HomePage() {
     <>
       <AboutHero />
       <FlashBanner />
-      <AboutContent content={about} />
+      <AboutContent content={about ?? undefined} />
     </>
   );
 }
