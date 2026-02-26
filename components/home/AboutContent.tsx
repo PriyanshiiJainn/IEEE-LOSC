@@ -33,9 +33,10 @@ export function AboutContent({ content }: AboutContentProps) {
   const aboutOptica = content?.aboutOptica ?? "";
 
   const recentUpdates = content?.recentUpdates ?? [
-    "The LNMIIT Optica Student Chapter (LOSC) will be inaugurated on 12 March 2026.",
-    "The event will be graced by Prof Muhammad Agus Hatta and Dr Rikmantra Basu.",
-    "An engaging quiz session will be conducted with exciting prizes for the winners."
+    "We are pleased to inform you about the inaugural event of the LNMIIT Optica Student Chapter LOSC at The LNM Institute of Information Technology, Jaipur. ",
+    "Event date: 12th March 2026 (10:00 AM; Thursday)" ,
+    "Venue: LT-17, RIEP Building."
+  
   ];
 
   // 🔥 Highlight Function

@@ -1,28 +1,28 @@
 export function AboutHero() {
   return (
     <section
-      className="bg-ieee-navy text-white py-16 md:py-24"
+      className="bg-ieee-navy text-white py-16 md:py-24 flex items-center justify-center"
       style={{
-        backgroundImage: "url('/lnm_campus.jpg')",
+        backgroundImage: "url('/centralplaza.webp')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="container mx-auto px-4 text-center">
+      <div className="container h-[50vh] px-4 text-center flex flex-col justify-center items-center">
         <h1
-          className="text-7xl md:text-7xl text-[#00CED1] font-bold mt-20 mb-20 font-times"
-          style={{ textShadow: "2px 2px 6px rgba(0,0,0,0.7)" }}
+          className="text-5xl text-border border-black  text-[#FFFFFF] font-bold font-times"
+          style={{ textShadow: "2px 2px 6px rgba(0,0,0,0.2)" }}
         >
-          LNMMIIT OPTICA STUDENT CHAPTER
+          LNMIIT OPTICA STUDENT CHAPTER
         </h1>
+
         <p
-          className="text-3xl text-[#00CED1] max-w-3xl mx-auto font-georgia"
+          className="text-2xl text-[#FFFFFF] max-w-3xl mx-auto font-times mt-6"
           style={{ textShadow: "1px 1px 4px rgba(0,0,0,0.7)" }}
         >
-        The LNM Institute of Information Technology, Jaipur (INDIA)
+          The LNM Institute of Information Technology, Jaipur (INDIA)
         </p>
       </div>
     </section>
   );
 }
-
