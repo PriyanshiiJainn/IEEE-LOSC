@@ -6,7 +6,7 @@ export default async function EventReportsPage() {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
-      <h1 className="text-4xl font-bold text-ieee-navy text-center mb-2">Event Reports</h1>
+      <h1 className="text-6xl font-heading text-ieee-navy text-center mb-2">Event Reports</h1>
       <p className="text-gray-600 mb-8">
         Summaries and highlights from past events.
       </p>

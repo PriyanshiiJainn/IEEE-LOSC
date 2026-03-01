@@ -18,21 +18,20 @@ export default async function EventsPage() {
   );
 
   return (
-    <section className="w-full px-4 py-12 md:py-16">
+    <section className="w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
       <div className="max-w-7xl mx-auto">
 
         {/* Main Page Heading */}
-        <h1 className="text-4xl font-bold text-ieee-navy text-center mb-2">Events</h1>
-        <p className="text-gray-600 mb-10">
+        <h1 className="text-6xl font-heading text-ieee-navy text-center mb-3">Events</h1>
+        <p className="text-gray-600 mb-10 md:mb-12 leading-relaxed">
         We are the <span className="text-ieee-red">Optica Student Chapter</span> at <span className="text-ieee-red">The LNM Institute of Information Technology (LNMIIT)</span>, Jaipur, a vibrant community of students passionate about technology, innovation, and professional growth. Through workshops, hackathons, webinars, expert talks, and hands-on sessions, we foster curiosity, collaboration, and continuous learning. By promoting innovation, leadership, and teamwork, the <span className="text-ieee-red">LNMIIT Optica Student Chapter (LOSC) </span> strives to empower students to become skilled professionals and contributors to the global technological community.
 
         </p>
-       <br/>
         {/* --- First Grid --- */}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch mb-12">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch mb-12 md:mb-14">
           {firstRow.map((event) => (
             <div key={event.id}>
-              <h3 className="text-lg font-bold text-ieee-navy mb-3 px-9 border-b pb-2">
+              <h3 className="text-lg font-bold text-ieee-navy mb-3 px-4 sm:px-6 border-b pb-2">
                 {event.category}
               </h3>
               <EventCard event={event} />
@@ -41,10 +40,10 @@ export default async function EventsPage() {
         </div>
 
         {/* --- Second Grid --- */}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch mb-12">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch mb-12 md:mb-14">
           {secondRow.map((event) => (
             <div key={event.id}>
-              <h3 className="text-lg font-semibold text-ieee-navy mb-3 px-9 border-b pb-2">
+              <h3 className="text-lg font-semibold text-ieee-navy mb-3 px-4 sm:px-6 border-b pb-2">
                 {event.category}
               </h3>
               <EventCard event={event} />

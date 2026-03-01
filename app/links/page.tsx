@@ -38,7 +38,7 @@ export default function LinksPage() {
 
   return (
     <div className="container mx-auto px-4 py-10">
-      <h1 className="text-4xl font-bold text-ieee-navy text-center mb-8">Important Links</h1>
+      <h1 className="text-6xl font-heading text-ieee-navy text-center mb-8">Important Links</h1>
 
       <div className="space-y-4">
         {links.map((link, index) => (

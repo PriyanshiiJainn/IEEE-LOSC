@@ -15,7 +15,7 @@ export default async function TeamPage() {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
-      <h1 className="text-6xl font-bold text-ieee-navy text-center mb-10">
+      <h1 className="text-7xl font-heading text-ieee-navy text-center mb-10">
         Our Team
       </h1>
 
