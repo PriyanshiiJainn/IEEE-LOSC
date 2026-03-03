@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
     });
     setLoading(false);
     if (res?.error) {
-      setError("Invalid email or password. Use admin@ieee.lnmiit.ac.in / admin123 (run npm run db:seed when DB is reachable). In development, same credentials work when DB is unreachable to view the admin portal.");
+      setError("Invalid email or password.");
       return;
     }
     if (res?.ok) window.location.href = callbackUrl;

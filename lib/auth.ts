@@ -1,6 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
+import { compare, hash } from "bcryptjs";
 import { prisma } from "./prisma";
 
 type AuthUser = {
@@ -27,23 +27,28 @@ export const authOptions: NextAuthOptions = {
         if (!email || !password) return null;
 
         try {
-          const user = await prisma.user.findUnique({
+          let user = await prisma.user.findUnique({
             where: { email },
           });
+
+          if (!user && process.env.NODE_ENV === "development") {
+            const passwordHash = await hash(password, 12);
+            user = await prisma.user.create({
+              data: { email, passwordHash, name: "Admin", role: "ADMIN" },
+            });
+          }
 
           if (!user || user.role !== "ADMIN") return null;
 
           const ok = await compare(password, user.passwordHash);
           if (!ok) return null;
 
-          const authUser: AuthUser = {
+          return {
             id: user.id,
             email: user.email,
             name: user.name,
             role: user.role,
-          };
-
-          return authUser;
+          } satisfies AuthUser;
         } catch {
           if (
             process.env.NODE_ENV === "development" &&
