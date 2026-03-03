@@ -18,7 +18,7 @@ export default function GalleryPage() {
 ];
   return (
     <div className=" min-h-screen">
-      <h1 className="text-[5vw] font-heading text-ieee-navy text-center my-10">
+      <h1 className="text-[clamp(1.75rem,5vw,3rem)] font-heading text-ieee-navy text-center my-10">
         Image Gallery
       </h1>
 

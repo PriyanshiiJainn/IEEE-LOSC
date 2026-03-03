@@ -22,7 +22,7 @@ export function FunctionalTeamSection({
   return (
     <div className="w-full">
       {/* Main Heading */}
-      <h2 className="text-center text-[3vw] font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-2 mb-12">
+      <h2 className="text-center text-[clamp(1.25rem,3vw,2rem)] font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-2 mb-12">
         FUNCTIONAL TEAM
       </h2>
 
@@ -39,7 +39,7 @@ export function FunctionalTeamSection({
           return (
             <section key={team.name} className="text-center">
               {/* Team Heading */}
-              <h3 className="text-[2.2vw] font-semibold text-ieee-navy mb-4">
+              <h3 className="text-[clamp(1.125rem,2.2vw,1.5rem)] font-semibold text-ieee-navy mb-4">
                 {team.name} Team
               </h3>
 

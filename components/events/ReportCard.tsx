@@ -1,4 +1,5 @@
 import type { EventReportItem } from "@/lib/data";
+import { MarkdownContent } from "@/components/shared/MarkdownContent";
 
 export function ReportCard({ report }: { report: EventReportItem }) {
   const dateStr = report.publishedAt
@@ -21,7 +22,9 @@ export function ReportCard({ report }: { report: EventReportItem }) {
       <div className="p-5 flex-1 flex flex-col">
         <h3 className="font-semibold text-ieee-navy">{report.title}</h3>
         {dateStr && <p className="text-sm text-gray-700 mt-1">{dateStr}</p>}
-        <p className="text-sm text-gray-800 mt-2 line-clamp-3">{report.content}</p>
+        <div className="text-sm text-gray-800 mt-2 line-clamp-3">
+          <MarkdownContent>{report.content}</MarkdownContent>
+        </div>
 
         {report.pdfUrl && (
           <div className="mt-auto pt-4 flex gap-3">

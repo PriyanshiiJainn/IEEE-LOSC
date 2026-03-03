@@ -177,6 +177,7 @@ export function EventsManager({ initialEvents, categories }: Props) {
                   rows={3}
                   className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
                 />
+                <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph, Enter for line break</p>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>

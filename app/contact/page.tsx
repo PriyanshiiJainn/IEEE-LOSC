@@ -7,7 +7,7 @@ export default async function ContactPage() {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
-      <h1 className="text-[5vw] font-heading text-ieee-navy text-center mb-2">Contact Us</h1>
+      <h1 className="text-[clamp(1.75rem,5vw,3rem)] font-heading text-ieee-navy text-center mb-2">Contact Us</h1>
       <p className="text-gray-800 mb-8">
         Reach out to our team or send a message.
       </p>

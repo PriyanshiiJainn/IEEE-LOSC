@@ -15,7 +15,7 @@ export default async function TeamPage() {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
-      <h1 className="text-[7vw] font-heading text-ieee-navy text-center mb-10">
+      <h1 className="text-[clamp(2.5rem,7vw,4.5rem)] font-heading text-ieee-navy text-center mb-10">
         Our Team
       </h1>
 
@@ -29,14 +29,13 @@ export default async function TeamPage() {
       
       />
 
-      {/* Core Team section */}
-      {/* Core Team section */}
-<TeamSection
-  title="CORE TEAM"
-  className="mb-16"
-  members={core}
-  nameClassName="md:text-2xl" // only Core Team names bigger
-/>
+      <TeamSection
+        title="CORE TEAM"
+        className="mb-16"
+        members={core}
+        nameClassName="md:text-2xl"
+        cols={3}
+      />
 
 
 

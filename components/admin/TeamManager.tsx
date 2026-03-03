@@ -94,7 +94,24 @@ export function TeamManager({ initialMembers, classifications }: Props) {
       }
       setOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed");
+      if (err instanceof Error) {
+        try {
+          const parsed = JSON.parse(err.message);
+          const details = parsed.details;
+          if (details) {
+            const msgs = Object.entries(details)
+              .map(([k, v]) => `${k}: ${(v as string[])[0]}`)
+              .join(", ");
+            setError(msgs || parsed.error || "Failed");
+          } else {
+            setError(parsed.error || err.message);
+          }
+        } catch {
+          setError(err.message);
+        }
+      } else {
+        setError("Failed");
+      }
     } finally {
       setLoading(false);
     }
@@ -140,7 +157,8 @@ export function TeamManager({ initialMembers, classifications }: Props) {
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <textarea value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required rows={2} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <p className="mt-1 text-xs text-gray-400">Press Enter to split the name across lines on the card</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Classification</label>
@@ -150,7 +168,12 @@ export function TeamManager({ initialMembers, classifications }: Props) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Post</label>
-                <input value={form.post} onChange={(e) => setForm((f) => ({ ...f, post: e.target.value }))} placeholder="e.g. Chair" className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <textarea value={form.post} onChange={(e) => setForm((f) => ({ ...f, post: e.target.value }))} placeholder="e.g. Chair" rows={2} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph, Enter for line break</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                <input value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -159,6 +182,10 @@ export function TeamManager({ initialMembers, classifications }: Props) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                <input value={form.linkedin} onChange={(e) => setForm((f) => ({ ...f, linkedin: e.target.value }))} placeholder="https://linkedin.com/in/username" className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>

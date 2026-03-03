@@ -1,3 +1,5 @@
+import { MarkdownContent } from "@/components/shared/MarkdownContent";
+
 type AboutContentProps = {
   content?: {
     aboutUs?: string;
@@ -26,22 +28,12 @@ export function AboutContent({ content }: AboutContentProps) {
 
         {/* ABOUT US */}
         <div>
-          <h2 className="text-[2.2vw] font-bold text-ieee-navy mb-4">
+          <h2 className="text-[clamp(1.125rem,2.2vw,1.5rem)] font-bold text-ieee-navy mb-4">
             About Us
           </h2>
 
-          <div className="text-gray-800 flex flex-col gap-4">
-            {aboutUs.split("\n\n").map((para, idx) => {
-              const trimmed = para.trim();
-              if (trimmed.startsWith("➤")) {
-                return (
-                  <p key={idx} className="pl-6">
-                    {trimmed}
-                  </p>
-                );
-              }
-              return <p key={idx}>{trimmed}</p>;
-            })}
+          <div className="text-gray-800">
+            <MarkdownContent>{aboutUs}</MarkdownContent>
           </div>
 
           {aboutPoints.length > 0 && (
@@ -55,19 +47,17 @@ export function AboutContent({ content }: AboutContentProps) {
 
         {/* ABOUT OPTICA */}
         <div>
-          <h2 className="text-[2.2vw] font-bold text-ieee-navy mb-4">
+          <h2 className="text-[clamp(1.125rem,2.2vw,1.5rem)] font-bold text-ieee-navy mb-4">
             About Optica
           </h2>
-          <div className="text-gray-800 flex flex-col gap-4">
-            {aboutOptica.split("\n\n").map((para, idx) => (
-              <p key={idx}>{para}</p>
-            ))}
+          <div className="text-gray-800">
+            <MarkdownContent>{aboutOptica}</MarkdownContent>
           </div>
         </div>
 
         {/* RECENT UPDATES */}
         <div>
-          <h2 className="text-[2.2vw] font-bold text-ieee-navy mb-4">
+          <h2 className="text-[clamp(1.125rem,2.2vw,1.5rem)] font-bold text-ieee-navy mb-4">
             Recent Updates
           </h2>
           <ul className="list-disc pl-6 space-y-2 text-gray-800">

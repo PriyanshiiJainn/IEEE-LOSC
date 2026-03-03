@@ -5,7 +5,7 @@ export async function Footer() {
 
   return (
     <footer className="border-t border-gray-200 bg-gray-50 mt-auto">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p className="text-sm text-gray-800">
             LNMIIT Optica Student Chapter &copy; LNMIIT 2026

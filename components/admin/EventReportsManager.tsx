@@ -146,6 +146,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
                 <textarea value={form.content} onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))} required rows={4} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph, Enter for line break</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">PDF Report</label>
