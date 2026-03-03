@@ -20,8 +20,8 @@ export function ReportCard({ report }: { report: EventReportItem }) {
       )}
       <div className="p-5 flex-1 flex flex-col">
         <h3 className="font-semibold text-ieee-navy">{report.title}</h3>
-        {dateStr && <p className="text-sm text-gray-500 mt-1">{dateStr}</p>}
-        <p className="text-sm text-gray-600 mt-2 line-clamp-3">{report.content}</p>
+        {dateStr && <p className="text-sm text-gray-700 mt-1">{dateStr}</p>}
+        <p className="text-sm text-gray-800 mt-2 line-clamp-3">{report.content}</p>
 
         {report.pdfUrl && (
           <div className="mt-auto pt-4 flex gap-3">

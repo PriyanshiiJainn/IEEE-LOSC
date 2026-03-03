@@ -8,14 +8,14 @@ export function AboutHero() {
           className="text-[5.5vw] font-heading"
           style={{
             textShadow:
-              "0 2px 4px rgba(0,0,0,0.9), 0 6px 14px rgba(0,0,0,0.75)",
+              "0 2px 4px rgba(0,0,0,0), 0 6px 14px rgba(0,0,0,0)",
           }}
         >
           LNMIIT OPTICA STUDENT CHAPTER
         </h1>
 
         <p
-          className="text-3xl max-w-4xl mt-10"
+          className="text-[2.5vw] max-w-4xl mt-10"
           style={{
             textShadow:
               "0 1px 3px rgba(0,0,0,0.9), 0 4px 10px rgba(0,0,0,0.75)",

@@ -18,7 +18,7 @@ export default function GalleryPage() {
 ];
   return (
     <div className=" min-h-screen">
-      <h1 className="text-6xl font-heading text-ieee-navy text-center my-10">
+      <h1 className="text-[5vw] font-heading text-ieee-navy text-center my-10">
         Image Gallery
       </h1>
 
@@ -26,7 +26,7 @@ export default function GalleryPage() {
         <div className="fixed top-0 left-0 w-full h-screen bg-black bg-opacity-80 flex items-center justify-center z-50">
           <img
             src={fullImage}
-            className="max-w-[700px] rounded-xl border-2 border-white"
+            className="max-w-[50vw] rounded-xl border-2 border-white"
             alt="Full View"
           />
           <span
@@ -44,7 +44,7 @@ export default function GalleryPage() {
     <img
       src={image.src}
       alt={`Image ${index + 1}`}
-      className="w-full h-[400px] cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105 rounded-2xl hover:shadow-2xl"
+      className="w-full h-[28vw] cursor-pointer transition-transform duration-300 ease-in-out hover:scale-105 rounded-2xl hover:shadow-2xl"
       onClick={() => setFullImage(image.src)}
     />
     <p className="mt-2 text-center text-ieee-red font-medium">

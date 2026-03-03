@@ -145,7 +145,7 @@ export function RegistrationForm({
         <div className="space-y-1">
           <p className="text-sm text-red-600">{error}</p>
           {(error.includes("Database") || error.includes("reachable") || error.includes("migrations")) && (
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-700">
               Ensure .env has DATABASE_URL set, you&apos;ve run <code className="bg-gray-100 px-1 rounded">npx prisma migrate dev</code>, and (for Neon) the project is resumed in the dashboard.
             </p>
           )}

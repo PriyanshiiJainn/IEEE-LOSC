@@ -6,13 +6,13 @@ export default async function EventReportsPage() {
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">
-      <h1 className="text-6xl font-heading text-ieee-navy text-center mb-2">Event Reports</h1>
-      <p className="text-gray-600 mb-8">
+      <h1 className="text-[5vw] font-heading text-ieee-navy text-center mb-2">Event Reports</h1>
+      <p className="text-gray-800 mb-8">
         Summaries and highlights from past events.
       </p>
 
       {reports.length === 0 ? (
-        <p className="text-gray-500">No reports yet.</p>
+        <p className="text-gray-700">No reports yet.</p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {reports.map((report) => (

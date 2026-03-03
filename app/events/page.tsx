@@ -22,8 +22,8 @@ export default async function EventsPage() {
       <div className="max-w-7xl mx-auto">
 
         {/* Main Page Heading */}
-        <h1 className="text-6xl font-heading text-ieee-navy text-center mb-3">Events</h1>
-        <p className="text-gray-600 mb-10 md:mb-12 leading-relaxed">
+        <h1 className="text-[5vw] font-heading text-ieee-navy text-center mb-3">Events</h1>
+        <p className="text-gray-800 mb-10 md:mb-12 leading-relaxed">
         We are the <span className="text-ieee-red">Optica Student Chapter</span> at <span className="text-ieee-red">The LNM Institute of Information Technology (LNMIIT)</span>, Jaipur, a vibrant community of students passionate about technology, innovation, and professional growth. Through workshops, hackathons, webinars, expert talks, and hands-on sessions, we foster curiosity, collaboration, and continuous learning. By promoting innovation, leadership, and teamwork, the <span className="text-ieee-red">LNMIIT Optica Student Chapter (LOSC) </span> strives to empower students to become skilled professionals and contributors to the global technological community.
 
         </p>
@@ -61,7 +61,7 @@ export default async function EventsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">A series of Invited Talks will be organized featuring distinguished experts and industry professionals from diverse technical domains. These sessions will provide valuable insights into emerging technologies, research advancements, and real-world applications. It will offer students an opportunity to learn from experienced leaders and gain inspiration for their academic and professional journey.</p>
+            <p className="text-gray-700">A series of Invited Talks will be organized featuring distinguished experts and industry professionals from diverse technical domains. These sessions will provide valuable insights into emerging technologies, research advancements, and real-world applications. It will offer students an opportunity to learn from experienced leaders and gain inspiration for their academic and professional journey.</p>
           )}
         </div>
 
@@ -75,7 +75,7 @@ export default async function EventsPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">A series of Webinars will be organized to provide students with insights into emerging technologies and industry trends. These interactive online sessions will feature expert speakers who will share practical knowledge, real-world experiences, and career guidance. The webinars will offer a flexible platform for learning, discussion, and skill enhancement.</p>
+            <p className="text-gray-700">A series of Webinars will be organized to provide students with insights into emerging technologies and industry trends. These interactive online sessions will feature expert speakers who will share practical knowledge, real-world experiences, and career guidance. The webinars will offer a flexible platform for learning, discussion, and skill enhancement.</p>
           )}
         </div>
 

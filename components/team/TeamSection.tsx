@@ -20,7 +20,7 @@ export function TeamSection({
 
   return (
     <section className={className ?? "mb-16"}>
-      <h2 className="text-4xl font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-3 mb-10 text-center">
+      <h2 className="text-[3vw] font-bold text-[#000080] border-b-2 border-ieee-red/30 pb-3 mb-10 text-center">
         {title}
       </h2>
 

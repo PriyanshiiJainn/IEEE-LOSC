@@ -23,13 +23,13 @@ export function EventCard({ event }: { event: EventItem }) {
 
       )}
       <h3 className="font-semibold text-ieee-navy">{event.title}</h3>
-      <p className="text-sm text-gray-500 mt-1">{dateStr}</p>
-      {event.time && <p className="text-sm text-gray-500">{event.time}</p>}
-      {event.venue && <p className="text-sm text-gray-600 mt-1">{event.venue}</p>}
-      <p className="text-sm text-gray-600 mt-2 ">{event.description}</p>
+      <p className="text-sm text-gray-700 mt-1">{dateStr}</p>
+      {event.time && <p className="text-sm text-gray-700">{event.time}</p>}
+      {event.venue && <p className="text-sm text-gray-800 mt-1">{event.venue}</p>}
+      <p className="text-sm text-gray-800 mt-2 ">{event.description}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {event.registrationClosed ? (
-          <span className="inline-flex items-center rounded border border-gray-300 bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600">
+          <span className="inline-flex items-center rounded border border-gray-300 bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-800">
             Registration closed
           </span>
         ) : (

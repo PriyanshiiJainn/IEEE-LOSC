@@ -41,7 +41,7 @@ export function Header() {
 
         <button
           type="button"
-          className="md:hidden rounded p-2 text-gray-600 hover:bg-gray-100"
+          className="md:hidden rounded p-2 text-gray-800 hover:bg-gray-100"
           onClick={() => setOpen((o) => !o)}
           aria-label="Toggle menu"
         >
