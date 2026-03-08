@@ -10,7 +10,7 @@ export function MarkdownContent({ children, className = "" }: Props) {
     <div className={className}>
       <ReactMarkdown
         skipHtml
-        breaks
+        
         components={{
           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
           strong: ({ children }) => <strong className="font-semibold">{children}</strong>,

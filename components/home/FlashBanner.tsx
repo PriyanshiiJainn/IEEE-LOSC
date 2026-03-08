@@ -7,7 +7,7 @@ export function FlashBanner() {
       <div className="relative h-10 w-full">
         <div className="absolute top-1/2 whitespace-nowrap banner-slide">
           <span
-            className="text-lg font-semibold text-amber-100 underline underline-offset-4"
+            className="text-lg font-semibold text-yellow-200 underline underline-offset-4"
             style={{
               textShadow: "0 1px 2px rgba(0, 0, 0, 0.45)",
             }}
