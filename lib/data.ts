@@ -51,6 +51,14 @@ export type EventReportItem = {
   event: { id: string; title: string };
 };
 
+export type RecentActivityItem = {
+  id: string;
+  title: string;
+  content: string;
+  pdfUrl: string | null;
+  publishedAt: Date | null;
+};
+
 // --- Getters ---
 
 export async function getAboutContent() {
@@ -89,4 +97,10 @@ export async function getEventReports(): Promise<EventReportItem[]> {
 
 export async function getEventById(id: string): Promise<EventItem | null> {
   return await prisma.event.findUnique({ where: { id } });
+}
+
+export async function getRecentActivities(): Promise<RecentActivityItem[]> {
+  return await (prisma as any).recentActivity.findMany({
+    orderBy: { publishedAt: "desc" },
+  });
 }

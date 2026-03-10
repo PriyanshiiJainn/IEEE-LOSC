@@ -9,7 +9,7 @@ const nav = [
   { href: "/team", label: "Team" },
   { href: "/events", label: "Events" },
   { href: "/recent-activity", label: "Activity" },
-  { href: "/event-reports", label: "Event Reports" },
+  { href: "/event-reports", label: "MOM" },
   { href: "/gallery", label: "Gallery" },
   { href: "/contact", label: "Contact" },
   { href: "/links", label: "Useful Links" },

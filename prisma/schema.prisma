@@ -49,7 +49,7 @@ model Event {
   report            EventReport?
 }
 
-// One active "flash" banner on home (links to event or custom URL)
+
 model FlashAnnouncement {
   id           String   @id @default(cuid())
   eventId      String?  @unique
@@ -114,6 +114,19 @@ model ContactSubmission {
   subject   String?
   message   String   @db.Text
   createdAt DateTime @updatedAt
+}
+
+// Recent activities (admin uploads PDF + description)
+model RecentActivity {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  pdfUrl      String?
+  publishedAt DateTime?
+  createdAt   DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
+
+  @@index([publishedAt])
 }
 
 // Footer useful links (admin-editable)
