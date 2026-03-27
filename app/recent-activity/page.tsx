@@ -1,7 +1,8 @@
-import { getRecentActivities } from "@/lib/data";
+import { getRecentActivities, getRecentActivityIntro } from "@/lib/data";
 import { MarkdownContent } from "@/components/shared/MarkdownContent";
 
 export default async function RecentActivityPage() {
+  const intro = await getRecentActivityIntro();
   const activities = await getRecentActivities();
 
   return (
@@ -10,15 +11,11 @@ export default async function RecentActivityPage() {
         Recent Activities
       </h1>
 
-      <p className="max-w-3xl mx-auto text-gray-800 mb-12 leading-relaxed text-center">
-        The <span className="text-ieee-red">LNMIIT Optica Student Chapter (LOSC)</span> will be
-        inaugurated on <span className="text-ieee-red">12 March 2026</span> in the presence of
-        distinguished dignitaries and esteemed guests. The event will be graced by{" "}
-        <span className="text-ieee-red">Prof. Muhammad Agus Hatta</span>, Vice Rector for Research,
-        Innovation, Cooperation, and Alumni at Institut Teknologi Sepuluh Nopember (ITS), Indonesia,
-        and <span className="text-ieee-red">Dr. Rikmantra Basu</span>, Associate Professor and Head
-        of the Department of Electronics and Communication Engineering, NIT Delhi.
-      </p>
+      {intro?.content && (
+        <div className="max-w-3xl mx-auto text-gray-800 mb-12 leading-relaxed text-center">
+          <MarkdownContent>{intro.content}</MarkdownContent>
+        </div>
+      )}
 
       {activities.length > 0 && (
         <div className="space-y-10 max-w-4xl mx-auto">

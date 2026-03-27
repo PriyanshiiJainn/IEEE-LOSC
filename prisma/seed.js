@@ -77,9 +77,42 @@ async function main() {
   if (existingEvents === 0) {
     await prisma.event.createMany({
       data: [
-        { title: "Annual Workshop 2025", description: "An Annual Workshop will be organized to provide hands-on learning in emerging technologies. The session will offer expert guidance and practical exposure to enhance students' technical skills.", date: new Date("2025-03-15"), time: "10:00 AM", venue: "LNMIIT Campus", category: "WORKSHOP", isFeatured: true, registrationClosed: false },
-        { title: "IEEE Hackathon", description: "A 24-hour innovation challenge where students collaborate to build real-world tech solutions from scratch. Guided by mentors, teams design, develop, and pitch impactful prototypes in a fast-paced environment.", date: new Date("2025-04-20"), time: "9:00 AM", venue: "Lab Block", category: "HACKATHON", isFeatured: true, registrationClosed: false },
-        { title: "Tech Quiz", description: "An exciting Tech Quiz will be organized to test students' knowledge in technology and emerging trends, challenging their technical awareness and quick-thinking skills.", date: new Date("2025-05-10"), time: "2:00 PM", venue: "Seminar Hall", category: "QUIZ", isFeatured: true, registrationClosed: false },
+        {
+          title: "Annual Workshop 2025",
+          description:
+            "An Annual Workshop will be organized to provide hands-on learning in emerging technologies. The session will offer expert guidance and practical exposure to enhance students' technical skills.",
+          date: new Date("2025-03-15"),
+          time: "10:00 AM",
+          venue: "LNMIIT Campus",
+          category: "WORKSHOP",
+          isFeatured: true,
+          registrationClosed: false,
+          registrationStatus: "OPEN",
+        },
+        {
+          title: "IEEE Hackathon",
+          description:
+            "A 24-hour innovation challenge where students collaborate to build real-world tech solutions from scratch. Guided by mentors, teams design, develop, and pitch impactful prototypes in a fast-paced environment.",
+          date: new Date("2025-04-20"),
+          time: "9:00 AM",
+          venue: "Lab Block",
+          category: "HACKATHON",
+          isFeatured: true,
+          registrationClosed: false,
+          registrationStatus: "SOON",
+        },
+        {
+          title: "Tech Quiz",
+          description:
+            "An exciting Tech Quiz will be organized to test students' knowledge in technology and emerging trends, challenging their technical awareness and quick-thinking skills.",
+          date: new Date("2025-05-10"),
+          time: "2:00 PM",
+          venue: "Seminar Hall",
+          category: "QUIZ",
+          isFeatured: true,
+          registrationClosed: true,
+          registrationStatus: "CLOSED",
+        },
       ],
     });
     console.log("Seeded Events.");
@@ -97,6 +130,61 @@ async function main() {
       });
       console.log("Seeded Event report.");
     }
+  }
+
+  // --- Gallery Images (for existing public images) ---
+  const existingGallery = await prisma.galleryImage.count();
+  if (existingGallery === 0) {
+    await prisma.galleryImage.createMany({
+      data: [
+        {
+          imageUrl: "/image1.png",
+          caption: "The LNM Institute of Information Technology (LNMIIT), Jaipur",
+          order: 0,
+        },
+        {
+          imageUrl: "/image2.png",
+          caption: "Aerial View of LNMIIT Jaipur Campus",
+          order: 1,
+        },
+        {
+          imageUrl: "/image4.png",
+          caption: "Blooming Greens at LNMIIT Jaipur",
+          order: 2,
+        },
+        {
+          imageUrl: "/image5.png",
+          caption: "LNMIIT AI Centre – Advancing Artificial Intelligence Research",
+          order: 3,
+        },
+        {
+          imageUrl: "/image.png",
+          caption: "Academic Block at LNMIIT – A hub for innovation, research, and academic excellence",
+          order: 4,
+        },
+        {
+          imageUrl: "/image6.png",
+          caption: "Central Plaza at LNMIIT – A vibrant space for student interaction and campus life.",
+          order: 5,
+        },
+        {
+          imageUrl: "/image7.png",
+          caption: "Green Lawns of LNMIIT Campus",
+          order: 6,
+        },
+        {
+          imageUrl: "/image8.png",
+          caption: "Central Activity Area – LNMIIT",
+          order: 7,
+        },
+        {
+          imageUrl: "/image3.png",
+          caption: "Lighting Up the Campus – Celebrating Success Together.",
+          order: 8,
+        },
+      ],
+    });
+    console.log("Seeded Gallery images.");
   }
 
   console.log("\nSeed complete!");

@@ -8,6 +8,10 @@ import { SmoothScroll } from "@/components/layout/SmoothScroll";
 export const metadata: Metadata = {
   title: "Optica Student Chapter | LNMIIT",
   description: "Optica Student Chapter at The LNM Institute of Information Technology, Jaipur",
+  icons: {
+    icon: "/losc3.png",
+    shortcut: "/losc3.png",
+  },
 };
 
 export default function RootLayout({

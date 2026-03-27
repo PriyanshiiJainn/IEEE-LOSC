@@ -22,8 +22,9 @@ export function Header() {
   return (
     <header className="sticky top-2 z-50 mx-4 rounded-xl border border-gray-200 bg-white backdrop-blur shadow-sm">
       <div className="container mx-auto flex h-12 items-center justify-between px-4">
-        <img src="/optica_logo.png" alt="Optica_logo" className="h-9 object-contain" />
-        
+        <Link href="/2" className="flex items-center">
+          <img src="/optica_logo.png" alt="Optica_logo" className="h-9 object-contain" />
+        </Link>
 
         <nav className="hidden md:flex md:items-center md:gap-6">
           {nav.map(({ href, label }) => (

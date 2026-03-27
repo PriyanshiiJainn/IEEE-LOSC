@@ -38,6 +38,7 @@ export type EventItem = {
   brochureUrl: string | null;
   isFeatured: boolean;
   registrationClosed: boolean;
+  registrationStatus: string;
 };
 
 export type EventReportItem = {
@@ -57,6 +58,13 @@ export type RecentActivityItem = {
   content: string;
   pdfUrl: string | null;
   publishedAt: Date | null;
+};
+
+export type GalleryImageItem = {
+  id: string;
+  imageUrl: string;
+  caption: string;
+  order: number;
 };
 
 // --- Getters ---
@@ -84,7 +92,11 @@ export async function getTeamMembers(): Promise<TeamMemberItem[]> {
 }
 
 export async function getEvents(): Promise<EventItem[]> {
-  return await prisma.event.findMany({ orderBy: { date: "desc" } });
+  const rows = await prisma.event.findMany({ orderBy: { date: "desc" } });
+  return rows.map((e) => ({
+    ...e,
+    registrationStatus: (e as any).registrationStatus ?? "OPEN",
+  }));
 }
 
 export async function getEventReports(): Promise<EventReportItem[]> {
@@ -96,11 +108,27 @@ export async function getEventReports(): Promise<EventReportItem[]> {
 }
 
 export async function getEventById(id: string): Promise<EventItem | null> {
-  return await prisma.event.findUnique({ where: { id } });
+  const row = await prisma.event.findUnique({ where: { id } });
+  if (!row) return null;
+  return {
+    ...row,
+    registrationStatus: (row as any).registrationStatus ?? "OPEN",
+  };
 }
 
 export async function getRecentActivities(): Promise<RecentActivityItem[]> {
   return await (prisma as any).recentActivity.findMany({
     orderBy: { publishedAt: "desc" },
   });
+}
+
+export async function getRecentActivityIntro() {
+  return await (prisma as any).recentActivityIntro.findFirst();
+}
+
+export async function getGalleryImages(): Promise<GalleryImageItem[]> {
+  const rows = await (prisma as any).galleryImage.findMany({
+    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+  });
+  return rows;
 }

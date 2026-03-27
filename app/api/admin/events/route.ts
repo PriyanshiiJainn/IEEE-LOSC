@@ -13,6 +13,7 @@ const createSchema = z.object({
   brochureUrl: z.string().url().optional().nullable(),
   isFeatured: z.boolean().optional(),
   registrationClosed: z.boolean().optional(),
+  registrationStatus: z.enum(["OPEN", "SOON", "CLOSED"]).optional(),
 });
 
 export async function GET() {
@@ -30,7 +31,12 @@ export async function POST(request: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   const { date, ...rest } = parsed.data;
   const event = await prisma.event.create({
-    data: { ...rest, date: new Date(date), registrationClosed: rest.registrationClosed ?? false },
+    data: {
+      ...rest,
+      date: new Date(date),
+      registrationClosed: rest.registrationClosed ?? false,
+      registrationStatus: rest.registrationStatus ?? "OPEN",
+    },
   });
   return NextResponse.json(event);
 }

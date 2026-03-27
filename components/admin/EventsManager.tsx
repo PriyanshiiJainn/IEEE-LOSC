@@ -13,6 +13,7 @@ type Event = {
   brochureUrl: string | null;
   isFeatured: boolean;
   registrationClosed: boolean;
+  registrationStatus: string;
 };
 
 type Props = {
@@ -37,6 +38,7 @@ export function EventsManager({ initialEvents, categories }: Props) {
     brochureUrl: "",
     isFeatured: false,
     registrationClosed: false,
+    registrationStatus: "OPEN",
   };
   const [form, setForm] = useState<Record<string, string | boolean>>(empty as Record<string, string | boolean>);
 
@@ -57,6 +59,7 @@ export function EventsManager({ initialEvents, categories }: Props) {
       brochureUrl: e.brochureUrl ?? "",
       isFeatured: e.isFeatured,
       registrationClosed: e.registrationClosed ?? false,
+      registrationStatus: e.registrationStatus ?? "OPEN",
     });
     setOpen(true);
   }
@@ -65,6 +68,8 @@ export function EventsManager({ initialEvents, categories }: Props) {
     e.preventDefault();
     setError("");
     setLoading(true);
+    // Close the popup immediately after clicking save
+    setOpen(false);
     try {
       const body = {
         title: form.title,
@@ -76,6 +81,10 @@ export function EventsManager({ initialEvents, categories }: Props) {
         brochureUrl: form.brochureUrl || undefined,
         isFeatured: form.isFeatured === true,
         registrationClosed: form.registrationClosed === true,
+        registrationStatus:
+          typeof form.registrationStatus === "string" && form.registrationStatus
+            ? form.registrationStatus
+            : "OPEN",
       };
       if (editing) {
         const res = await fetch(`/api/admin/events/${editing.id}`, {
@@ -96,7 +105,6 @@ export function EventsManager({ initialEvents, categories }: Props) {
         const created = await res.json();
         setEvents((prev) => [created, ...prev]);
       }
-      setOpen(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed");
     } finally {
@@ -140,7 +148,13 @@ export function EventsManager({ initialEvents, categories }: Props) {
               <span className="font-medium">{ev.title}</span>
               <span className="ml-2 text-sm text-gray-500">{dateStr(ev.date)}</span>
               {ev.isFeatured && <span className="ml-2 text-xs text-ieee-red">Featured</span>}
-              {ev.registrationClosed && <span className="ml-2 text-xs text-amber-600">Registration closed</span>}
+              <span className="ml-2 text-xs text-gray-600">
+                {ev.registrationStatus === "SOON"
+                  ? "Registration soon"
+                  : ev.registrationStatus === "CLOSED" || ev.registrationClosed
+                    ? "Registration closed"
+                    : "Registration open"}
+              </span>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => openEdit(ev)} className="text-sm text-ieee-red hover:underline">
@@ -238,14 +252,70 @@ export function EventsManager({ initialEvents, categories }: Props) {
                 />
                 <span className="text-sm">Featured</span>
               </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={form.registrationClosed === true}
-                  onChange={(e) => setForm((f) => ({ ...f, registrationClosed: e.target.checked }))}
-                />
-                <span className="text-sm">Registration closed</span>
-              </label>
+              {(() => {
+                const registrationIsOpen =
+                  (form.registrationStatus as string) === "OPEN" && form.registrationClosed !== true;
+                return (
+                  <>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={registrationIsOpen}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setForm((f) => {
+                            const currentStatus = (f.registrationStatus as string) || "OPEN";
+                            if (checked) {
+                              return {
+                                ...f,
+                                registrationClosed: false,
+                                registrationStatus: "OPEN",
+                              };
+                            }
+                            const nextStatus =
+                              currentStatus === "OPEN" ? "SOON" : currentStatus === "CLOSED" ? "CLOSED" : "SOON";
+                            return {
+                              ...f,
+                              registrationClosed: true,
+                              registrationStatus: nextStatus,
+                            };
+                          });
+                        }}
+                      />
+                      <span className="text-sm">Registration open</span>
+                    </label>
+                    {!registrationIsOpen && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Registration unavailable
+                        </label>
+                        <select
+                          value={
+                            (form.registrationStatus as string) === "OPEN"
+                              ? "SOON"
+                              : (form.registrationStatus as string) || "SOON"
+                          }
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setForm((f) => ({
+                              ...f,
+                              registrationClosed: true,
+                              registrationStatus: value,
+                            }));
+                          }}
+                          className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                        >
+                          <option value="SOON">Registration soon</option>
+                          <option value="CLOSED">Registration closed</option>
+                        </select>
+                        <p className="mt-1 text-xs text-gray-400">
+                          When unavailable, registrations are not allowed and the button appears grey.
+                        </p>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
               {error && <p className="text-sm text-red-600">{error}</p>}
               <div className="flex gap-2 pt-2">
                 <button

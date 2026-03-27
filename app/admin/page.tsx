@@ -27,6 +27,7 @@ export default async function AdminDashboardPage() {
     { href: "/admin/recent-activity", label: "Recent Activities", description: "Add, edit, delete recent activities with PDF uploads.", count: null },
     { href: "/admin/flash", label: "Flash banner", description: "Set one active banner on the home page (link to event or URL).", count: null },
     { href: "/admin/about", label: "About", description: "Edit About us and About Optica (home page content).", count: null },
+    { href: "/admin/gallery", label: "Gallery", description: "Add and manage images shown on the public gallery page.", count: null },
   ];
 
   const viewSections = [

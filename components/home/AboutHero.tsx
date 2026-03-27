@@ -5,7 +5,7 @@ export function AboutHero() {
 
       <div className="relative h-full flex flex-col items-center justify-center px-4 text-center text-[#ffffff]">
         <h1
-          className="text-[clamp(2.5rem,6vw,4.5rem)] font-heading"
+          className="text-[clamp(2.5rem,6vw,4.5rem)] font-heading leading-relaxed md:leading-tight"
           style={{
             textShadow:
               "0 2px 4px rgba(0,0,0,0), 0 6px 14px rgba(0,0,0,0)",

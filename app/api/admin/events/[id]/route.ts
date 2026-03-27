@@ -13,6 +13,7 @@ const updateSchema = z.object({
   brochureUrl: z.string().url().optional().nullable(),
   isFeatured: z.boolean().optional(),
   registrationClosed: z.boolean().optional(),
+  registrationStatus: z.enum(["OPEN", "SOON", "CLOSED"]).optional(),
 });
 
 export async function PATCH(

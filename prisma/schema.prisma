@@ -41,6 +41,7 @@ model Event {
   brochureUrl       String?
   isFeatured        Boolean  @default(false)
   registrationClosed Boolean @default(false)
+  registrationStatus String   @default("OPEN") // OPEN | SOON | CLOSED
   createdAt         DateTime @updatedAt
   updatedAt         DateTime @updatedAt
 
@@ -129,6 +130,13 @@ model RecentActivity {
   @@index([publishedAt])
 }
 
+// Intro text for Recent Activities page (single row)
+model RecentActivityIntro {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
 // Footer useful links (admin-editable)
 model FooterLink {
   id        String   @id @default(cuid())
@@ -136,4 +144,12 @@ model FooterLink {
   url       String
   order     Int      @default(0)
   createdAt DateTime @updatedAt
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  caption   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
 }

@@ -42,15 +42,31 @@ export default function LinksPage() {
 
       <div className="space-y-4">
         {links.map((link, index) => (
-          <div key={index} className="p-4 border rounded-lg hover:bg-gray-50 transition">
-            <Link
-              href={link.url}
-              target="_blank"
-              className="text-blue-600 hover:underline text-lg"
-            >
+          <Link
+            key={index}
+            href={link.url}
+            target="_blank"
+            className="group flex items-center justify-between p-4 border rounded-lg bg-white transition-shadow cursor-pointer hover:shadow-lg"
+          >
+            <span className="text-blue-600 text-lg group-hover:underline">
               {link.title}
-            </Link>
-          </div>
+            </span>
+            <span className="ml-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-ieee-navy text-ieee-navy transform transition-transform duration-300 group-hover:rotate-45">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M7 17L17 7" />
+                <path d="M8 7H17V16" />
+              </svg>
+            </span>
+          </Link>
         ))}
       </div>
     </div>

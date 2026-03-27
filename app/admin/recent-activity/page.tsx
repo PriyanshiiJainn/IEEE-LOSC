@@ -9,7 +9,9 @@ export default async function AdminRecentActivityPage() {
 
   let activities: Activity[] = [];
   let dbReachable = true;
+  let intro: { id: string; content: string } | null = null;
   try {
+    intro = await (prisma as any).recentActivityIntro.findFirst();
     activities = (await (prisma as any).recentActivity.findMany({
       orderBy: { publishedAt: "desc" },
     })) as Activity[];
@@ -25,7 +27,7 @@ export default async function AdminRecentActivityPage() {
         </div>
       )}
       <h1 className="text-2xl font-bold text-ieee-navy mb-6">Manage Recent Activities</h1>
-      <RecentActivitiesManager initialActivities={activities} />
+      <RecentActivitiesManager initialActivities={activities} initialIntro={intro} />
     </div>
   );
 }

@@ -7,10 +7,10 @@ export default async function EventReportsPage() {
   return (
     <section className="container mx-auto px-6 md:px-12 lg:px-20 py-12 md:py-16">
       <h1 className="text-[clamp(1.75rem,5vw,3rem)] font-heading text-ieee-navy text-center mb-4">
-        MOM
+        MOM & Event Report
       </h1>
       <p className="max-w-4xl mx-auto text-red-500 mb-6 text-center">
-        Minutes of Meeting
+        Minutes of Meeting and reports of the events
       </p>
 
       {reports.length === 0 ? (

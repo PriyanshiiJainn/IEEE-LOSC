@@ -12,9 +12,10 @@ export type Activity = {
 
 type Props = {
   initialActivities: Activity[];
+  initialIntro?: { id: string; content: string } | null;
 };
 
-export function RecentActivitiesManager({ initialActivities }: Props) {
+export function RecentActivitiesManager({ initialActivities, initialIntro }: Props) {
   const [activities, setActivities] = useState(initialActivities);
   const [editing, setEditing] = useState<Activity | null>(null);
   const [open, setOpen] = useState(false);
@@ -23,6 +24,9 @@ export function RecentActivitiesManager({ initialActivities }: Props) {
   const [uploading, setUploading] = useState(false);
   const empty = { title: "", content: "", pdfUrl: "", publishedAt: "" };
   const [form, setForm] = useState(empty);
+  const [introContent, setIntroContent] = useState(initialIntro?.content ?? "");
+  const [introSaving, setIntroSaving] = useState(false);
+  const [introError, setIntroError] = useState("");
 
   function openAdd() {
     setEditing(null);
@@ -38,6 +42,24 @@ export function RecentActivitiesManager({ initialActivities }: Props) {
       publishedAt: a.publishedAt ? new Date(a.publishedAt).toISOString().slice(0, 10) : "",
     });
     setOpen(true);
+  }
+
+  async function handleIntroSave(e: React.FormEvent) {
+    e.preventDefault();
+    setIntroError("");
+    setIntroSaving(true);
+    try {
+      const res = await fetch("/api/admin/recent-activity-intro", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: introContent }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+    } catch (err) {
+      setIntroError(err instanceof Error ? err.message : "Failed to save intro");
+    } finally {
+      setIntroSaving(false);
+    }
   }
 
   async function handlePdfUpload(file: File) {
@@ -103,6 +125,31 @@ export function RecentActivitiesManager({ initialActivities }: Props) {
 
   return (
     <div>
+      <form onSubmit={handleIntroSave} className="mb-6 space-y-2 rounded border border-gray-200 bg-white p-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Intro paragraph shown on Recent Activities page
+          </label>
+          <textarea
+            value={introContent}
+            onChange={(e) => setIntroContent(e.target.value)}
+            rows={4}
+            className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+            placeholder="Write the introductory paragraph for the Recent Activities page..."
+          />
+          <p className="mt-1 text-xs text-gray-400">
+            Supports markdown for basic formatting.
+          </p>
+        </div>
+        {introError && <p className="text-sm text-red-600">{introError}</p>}
+        <button
+          type="submit"
+          disabled={introSaving}
+          className="rounded bg-ieee-navy px-3 py-2 text-sm font-medium text-white hover:bg-ieee-navy/90 disabled:opacity-50"
+        >
+          {introSaving ? "Saving…" : "Save intro"}
+        </button>
+      </form>
       <button type="button" onClick={openAdd} className="mb-4 rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90">Add activity</button>
       <div className="space-y-2">
         {activities.map((a) => (

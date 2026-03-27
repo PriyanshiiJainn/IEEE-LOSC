@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   try {
     const eventRow = await prisma.event.findUnique({
       where: { id: parsed.data.eventId },
-      select: { id: true, registrationClosed: true },
+      select: { id: true, registrationClosed: true, registrationStatus: true },
     });
     if (!eventRow) {
       return NextResponse.json(
@@ -30,9 +30,20 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (eventRow.registrationClosed) {
+    const status = (eventRow.registrationStatus ?? "").toUpperCase();
+    const isClosed =
+      eventRow.registrationClosed ||
+      status === "CLOSED" ||
+      status === "SOON";
+
+    if (isClosed) {
       return NextResponse.json(
-        { error: "Registration for this event is closed." },
+        {
+          error:
+            status === "SOON"
+              ? "Registration for this event has not opened yet."
+              : "Registration for this event is closed.",
+        },
         { status: 400 }
       );
     }
