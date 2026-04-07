@@ -24,18 +24,36 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const res = await signIn("credentials", {
-      email: email.trim(),
-      password: password.trim(),
-      redirect: false,
-      callbackUrl,
-    });
-    setLoading(false);
-    if (res?.error) {
-      setError("Invalid email or password.");
-      return;
+    try {
+      const res = await signIn("credentials", {
+        email: email.trim(),
+        password: password.trim(),
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (!res) {
+        setError("Login request failed. Please check server auth configuration.");
+        return;
+      }
+
+      if (res.error) {
+        setError(
+          res.error === "CredentialsSignin"
+            ? "Invalid email or password."
+            : "Unable to sign in right now. Please try again."
+        );
+        return;
+      }
+
+      if (res.ok) {
+        window.location.href = callbackUrl;
+      }
+    } catch {
+      setError("Login failed due to a network/server error. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    if (res?.ok) window.location.href = callbackUrl;
   }
 
   return (
