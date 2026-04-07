@@ -3,6 +3,24 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
 
+type GalleryImageRow = {
+  id: string;
+  imageUrl: string;
+  caption: string;
+  order: number;
+  createdAt: Date;
+};
+
+type PrismaWithGallery = typeof prisma & {
+  galleryImage: {
+    update: (args: {
+      where: { id: string };
+      data: { caption?: string; order?: number };
+    }) => Promise<GalleryImageRow>;
+    delete: (args: { where: { id: string } }) => Promise<GalleryImageRow>;
+  };
+};
+
 const updateSchema = z.object({
   caption: z.string().min(1).max(300).optional(),
   order: z.number().int().optional(),
@@ -22,7 +40,8 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
-  const image = await (prisma as any).galleryImage.update({
+  const db = prisma as PrismaWithGallery;
+  const image = await db.galleryImage.update({
     where: { id },
     data: parsed.data,
   });
@@ -39,7 +58,8 @@ export async function DELETE(
 
   const { id } = await params;
 
-  await (prisma as any).galleryImage.delete({
+  const db = prisma as PrismaWithGallery;
+  await db.galleryImage.delete({
     where: { id },
   });
 

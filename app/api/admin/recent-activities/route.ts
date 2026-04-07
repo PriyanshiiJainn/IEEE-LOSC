@@ -3,6 +3,28 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
 
+type RecentActivityRow = {
+  id: string;
+  title: string;
+  content: string;
+  pdfUrl: string | null;
+  publishedAt: Date | null;
+};
+
+type PrismaWithRecentActivities = typeof prisma & {
+  recentActivity: {
+    findMany: (args: { orderBy: { publishedAt: "asc" | "desc" } }) => Promise<RecentActivityRow[]>;
+    create: (args: {
+      data: {
+        title: string;
+        content: string;
+        pdfUrl?: string | null;
+        publishedAt: Date | null;
+      };
+    }) => Promise<RecentActivityRow>;
+  };
+};
+
 const createSchema = z.object({
   title: z.string().min(1).max(200),
   content: z.string(),
@@ -13,7 +35,8 @@ const createSchema = z.object({
 export async function GET() {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const activities = await (prisma as any).recentActivity.findMany({
+  const db = prisma as PrismaWithRecentActivities;
+  const activities = await db.recentActivity.findMany({
     orderBy: { publishedAt: "desc" },
   });
   return NextResponse.json(activities);
@@ -30,7 +53,8 @@ export async function POST(request: Request) {
       ...parsed.data,
       publishedAt: parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null,
     };
-    const activity = await (prisma as any).recentActivity.create({ data });
+    const db = prisma as PrismaWithRecentActivities;
+    const activity = await db.recentActivity.create({ data });
     return NextResponse.json(activity);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to create activity";

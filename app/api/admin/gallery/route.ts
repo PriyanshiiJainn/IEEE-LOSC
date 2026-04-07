@@ -3,6 +3,25 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
 
+type GalleryImageRow = {
+  id: string;
+  imageUrl: string;
+  caption: string;
+  order: number;
+  createdAt: Date;
+};
+
+type PrismaWithGallery = typeof prisma & {
+  galleryImage: {
+    findMany: (args: {
+      orderBy: Array<{ order: "asc" | "desc" } | { createdAt: "asc" | "desc" }>;
+    }) => Promise<GalleryImageRow[]>;
+    create: (args: {
+      data: { imageUrl: string; caption: string; order: number };
+    }) => Promise<GalleryImageRow>;
+  };
+};
+
 const createSchema = z.object({
   imageUrl: z.string().min(1),
   caption: z.string().max(300),
@@ -13,7 +32,8 @@ export async function GET() {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const images = await (prisma as any).galleryImage.findMany({
+  const db = prisma as PrismaWithGallery;
+  const images = await db.galleryImage.findMany({
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });
   return NextResponse.json(images);
@@ -31,7 +51,8 @@ export async function POST(request: Request) {
 
   const { imageUrl, caption, order } = parsed.data;
 
-  const image = await (prisma as any).galleryImage.create({
+  const db = prisma as PrismaWithGallery;
+  const image = await db.galleryImage.create({
     data: {
       imageUrl,
       caption,

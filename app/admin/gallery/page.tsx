@@ -3,14 +3,31 @@ import { getAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { GalleryManager } from "@/components/admin/GalleryManager";
 
+type GalleryImageRow = {
+  id: string;
+  imageUrl: string;
+  caption: string;
+  order: number;
+  createdAt: Date;
+};
+
+type PrismaWithGallery = typeof prisma & {
+  galleryImage: {
+    findMany: (args: {
+      orderBy: Array<{ order: "asc" | "desc" } | { createdAt: "asc" | "desc" }>;
+    }) => Promise<GalleryImageRow[]>;
+  };
+};
+
 export default async function AdminGalleryPage() {
   const session = await getAdminSession();
   if (!session) redirect("/admin/login");
 
-  let images: any[] = [];
+  let images: GalleryImageRow[] = [];
   let dbReachable = true;
   try {
-    images = await (prisma as any).galleryImage.findMany({
+    const db = prisma as PrismaWithGallery;
+    images = await db.galleryImage.findMany({
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     });
   } catch {

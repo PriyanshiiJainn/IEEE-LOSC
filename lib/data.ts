@@ -5,6 +5,24 @@
 
 import { prisma } from "./prisma";
 
+type EventWithOptionalRegistrationStatus = EventItem & {
+  registrationStatus?: string;
+};
+
+type PrismaWithExtendedModels = typeof prisma & {
+  recentActivity: {
+    findMany: (args: { orderBy: { publishedAt: "asc" | "desc" } }) => Promise<RecentActivityItem[]>;
+  };
+  recentActivityIntro: {
+    findFirst: () => Promise<{ id: string; content: string } | null>;
+  };
+  galleryImage: {
+    findMany: (args: {
+      orderBy: Array<{ order: "asc" | "desc" } | { createdAt: "asc" | "desc" }>;
+    }) => Promise<GalleryImageItem[]>;
+  };
+};
+
 // --- Types ---
 
 export type TeamMemberItem = {
@@ -95,7 +113,7 @@ export async function getEvents(): Promise<EventItem[]> {
   const rows = await prisma.event.findMany({ orderBy: { date: "desc" } });
   return rows.map((e) => ({
     ...e,
-    registrationStatus: (e as any).registrationStatus ?? "OPEN",
+    registrationStatus: (e as EventWithOptionalRegistrationStatus).registrationStatus ?? "OPEN",
   }));
 }
 
@@ -112,22 +130,25 @@ export async function getEventById(id: string): Promise<EventItem | null> {
   if (!row) return null;
   return {
     ...row,
-    registrationStatus: (row as any).registrationStatus ?? "OPEN",
+    registrationStatus: (row as EventWithOptionalRegistrationStatus).registrationStatus ?? "OPEN",
   };
 }
 
 export async function getRecentActivities(): Promise<RecentActivityItem[]> {
-  return await (prisma as any).recentActivity.findMany({
+  const db = prisma as PrismaWithExtendedModels;
+  return await db.recentActivity.findMany({
     orderBy: { publishedAt: "desc" },
   });
 }
 
 export async function getRecentActivityIntro() {
-  return await (prisma as any).recentActivityIntro.findFirst();
+  const db = prisma as PrismaWithExtendedModels;
+  return await db.recentActivityIntro.findFirst();
 }
 
 export async function getGalleryImages(): Promise<GalleryImageItem[]> {
-  const rows = await (prisma as any).galleryImage.findMany({
+  const db = prisma as PrismaWithExtendedModels;
+  const rows = await db.galleryImage.findMany({
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });
   return rows;

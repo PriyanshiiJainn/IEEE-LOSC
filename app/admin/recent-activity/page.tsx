@@ -3,6 +3,17 @@ import { getAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { RecentActivitiesManager, type Activity } from "@/components/admin/RecentActivitiesManager";
 
+type RecentActivityIntroRow = { id: string; content: string };
+
+type PrismaWithRecentActivity = typeof prisma & {
+  recentActivityIntro: {
+    findFirst: () => Promise<RecentActivityIntroRow | null>;
+  };
+  recentActivity: {
+    findMany: (args: { orderBy: { publishedAt: "asc" | "desc" } }) => Promise<Activity[]>;
+  };
+};
+
 export default async function AdminRecentActivityPage() {
   const session = await getAdminSession();
   if (!session) redirect("/admin/login");
@@ -11,10 +22,11 @@ export default async function AdminRecentActivityPage() {
   let dbReachable = true;
   let intro: { id: string; content: string } | null = null;
   try {
-    intro = await (prisma as any).recentActivityIntro.findFirst();
-    activities = (await (prisma as any).recentActivity.findMany({
+    const db = prisma as PrismaWithRecentActivity;
+    intro = await db.recentActivityIntro.findFirst();
+    activities = await db.recentActivity.findMany({
       orderBy: { publishedAt: "desc" },
-    })) as Activity[];
+    });
   } catch {
     dbReachable = false;
   }
