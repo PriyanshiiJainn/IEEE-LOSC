@@ -4,6 +4,7 @@
  */
 
 import { prisma } from "./prisma";
+import { unstable_noStore as noStore } from "next/cache";
 
 type EventWithOptionalRegistrationStatus = EventItem & {
   registrationStatus?: string;
@@ -88,10 +89,12 @@ export type GalleryImageItem = {
 // --- Getters ---
 
 export async function getAboutContent() {
+  noStore();
   return await prisma.aboutContent.findFirst();
 }
 
 export async function getActiveFlash(): Promise<FlashItem | null> {
+  noStore();
   return await prisma.flashAnnouncement.findFirst({
     where: { active: true },
     include: { event: { select: { id: true } } },
@@ -99,17 +102,20 @@ export async function getActiveFlash(): Promise<FlashItem | null> {
 }
 
 export async function getFooterLinks(): Promise<{ label: string; url: string }[]> {
+  noStore();
   const rows = await prisma.footerLink.findMany({ orderBy: { order: "asc" } });
   return rows.map((l) => ({ label: l.label, url: l.url }));
 }
 
 export async function getTeamMembers(): Promise<TeamMemberItem[]> {
+  noStore();
   return await prisma.teamMember.findMany({
     orderBy: [{ classification: "asc" }, { order: "asc" }],
   });
 }
 
 export async function getEvents(): Promise<EventItem[]> {
+  noStore();
   const rows = await prisma.event.findMany({ orderBy: { date: "desc" } });
   return rows.map((e) => ({
     ...e,
@@ -118,6 +124,7 @@ export async function getEvents(): Promise<EventItem[]> {
 }
 
 export async function getEventReports(): Promise<EventReportItem[]> {
+  noStore();
   const rows = await prisma.eventReport.findMany({
     include: { event: { select: { id: true, title: true } } },
     orderBy: { publishedAt: "desc" },
@@ -126,6 +133,7 @@ export async function getEventReports(): Promise<EventReportItem[]> {
 }
 
 export async function getEventById(id: string): Promise<EventItem | null> {
+  noStore();
   const row = await prisma.event.findUnique({ where: { id } });
   if (!row) return null;
   return {
@@ -135,6 +143,7 @@ export async function getEventById(id: string): Promise<EventItem | null> {
 }
 
 export async function getRecentActivities(): Promise<RecentActivityItem[]> {
+  noStore();
   const db = prisma as PrismaWithExtendedModels;
   return await db.recentActivity.findMany({
     orderBy: { publishedAt: "desc" },
@@ -142,11 +151,13 @@ export async function getRecentActivities(): Promise<RecentActivityItem[]> {
 }
 
 export async function getRecentActivityIntro() {
+  noStore();
   const db = prisma as PrismaWithExtendedModels;
   return await db.recentActivityIntro.findFirst();
 }
 
 export async function getGalleryImages(): Promise<GalleryImageItem[]> {
+  noStore();
   const db = prisma as PrismaWithExtendedModels;
   const rows = await db.galleryImage.findMany({
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
