@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { revalidatePath } from "next/cache";
 
 type GalleryImageRow = {
   id: string;
@@ -22,7 +23,7 @@ type PrismaWithGallery = typeof prisma & {
 };
 
 const updateSchema = z.object({
-  caption: z.string().min(1).max(300).optional(),
+  caption: z.string().max(300).optional(),
   order: z.number().int().optional(),
 });
 
@@ -46,6 +47,8 @@ export async function PATCH(
     data: parsed.data,
   });
 
+  revalidatePath("/gallery");
+
   return NextResponse.json(image);
 }
 
@@ -62,6 +65,8 @@ export async function DELETE(
   await db.galleryImage.delete({
     where: { id },
   });
+
+  revalidatePath("/gallery");
 
   return NextResponse.json({ ok: true });
 }

@@ -26,6 +26,7 @@ model AboutContent {
   id          String   @id @default(cuid())
   aboutUs     String   @db.Text // markdown or plain
   aboutOptica String   @db.Text
+  recentUpdates String @db.Text
   updatedAt   DateTime @updatedAt
 }
 
@@ -49,7 +50,6 @@ model Event {
   registrations     EventRegistration[]
   report            EventReport?
 }
-
 
 model FlashAnnouncement {
   id           String   @id @default(cuid())
@@ -98,10 +98,10 @@ model TeamMember {
   name         String
   classification String // FACULTY_ADVISOR | CORE | FUNCTIONAL
   post         String?  // e.g. Chair, Vice-Chair, Secretary
-  imageUrl     String?
+  imageUrl     String?  @db.Text
   email        String?
   phone        String?
-  linkedin     String?
+  linkedin     String?  @db.Text
   order        Int      @default(0)
   createdAt    DateTime @updatedAt
   updatedAt    DateTime @updatedAt

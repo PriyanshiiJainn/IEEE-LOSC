@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -6,6 +7,7 @@ import { requireAdmin } from "@/lib/auth-utils";
 const updateSchema = z.object({
   aboutUs: z.string(),
   aboutOptica: z.string(),
+  recentUpdates: z.string(),
 });
 
 export async function GET() {
@@ -27,8 +29,12 @@ export async function PUT(request: Request) {
       where: { id: existing.id },
       data: parsed.data,
     });
+    revalidatePath("/");
+    revalidatePath("/admin/about");
     return NextResponse.json(updated);
   }
   const created = await prisma.aboutContent.create({ data: parsed.data });
+  revalidatePath("/");
+  revalidatePath("/admin/about");
   return NextResponse.json(created);
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -44,9 +45,13 @@ export async function PUT(request: Request) {
       where: { id: existing.id },
       data: parsed.data,
     });
+    revalidatePath("/recent-activity");
+    revalidatePath("/admin/recent-activity");
     return NextResponse.json(updated);
   }
   const created = await db.recentActivityIntro.create({ data: parsed.data });
+  revalidatePath("/recent-activity");
+  revalidatePath("/admin/recent-activity");
   return NextResponse.json(created);
 }
 

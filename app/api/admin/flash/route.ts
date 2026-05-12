@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -31,5 +32,7 @@ export async function POST(request: Request) {
     await prisma.flashAnnouncement.updateMany({ data: { active: false } });
   }
   const flash = await prisma.flashAnnouncement.create({ data: parsed.data });
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/flash");
   return NextResponse.json(flash);
 }

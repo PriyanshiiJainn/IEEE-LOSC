@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
@@ -34,10 +37,19 @@ export async function POST(req: Request) {
 
     await fs.writeFile(filepath, buffer);
 
-    return NextResponse.json({
-      message: "Upload successful",
-      url: `/pdfs/${filename}`,
-    });
+    return NextResponse.json(
+      {
+        message: "Upload successful",
+        url: `/pdfs/${filename}`,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
 
   } catch (err) {
     return NextResponse.json(

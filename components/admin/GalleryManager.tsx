@@ -38,6 +38,7 @@ export function GalleryManager({ initialImages }: Props) {
       const uploadRes = await fetch("/api/upload-image", {
         method: "POST",
         body: fd,
+        cache: "no-store",
       });
       const uploadJson = await uploadRes.json();
       if (!uploadRes.ok) {
@@ -88,6 +89,23 @@ export function GalleryManager({ initialImages }: Props) {
     }
   }
 
+  async function handleCaptionChange(id: string, nextCaption: string) {
+    try {
+      const res = await fetch(`/api/admin/gallery/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ caption: nextCaption.trim() }),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to update caption");
+      }
+      const updated = await res.json();
+      setImages((prev) => prev.map((img) => (img.id === id ? updated : img)));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update caption");
+    }
+  }
+
   async function handleOrderChange(id: string, value: string) {
     const num = Number(value);
     if (Number.isNaN(num)) return;
@@ -126,7 +144,7 @@ export function GalleryManager({ initialImages }: Props) {
             onChange={(e) => setFile(e.target.files?.[0] || null)}
             className="block w-full text-sm text-gray-700"
           />
-          <p className="mt-1 text-xs text-gray-500">Max size 2MB. JPG/PNG/WebP recommended.</p>
+          <p className="mt-1 text-xs text-gray-500">Max size 15MB. JPG/PNG/WebP recommended.</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Caption (optional)</label>
@@ -171,7 +189,22 @@ export function GalleryManager({ initialImages }: Props) {
                 alt={img.caption}
                 className="h-40 w-full rounded-md object-cover"
               />
-              <p className="text-sm font-medium text-gray-900">{img.caption}</p>
+              <label className="block text-xs font-medium text-gray-600" htmlFor={`gallery-caption-${img.id}`}>
+                Caption
+              </label>
+              <input
+                key={`${img.id}:${img.caption}`}
+                id={`gallery-caption-${img.id}`}
+                type="text"
+                defaultValue={img.caption}
+                onBlur={(e) => {
+                  const v = e.target.value;
+                  if (v !== img.caption) handleCaptionChange(img.id, v);
+                }}
+                className="w-full rounded border border-gray-300 px-2 py-1 text-sm text-gray-900"
+                placeholder="Short description"
+                maxLength={300}
+              />
               <div className="flex items-center justify-between gap-2">
                 <label className="flex items-center gap-1 text-xs text-gray-600">
                   <span>Order:</span>

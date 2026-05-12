@@ -30,6 +30,10 @@ const emptyForm = {
   order: 0,
 };
 
+function formSignature(form: typeof emptyForm) {
+  return JSON.stringify(form);
+}
+
 export function TeamManager({ initialMembers, classifications }: Props) {
   const [members, setMembers] = useState(initialMembers);
   const [editing, setEditing] = useState<Member | null>(null);
@@ -37,15 +41,19 @@ export function TeamManager({ initialMembers, classifications }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState(emptyForm);
+  const [savedSignature, setSavedSignature] = useState(formSignature(emptyForm));
+  const [savedOnce, setSavedOnce] = useState(false);
 
   function openAdd() {
     setEditing(null);
     setForm(emptyForm);
+    setSavedSignature(formSignature(emptyForm));
+    setSavedOnce(false);
+    setError("");
     setOpen(true);
   }
   function openEdit(m: Member) {
-    setEditing(m);
-    setForm({
+    const nextForm = {
       name: m.name,
       classification: m.classification,
       post: m.post ?? "",
@@ -54,7 +62,12 @@ export function TeamManager({ initialMembers, classifications }: Props) {
       phone: m.phone ?? "",
       linkedin: m.linkedin ?? "",
       order: m.order,
-    });
+    };
+    setEditing(m);
+    setForm(nextForm);
+    setSavedSignature(formSignature(nextForm));
+    setSavedOnce(false);
+    setError("");
     setOpen(true);
   }
 
@@ -82,6 +95,19 @@ export function TeamManager({ initialMembers, classifications }: Props) {
         if (!res.ok) throw new Error(await res.text());
         const updated = await res.json();
         setMembers((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+        const nextForm = {
+          name: updated.name,
+          classification: updated.classification,
+          post: updated.post ?? "",
+          imageUrl: updated.imageUrl ?? "",
+          email: updated.email ?? "",
+          phone: updated.phone ?? "",
+          linkedin: updated.linkedin ?? "",
+          order: updated.order ?? 0,
+        };
+        setForm(nextForm);
+        setSavedSignature(formSignature(nextForm));
+        setSavedOnce(true);
       } else {
         const res = await fetch("/api/admin/team", {
           method: "POST",
@@ -91,8 +117,22 @@ export function TeamManager({ initialMembers, classifications }: Props) {
         if (!res.ok) throw new Error(await res.text());
         const created = await res.json();
         setMembers((prev) => [...prev, created].sort((a, b) => a.order - b.order));
+        const nextForm = {
+          name: created.name,
+          classification: created.classification,
+          post: created.post ?? "",
+          imageUrl: created.imageUrl ?? "",
+          email: created.email ?? "",
+          phone: created.phone ?? "",
+          linkedin: created.linkedin ?? "",
+          order: created.order ?? 0,
+        };
+        setEditing(created);
+        setForm(nextForm);
+        setSavedSignature(formSignature(nextForm));
+        setSavedOnce(true);
       }
-      setOpen(false);
+      setError("");
     } catch (err) {
       if (err instanceof Error) {
         try {
@@ -116,6 +156,9 @@ export function TeamManager({ initialMembers, classifications }: Props) {
       setLoading(false);
     }
   }
+
+  const isDirty = formSignature(form) !== savedSignature;
+  const showSavedState = savedOnce && !isDirty && !loading;
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this member?")) return;
@@ -173,7 +216,8 @@ export function TeamManager({ initialMembers, classifications }: Props) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                <input value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="https://example.com/photo.jpg" className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <input value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="/cropped-image.png or https://example.com/photo.jpg" className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <p className="mt-1 text-xs text-gray-400">For files in public, use root paths like /cropped-image.png</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -193,8 +237,24 @@ export function TeamManager({ initialMembers, classifications }: Props) {
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
               <div className="flex gap-2 pt-2">
-                <button type="submit" disabled={loading} className="rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90 disabled:opacity-50">{loading ? "Saving…" : "Save"}</button>
+                <button
+                  type="submit"
+                  disabled={loading || !isDirty}
+                  className="rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400"
+                >
+                  {loading ? "Saving…" : showSavedState ? "Saved" : "Save"}
+                </button>
                 <button type="button" onClick={() => setOpen(false)} className="rounded border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
+                {showSavedState && (
+                  <button
+                    type="button"
+                    aria-label="Close editor"
+                    onClick={() => setOpen(false)}
+                    className="rounded border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             </form>
           </div>

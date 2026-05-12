@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -30,6 +31,8 @@ export async function PATCH(
       where: { id },
       data,
     });
+    revalidatePath("/event-reports");
+    revalidatePath("/admin/event-reports");
     return NextResponse.json(report);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to update report";
@@ -45,5 +48,7 @@ export async function DELETE(
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   await prisma.eventReport.delete({ where: { id } });
+  revalidatePath("/event-reports");
+  revalidatePath("/admin/event-reports");
   return NextResponse.json({ ok: true });
 }

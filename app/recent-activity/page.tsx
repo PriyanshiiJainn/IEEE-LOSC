@@ -1,6 +1,8 @@
 import { getRecentActivities, getRecentActivityIntro } from "@/lib/data";
 import { MarkdownContent } from "@/components/shared/MarkdownContent";
 
+export const dynamic = "force-dynamic";
+
 export default async function RecentActivityPage() {
   const intro = await getRecentActivityIntro();
   const activities = await getRecentActivities();

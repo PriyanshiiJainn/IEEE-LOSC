@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { revalidatePath } from "next/cache";
 
 type GalleryImageRow = {
   id: string;
@@ -59,6 +60,8 @@ export async function POST(request: Request) {
       order: typeof order === "number" ? order : 0,
     },
   });
+
+  revalidatePath("/gallery");
 
   return NextResponse.json(image);
 }

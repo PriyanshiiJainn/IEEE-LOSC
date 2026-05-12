@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -38,5 +39,7 @@ export async function POST(request: Request) {
       registrationStatus: rest.registrationStatus ?? "OPEN",
     },
   });
+  revalidatePath("/events");
+  revalidatePath("/admin/events");
   return NextResponse.json(event);
 }

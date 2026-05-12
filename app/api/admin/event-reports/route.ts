@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -34,6 +35,8 @@ export async function POST(request: Request) {
       publishedAt: parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null,
     };
     const report = await prisma.eventReport.create({ data });
+    revalidatePath("/event-reports");
+    revalidatePath("/admin/event-reports");
     return NextResponse.json(report);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to create report";

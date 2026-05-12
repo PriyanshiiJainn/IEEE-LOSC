@@ -16,6 +16,7 @@ const Btnupload = () => {
         const res = await fetch("/api/upload", {
           method: "POST",
           body: formData,
+          cache: "no-store",
         });
     
         const data = await res.json();

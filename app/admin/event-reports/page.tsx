@@ -34,7 +34,7 @@ export default async function AdminEventReportsPage() {
           Database unreachable. Data will appear when the database is reachable.
         </div>
       )}
-      <h1 className="text-2xl font-bold text-ieee-navy mb-6">Manage MOM</h1>
+      <h1 className="text-2xl font-bold text-ieee-navy mb-6">Manage MOM & Event Reports</h1>
       <EventReportsManager initialReports={reports} events={events} />
     </div>
   );

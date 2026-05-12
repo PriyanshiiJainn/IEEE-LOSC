@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -47,6 +48,8 @@ export async function PATCH(
       where: { id },
       data,
     });
+    revalidatePath("/recent-activity");
+    revalidatePath("/admin/recent-activity");
     return NextResponse.json(activity);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to update activity";
@@ -63,5 +66,7 @@ export async function DELETE(
   const { id } = await params;
   const db = prisma as PrismaWithRecentActivities;
   await db.recentActivity.delete({ where: { id } });
+  revalidatePath("/recent-activity");
+  revalidatePath("/admin/recent-activity");
   return NextResponse.json({ ok: true });
 }

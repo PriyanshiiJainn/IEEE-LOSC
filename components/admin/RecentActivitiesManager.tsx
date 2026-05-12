@@ -68,7 +68,11 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
     try {
       const formData = new FormData();
       formData.append("pdf", file);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
       setForm((f) => ({ ...f, pdfUrl: data.url }));

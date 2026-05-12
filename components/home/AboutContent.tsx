@@ -5,7 +5,7 @@ type AboutContentProps = {
     aboutUs?: string;
     aboutPoints?: string[];
     aboutOptica?: string;
-    recentUpdates?: string[];
+    recentUpdates?: string[] | string;
   };
 };
 
@@ -15,12 +15,18 @@ export function AboutContent({ content }: AboutContentProps) {
   const aboutPoints = content?.aboutPoints ?? [];
   const aboutOptica = content?.aboutOptica ?? "";
 
-  const recentUpdates = content?.recentUpdates ?? [
-    "We are pleased to inform you about the inaugural event of the LNMIIT Optica Student Chapter LOSC at The LNM Institute of Information Technology, Jaipur. ",
-    "Event date: 12th March 2026 (10:00 AM; Thursday)" ,
-    "Venue: LT-17, RIEP Building."
-  
-  ];
+  const recentUpdatesRaw = content?.recentUpdates;
+  const recentUpdates =
+    typeof recentUpdatesRaw === "string"
+      ? recentUpdatesRaw
+          .split("\n")
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : recentUpdatesRaw ?? [
+          "We are pleased to inform you about the inaugural event of the LNMIIT Optica Student Chapter LOSC at The LNM Institute of Information Technology, Jaipur.",
+          "Event date: 12th March 2026 (10:00 AM; Thursday)",
+          "Venue: LT-17, RIEP Building.",
+        ];
 
   return (
     <section className="container mx-auto px-4 py-12 md:py-16">

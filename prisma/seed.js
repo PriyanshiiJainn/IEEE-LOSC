@@ -3,6 +3,46 @@ const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
+/** Default gallery: bundled `public/gallery/DSC*.jpg` (camera filenames; often typed as “DCS”). */
+const GALLERY_DSC_FILES = [
+  "DSC03378.jpg",
+  "DSC03389.jpg",
+  "DSC03394.jpg",
+  "DSC03400.jpg",
+  "DSC03403.jpg",
+  "DSC03444.jpg",
+  "DSC03447.jpg",
+  "DSC03490.jpg",
+  "DSC03491.jpg",
+  "DSC03533.jpg",
+  "DSC03548.jpg",
+  "DSC03558.jpg",
+  "DSC03610.jpg",
+  "DSC03632.jpg",
+  "DSC03677.jpg",
+  "DSC03688.jpg",
+];
+
+const LEGACY_GALLERY_PLACEHOLDER_URLS = new Set([
+  "/image1.png",
+  "/image2.png",
+  "/image4.png",
+  "/image5.png",
+  "/image.png",
+  "/image6.png",
+  "/image7.png",
+  "/image8.png",
+  "/image3.png",
+]);
+
+function dscGalleryRows() {
+  return GALLERY_DSC_FILES.map((file, order) => ({
+    imageUrl: `/gallery/${file}`,
+    caption: "IEEE Optica Student Chapter, LNMIIT",
+    order,
+  }));
+}
+
 async function main() {
   // --- Admin user ---
   const adminEmail = "admin@ieee.lnmiit.ac.in";
@@ -31,6 +71,11 @@ async function main() {
         ].join("\n"),
         aboutOptica:
           "Optica, formerly known as OSA, is a leading organization dedicated to advancing optics and photonics worldwide, promoting knowledge generation, application, and dissemination in the field.",
+        recentUpdates: [
+          "We are pleased to inform you about the inaugural event of the LNMIIT Optica Student Chapter LOSC at The LNM Institute of Information Technology, Jaipur.",
+          "Event date: 12th March 2026 (10:00 AM; Thursday)",
+          "Venue: LT-17, RIEP Building.",
+        ].join("\n"),
       },
     });
     console.log("Seeded About content.");
@@ -132,59 +177,23 @@ async function main() {
     }
   }
 
-  // --- Gallery Images (for existing public images) ---
-  const existingGallery = await prisma.galleryImage.count();
-  if (existingGallery === 0) {
-    await prisma.galleryImage.createMany({
-      data: [
-        {
-          imageUrl: "/image1.png",
-          caption: "The LNM Institute of Information Technology (LNMIIT), Jaipur",
-          order: 0,
-        },
-        {
-          imageUrl: "/image2.png",
-          caption: "Aerial View of LNMIIT Jaipur Campus",
-          order: 1,
-        },
-        {
-          imageUrl: "/image4.png",
-          caption: "Blooming Greens at LNMIIT Jaipur",
-          order: 2,
-        },
-        {
-          imageUrl: "/image5.png",
-          caption: "LNMIIT AI Centre – Advancing Artificial Intelligence Research",
-          order: 3,
-        },
-        {
-          imageUrl: "/image.png",
-          caption: "Academic Block at LNMIIT – A hub for innovation, research, and academic excellence",
-          order: 4,
-        },
-        {
-          imageUrl: "/image6.png",
-          caption: "Central Plaza at LNMIIT – A vibrant space for student interaction and campus life.",
-          order: 5,
-        },
-        {
-          imageUrl: "/image7.png",
-          caption: "Green Lawns of LNMIIT Campus",
-          order: 6,
-        },
-        {
-          imageUrl: "/image8.png",
-          caption: "Central Activity Area – LNMIIT",
-          order: 7,
-        },
-        {
-          imageUrl: "/image3.png",
-          caption: "Lighting Up the Campus – Celebrating Success Together.",
-          order: 8,
-        },
-      ],
+  // --- Gallery Images (bundled DSC* photos under public/gallery; admin can add/reorder/edit later) ---
+  const galleryCount = await prisma.galleryImage.count();
+  if (galleryCount === 0) {
+    await prisma.galleryImage.createMany({ data: dscGalleryRows() });
+    console.log("Seeded Gallery images (DSC defaults under /public/gallery).");
+  } else {
+    const galleryRows = await prisma.galleryImage.findMany({
+      select: { imageUrl: true },
     });
-    console.log("Seeded Gallery images.");
+    const onlyLegacyPlaceholders =
+      galleryRows.length === LEGACY_GALLERY_PLACEHOLDER_URLS.size &&
+      galleryRows.every((r) => LEGACY_GALLERY_PLACEHOLDER_URLS.has(r.imageUrl));
+    if (onlyLegacyPlaceholders) {
+      await prisma.galleryImage.deleteMany({});
+      await prisma.galleryImage.createMany({ data: dscGalleryRows() });
+      console.log("Replaced legacy placeholder gallery with DSC defaults.");
+    }
   }
 
   console.log("\nSeed complete!");

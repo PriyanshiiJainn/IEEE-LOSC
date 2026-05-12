@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 
-type About = { id: string; aboutUs: string; aboutOptica: string } | null;
+type About = { id: string; aboutUs: string; aboutOptica: string; recentUpdates: string } | null;
 
 type Props = { initial: About };
 
 export function AboutEditor({ initial }: Props) {
   const [aboutUs, setAboutUs] = useState(initial?.aboutUs ?? "");
   const [aboutOptica, setAboutOptica] = useState(initial?.aboutOptica ?? "");
+  const [recentUpdates, setRecentUpdates] = useState(initial?.recentUpdates ?? "");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<"success" | "error" | null>(null);
 
@@ -20,7 +21,7 @@ export function AboutEditor({ initial }: Props) {
       const res = await fetch("/api/admin/about", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ aboutUs, aboutOptica }),
+        body: JSON.stringify({ aboutUs, aboutOptica, recentUpdates }),
       });
       if (!res.ok) throw new Error();
       setMessage("success");
@@ -54,6 +55,17 @@ export function AboutEditor({ initial }: Props) {
           className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
         />
         <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph, Enter for line break</p>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Recent Updates</label>
+        <textarea
+          value={recentUpdates}
+          onChange={(e) => setRecentUpdates(e.target.value)}
+          required
+          rows={6}
+          className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+        />
+        <p className="mt-1 text-xs text-gray-400">One update per line. Each line appears as a bullet on the About page.</p>
       </div>
       {message === "success" && <p className="text-sm text-green-600">Saved.</p>}
       {message === "error" && <p className="text-sm text-red-600">Save failed.</p>}

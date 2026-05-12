@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -31,6 +32,8 @@ export async function PATCH(
     where: { id },
     data: parsed.data,
   });
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/flash");
   return NextResponse.json(flash);
 }
 
@@ -42,5 +45,7 @@ export async function DELETE(
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   await prisma.flashAnnouncement.delete({ where: { id } });
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/flash");
   return NextResponse.json({ ok: true });
 }
