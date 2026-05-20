@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 type RecentActivityRow = {
   id: string;
@@ -25,7 +26,7 @@ type PrismaWithRecentActivities = typeof prisma & {
 const updateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   content: z.string().optional(),
-  pdfUrl: z.string().optional().nullable(),
+  pdfUrl: optionalMediaUrlSchema,
   publishedAt: z.string().optional().nullable(),
 });
 

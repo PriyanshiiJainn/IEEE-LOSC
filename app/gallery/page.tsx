@@ -7,13 +7,8 @@ export const dynamic = "force-dynamic";
 
 
 export default async function GalleryPage() {
-  let images: { src: string; caption: string }[] = [];
-  try {
-    const rows = await getGalleryImages();
-    images = rows.map((r) => ({ src: r.imageUrl, caption: r.caption }));
-  } catch {
-    images = [];
-  }
+  const rows = await getGalleryImages();
+  const images = rows.map((r) => ({ src: r.imageUrl, caption: r.caption }));
 
   return <GalleryClient images={images} />;
 }

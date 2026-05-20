@@ -9,6 +9,7 @@ export type Report = {
   content: string;
   coverImageUrl: string | null;
   pdfUrl: string | null;
+  isMom: boolean;
   publishedAt: Date | string | null;
   event: { id: string; title: string };
 };
@@ -29,6 +30,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
   const [selectedPdfName, setSelectedPdfName] = useState("");
   const empty = { eventId: events[0]?.id ?? "", title: "", content: "", coverImageUrl: "", pdfUrl: "", publishedAt: "" };
   const [form, setForm] = useState(empty);
+  const existingForSelectedEvent = reports.find((r) => r.eventId === form.eventId);
 
   function openAddMom() {
     setMode("MOM");
@@ -46,7 +48,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
     setOpen(true);
   }
   function openEdit(r: Report) {
-    setMode(r.pdfUrl ? "MOM" : "EVENT");
+    setMode(r.isMom ? "MOM" : "EVENT");
     setEditing(r);
     setForm({
       eventId: r.eventId,
@@ -70,6 +72,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
         method: "POST",
         body: formData,
         cache: "no-store",
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Upload failed");
@@ -87,9 +90,11 @@ export function EventReportsManager({ initialReports, events }: Props) {
     setError("");
     setLoading(true);
     try {
-      const normalizedPdfUrl = mode === "MOM" ? (form.pdfUrl || null) : null;
-      if (mode === "MOM" && !normalizedPdfUrl) {
+      const isMom = mode === "MOM";
+      const normalizedPdfUrl = form.pdfUrl || null;
+      if (isMom && !normalizedPdfUrl) {
         setError("Please upload a MOM PDF before saving.");
+        setLoading(false);
         return;
       }
       const body = {
@@ -98,6 +103,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
         content: form.content,
         coverImageUrl: form.coverImageUrl || null,
         pdfUrl: normalizedPdfUrl,
+        isMom,
         publishedAt: form.publishedAt || null,
       };
       if (editing) {
@@ -110,7 +116,16 @@ export function EventReportsManager({ initialReports, events }: Props) {
         if (!res.ok) throw new Error(await res.text());
         const created = await res.json();
         const ev = events.find((e) => e.id === created.eventId);
-        setReports((prev) => [{ ...created, event: ev ?? { id: created.eventId, title: "" } }, ...prev]);
+        const eventMeta = ev ?? { id: created.eventId, title: "" };
+        setReports((prev) => {
+          const idx = prev.findIndex((p) => p.eventId === created.eventId);
+          if (idx >= 0) {
+            const next = [...prev];
+            next[idx] = { ...created, event: prev[idx]?.event ?? eventMeta };
+            return next;
+          }
+          return [{ ...created, event: eventMeta }, ...prev];
+        });
       }
       setOpen(false);
     } catch (err) {
@@ -146,10 +161,25 @@ export function EventReportsManager({ initialReports, events }: Props) {
             <div>
               <span className="font-medium">{r.title}</span>
               <span className="ml-2 text-sm text-gray-500">{r.event?.title}</span>
-              <span className="ml-2 text-xs text-gray-500">{r.pdfUrl ? "MOM" : "Event Report"}</span>
+              <span className="ml-2 text-xs text-gray-500">{r.isMom ? "MOM" : "Event Report"}</span>
               {r.pdfUrl && <span className="ml-2 text-xs text-green-600">PDF attached</span>}
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {r.pdfUrl && (
+                <>
+                  <a
+                    href={r.pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-ieee-navy hover:underline"
+                  >
+                    View PDF
+                  </a>
+                  <a href={r.pdfUrl} download className="text-sm text-ieee-red hover:underline">
+                    Download
+                  </a>
+                </>
+              )}
               <button type="button" onClick={() => openEdit(r)} className="text-sm text-ieee-red hover:underline">Edit</button>
               <button type="button" onClick={() => handleDelete(r.id)} className="text-sm text-red-600 hover:underline">Delete</button>
             </div>
@@ -163,6 +193,12 @@ export function EventReportsManager({ initialReports, events }: Props) {
               {editing ? `Edit ${mode === "MOM" ? "MOM" : "Event Report"}` : mode === "MOM" ? "Add MOM" : "Add Event Report"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-3">
+              {!editing && existingForSelectedEvent && (
+                <p className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                  This event already has a {existingForSelectedEvent.isMom ? "MOM" : "report"} entry. Saving will update it
+                  {mode === "MOM" && !existingForSelectedEvent.isMom ? " and attach the MOM PDF." : "."}
+                </p>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Event</label>
                 <select value={form.eventId} onChange={(e) => setForm((f) => ({ ...f, eventId: e.target.value }))} required className="w-full rounded border border-gray-300 px-3 py-2 text-sm">
@@ -214,12 +250,29 @@ export function EventReportsManager({ initialReports, events }: Props) {
                   <p className="mt-1 text-xs text-gray-600">Selected: {selectedPdfName}</p>
                 )}
                 {form.pdfUrl && (
-                  <p className="mt-1 text-xs text-green-600">
-                    Attached:{" "}
-                    <a href={form.pdfUrl} target="_blank" rel="noopener noreferrer" className="underline">
-                      {form.pdfUrl}
-                    </a>
-                  </p>
+                  <div className="mt-3 space-y-2">
+                    <p className="text-xs text-green-600">PDF attached</p>
+                    <div className="rounded border border-gray-200 overflow-hidden bg-gray-50">
+                      <iframe
+                        src={form.pdfUrl}
+                        title="PDF preview"
+                        className="w-full h-48 border-0"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <a
+                        href={form.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-ieee-navy underline"
+                      >
+                        Open
+                      </a>
+                      <a href={form.pdfUrl} download className="text-xs text-ieee-red underline">
+                        Download
+                      </a>
+                    </div>
+                  </div>
                 )}
               </div>
               <div>

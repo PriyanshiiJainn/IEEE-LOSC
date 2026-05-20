@@ -60,11 +60,21 @@ export async function DELETE(
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
+  if (!id?.trim()) {
+    return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  }
 
   const db = prisma as PrismaWithGallery;
-  await db.galleryImage.delete({
+  const removed = await db.galleryImage.deleteMany({
     where: { id },
   });
+
+  if (removed.count === 0) {
+    return NextResponse.json(
+      { error: "Gallery image not found. Refresh the page if it still appears." },
+      { status: 404 }
+    );
+  }
 
   revalidatePath("/gallery");
 

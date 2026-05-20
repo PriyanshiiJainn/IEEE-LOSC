@@ -4,6 +4,7 @@
  */
 
 import { prisma } from "./prisma";
+import { getDefaultGalleryDbRows } from "./gallery-defaults.js";
 import { unstable_noStore as noStore } from "next/cache";
 
 type EventWithOptionalRegistrationStatus = EventItem & {
@@ -67,6 +68,7 @@ export type EventReportItem = {
   content: string;
   coverImageUrl: string | null;
   pdfUrl: string | null;
+  isMom: boolean;
   publishedAt: Date | null;
   event: { id: string; title: string };
 };
@@ -158,9 +160,15 @@ export async function getRecentActivityIntro() {
 
 export async function getGalleryImages(): Promise<GalleryImageItem[]> {
   noStore();
-  const db = prisma as PrismaWithExtendedModels;
-  const rows = await db.galleryImage.findMany({
-    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  });
-  return rows;
+  try {
+    const db = prisma as PrismaWithExtendedModels;
+    const rows = await db.galleryImage.findMany({
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    });
+    if (rows.length > 0) return rows;
+    return getDefaultGalleryDbRows();
+  } catch (err) {
+    console.error("[getGalleryImages] database error, using bundled defaults:", err);
+    return getDefaultGalleryDbRows();
+  }
 }

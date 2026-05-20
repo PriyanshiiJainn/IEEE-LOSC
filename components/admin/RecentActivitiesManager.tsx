@@ -72,6 +72,7 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
         method: "POST",
         body: formData,
         cache: "no-store",
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();

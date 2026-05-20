@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { contactFormSchema } from "@/lib/validation";
 
+export const dynamic = "force-dynamic";
+
+const RATE_WINDOW_MS = 15 * 60 * 1000;
+const RATE_MAX = 8;
+
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const limited = checkRateLimit(`contact:${ip}`, RATE_MAX, RATE_WINDOW_MS);
+  if (!limited.ok) {
+    return rateLimitResponse(limited.retryAfterSec);
+  }
+
   const body = await request.json();
   const parsed = contactFormSchema.safeParse(body);
   if (!parsed.success) {
@@ -22,7 +34,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json(
       { error: "Database not configured or unavailable" },
-      { status: 503 }
+      { status: 503 },
     );
   }
 }

@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { requireAdmin } from "@/lib/auth-utils";
+import { noCacheJson } from "@/lib/cache-headers";
+import { isImageUpload, saveUploadedFile } from "@/lib/upload-storage";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+export const runtime = "nodejs";
 
 const MAX_SIZE_BYTES = 15 * 1024 * 1024; // 15MB
 
 export async function POST(req: Request) {
+  const admin = await requireAdmin();
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get("image") as File | null;
@@ -16,47 +23,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    if (!file.type.startsWith("image/")) {
+    if (!isImageUpload(file)) {
       return NextResponse.json({ error: "Only image files are allowed" }, { status: 400 });
     }
 
     if (file.size > MAX_SIZE_BYTES) {
       return NextResponse.json(
         { error: "Image is too large. Max size is 15MB." },
-        { status: 400 }
+        { status: 400 },
       );
     }
-
-    const uploadDir = path.join(process.cwd(), "public/gallery");
-    await fs.mkdir(uploadDir, { recursive: true });
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const filename = `${Date.now()}-${safeName}`;
-    const filepath = path.join(uploadDir, filename);
+    const { url } = await saveUploadedFile("gallery", buffer, file.name, file.type || undefined);
 
-    await fs.writeFile(filepath, buffer);
-
-    return NextResponse.json(
-      {
-        message: "Upload successful",
-        url: `/gallery/${filename}`,
-      },
-      {
-        headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
-        },
-      }
-    );
+    return noCacheJson({
+      message: "Upload successful",
+      url,
+    });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Upload failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 const updateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
@@ -11,7 +12,7 @@ const updateSchema = z.object({
   time: z.string().max(50).optional().nullable(),
   venue: z.string().max(200).optional().nullable(),
   category: z.enum(["WORKSHOP", "HACKATHON", "QUIZ", "WEBINAR", "INVITED_TALK"]).optional(),
-  brochureUrl: z.string().url().optional().nullable(),
+  brochureUrl: optionalMediaUrlSchema,
   isFeatured: z.boolean().optional(),
   registrationClosed: z.boolean().optional(),
   registrationStatus: z.enum(["OPEN", "SOON", "CLOSED"]).optional(),

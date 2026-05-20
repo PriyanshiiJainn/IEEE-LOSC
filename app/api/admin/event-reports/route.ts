@@ -3,13 +3,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 const createSchema = z.object({
   eventId: z.string().min(1),
   title: z.string().min(1).max(200),
   content: z.string(),
-  coverImageUrl: z.string().url().optional().nullable(),
-  pdfUrl: z.string().optional().nullable(),
+  coverImageUrl: optionalMediaUrlSchema,
+  pdfUrl: optionalMediaUrlSchema,
+  isMom: z.boolean().optional(),
   publishedAt: z.string().optional().nullable(),
 });
 
@@ -34,7 +36,12 @@ export async function POST(request: Request) {
       ...parsed.data,
       publishedAt: parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null,
     };
-    const report = await prisma.eventReport.create({ data });
+    // One report per event (eventId is unique). Upsert so MOM PDF can be added to an existing entry.
+    const report = await prisma.eventReport.upsert({
+      where: { eventId: parsed.data.eventId },
+      create: data,
+      update: data,
+    });
     revalidatePath("/event-reports");
     revalidatePath("/admin/event-reports");
     return NextResponse.json(report);

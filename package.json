@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",
+    "@vercel/blob": "^0.27.3",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "gsap": "^3.14.2",

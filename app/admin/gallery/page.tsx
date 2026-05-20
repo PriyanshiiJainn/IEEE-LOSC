@@ -3,6 +3,8 @@ import { getAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { GalleryManager } from "@/components/admin/GalleryManager";
 
+export const dynamic = "force-dynamic";
+
 type GalleryImageRow = {
   id: string;
   imageUrl: string;

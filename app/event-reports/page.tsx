@@ -5,8 +5,8 @@ export const dynamic = "force-dynamic";
 
 export default async function EventReportsPage() {
   const reports = await getEventReports();
-  const momReports = reports.filter((report) => Boolean(report.pdfUrl));
-  const eventReports = reports.filter((report) => !report.pdfUrl);
+  const momReports = reports.filter((report) => report.isMom);
+  const eventReports = reports.filter((report) => !report.isMom);
   const hasAnyReports = momReports.length > 0 || eventReports.length > 0;
 
   return (

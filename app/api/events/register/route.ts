@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import { eventRegistrationSchema } from "@/lib/validation";
 
+export const dynamic = "force-dynamic";
+
+const RATE_WINDOW_MS = 15 * 60 * 1000;
+const RATE_MAX = 15;
+
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const limited = checkRateLimit(`register:${ip}`, RATE_MAX, RATE_WINDOW_MS);
+  if (!limited.ok) {
+    return rateLimitResponse(limited.retryAfterSec);
+  }
+
   const body = await request.json();
   const parsed = eventRegistrationSchema.safeParse(body);
   if (!parsed.success) {
@@ -16,6 +28,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: first, errors }, { status: 400 });
   }
 
+  const email = parsed.data.email.trim().toLowerCase();
+
   try {
     const eventRow = await prisma.event.findUnique({
       where: { id: parsed.data.eventId },
@@ -27,14 +41,12 @@ export async function POST(request: Request) {
           error:
             "This event doesn't exist in the database. Add events via Admin → Events.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const status = (eventRow.registrationStatus ?? "").toUpperCase();
     const isClosed =
-      eventRow.registrationClosed ||
-      status === "CLOSED" ||
-      status === "SOON";
+      eventRow.registrationClosed || status === "CLOSED" || status === "SOON";
 
     if (isClosed) {
       return NextResponse.json(
@@ -44,10 +56,29 @@ export async function POST(request: Request) {
               ? "Registration for this event has not opened yet."
               : "Registration for this event is closed.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
-    await prisma.eventRegistration.create({ data: parsed.data });
+
+    const existing = await prisma.eventRegistration.findFirst({
+      where: {
+        eventId: parsed.data.eventId,
+        email,
+      },
+    });
+    if (existing) {
+      return NextResponse.json(
+        { error: "You have already registered for this event with this email." },
+        { status: 400 },
+      );
+    }
+
+    await prisma.eventRegistration.create({
+      data: {
+        ...parsed.data,
+        email,
+      },
+    });
     return NextResponse.json({ ok: true });
   } catch (e) {
     const isPrisma = e && typeof e === "object" && "code" in e;
@@ -56,16 +87,16 @@ export async function POST(request: Request) {
     if (code === "P2003") {
       return NextResponse.json(
         { error: "This event is no longer available. Try another event." },
-        { status: 400 }
+        { status: 400 },
       );
     }
     if (code === "P1001" || code === "P1017" || code === "P2024") {
       return NextResponse.json(
-      {
-        error:
-          "Database is not reachable. Check DATABASE_URL in .env, run migrations, and if using Neon, resume the project in the dashboard.",
-      },
-      { status: 503 }
+        {
+          error:
+            "Database is not reachable. Check DATABASE_URL in .env, run migrations, and if using Neon, resume the project in the dashboard.",
+        },
+        { status: 503 },
       );
     }
 
@@ -74,7 +105,7 @@ export async function POST(request: Request) {
         error:
           "Registration could not be saved. Check that the database is set up and migrations have been run.",
       },
-      { status: 503 }
+      { status: 503 },
     );
   }
 }

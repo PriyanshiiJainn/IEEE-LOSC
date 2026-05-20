@@ -26,12 +26,18 @@ export const authOptions: NextAuthOptions = {
         const password = String(credentials.password).trim();
         if (!email || !password) return null;
 
+        const isProduction = process.env.NODE_ENV === "production";
+        if (isProduction && !process.env.NEXTAUTH_SECRET?.trim()) {
+          console.error("[auth] NEXTAUTH_SECRET must be set in production");
+          return null;
+        }
+
         try {
           let user = await prisma.user.findUnique({
             where: { email },
           });
 
-          if (!user && process.env.NODE_ENV === "development") {
+          if (!user && !isProduction) {
             const passwordHash = await hash(password, 12);
             user = await prisma.user.create({
               data: { email, passwordHash, name: "Admin", role: "ADMIN" },
@@ -51,7 +57,7 @@ export const authOptions: NextAuthOptions = {
           } satisfies AuthUser;
         } catch {
           if (
-            process.env.NODE_ENV === "development" &&
+            !isProduction &&
             email === "admin@ieee.lnmiit.ac.in" &&
             password === "admin123"
           ) {

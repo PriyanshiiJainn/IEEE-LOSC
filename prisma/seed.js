@@ -1,27 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
+const { getDefaultGallerySeedRows } = require("../lib/gallery-defaults.js");
 
 const prisma = new PrismaClient();
-
-/** Default gallery: bundled `public/gallery/DSC*.jpg` (camera filenames; often typed as “DCS”). */
-const GALLERY_DSC_FILES = [
-  "DSC03378.jpg",
-  "DSC03389.jpg",
-  "DSC03394.jpg",
-  "DSC03400.jpg",
-  "DSC03403.jpg",
-  "DSC03444.jpg",
-  "DSC03447.jpg",
-  "DSC03490.jpg",
-  "DSC03491.jpg",
-  "DSC03533.jpg",
-  "DSC03548.jpg",
-  "DSC03558.jpg",
-  "DSC03610.jpg",
-  "DSC03632.jpg",
-  "DSC03677.jpg",
-  "DSC03688.jpg",
-];
 
 const LEGACY_GALLERY_PLACEHOLDER_URLS = new Set([
   "/image1.png",
@@ -34,14 +15,6 @@ const LEGACY_GALLERY_PLACEHOLDER_URLS = new Set([
   "/image8.png",
   "/image3.png",
 ]);
-
-function dscGalleryRows() {
-  return GALLERY_DSC_FILES.map((file, order) => ({
-    imageUrl: `/gallery/${file}`,
-    caption: "IEEE Optica Student Chapter, LNMIIT",
-    order,
-  }));
-}
 
 async function main() {
   // --- Admin user ---
@@ -180,7 +153,7 @@ async function main() {
   // --- Gallery Images (bundled DSC* photos under public/gallery; admin can add/reorder/edit later) ---
   const galleryCount = await prisma.galleryImage.count();
   if (galleryCount === 0) {
-    await prisma.galleryImage.createMany({ data: dscGalleryRows() });
+    await prisma.galleryImage.createMany({ data: getDefaultGallerySeedRows() });
     console.log("Seeded Gallery images (DSC defaults under /public/gallery).");
   } else {
     const galleryRows = await prisma.galleryImage.findMany({
@@ -191,7 +164,7 @@ async function main() {
       galleryRows.every((r) => LEGACY_GALLERY_PLACEHOLDER_URLS.has(r.imageUrl));
     if (onlyLegacyPlaceholders) {
       await prisma.galleryImage.deleteMany({});
-      await prisma.galleryImage.createMany({ data: dscGalleryRows() });
+      await prisma.galleryImage.createMany({ data: getDefaultGallerySeedRows() });
       console.log("Replaced legacy placeholder gallery with DSC defaults.");
     }
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type GalleryImage = {
   id: string;
@@ -13,77 +14,132 @@ type Props = {
   initialImages: GalleryImage[];
 };
 
+const MAX_GALLERY_BATCH = 8;
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
+
 export function GalleryManager({ initialImages }: Props) {
+  const router = useRouter();
   const [images, setImages] = useState<GalleryImage[]>(initialImages);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [caption, setCaption] = useState("");
   const [order, setOrder] = useState<string>("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadStep, setUploadStep] = useState<{ current: number; total: number } | null>(null);
+
+  function validateAndSetFiles(list: FileList | null) {
+    setError("");
+    if (!list?.length) {
+      setFiles([]);
+      return;
+    }
+    const picked = Array.from(list).slice(0, MAX_GALLERY_BATCH);
+    if (list.length > MAX_GALLERY_BATCH) {
+      setError(`You can add at most ${MAX_GALLERY_BATCH} images at once. Only the first ${MAX_GALLERY_BATCH} were kept.`);
+    }
+    const oversize = picked.filter((f) => f.size > MAX_IMAGE_BYTES);
+    if (oversize.length > 0) {
+      setError(
+        `Each image must be 15MB or smaller. Over limit: ${oversize.map((f) => f.name).join(", ")}`
+      );
+      setFiles([]);
+      return;
+    }
+    setFiles(picked);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (!file) {
-      setError("Please choose an image file");
+    if (files.length === 0) {
+      setError("Please choose one or more image files");
+      return;
+    }
+
+    const baseOrder = order.trim() === "" ? 0 : Number(order);
+    if (order.trim() !== "" && Number.isNaN(baseOrder)) {
+      setError("Order must be a valid number");
       return;
     }
 
     try {
       setUploading(true);
-      const fd = new FormData();
-      fd.append("image", file);
+      setUploadStep({ current: 0, total: files.length });
 
-      const uploadRes = await fetch("/api/upload-image", {
-        method: "POST",
-        body: fd,
-        cache: "no-store",
-      });
-      const uploadJson = await uploadRes.json();
-      if (!uploadRes.ok) {
-        throw new Error(uploadJson.error || "Upload failed");
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        setUploadStep({ current: i + 1, total: files.length });
+
+        const fd = new FormData();
+        fd.append("image", file);
+
+        const uploadRes = await fetch("/api/upload-image", {
+          method: "POST",
+          body: fd,
+          cache: "no-store",
+          credentials: "include",
+        });
+        const uploadJson = await uploadRes.json();
+        if (!uploadRes.ok) {
+          throw new Error(uploadJson.error || `Upload failed for “${file.name}”`);
+        }
+
+        const imageUrl = uploadJson.url as string;
+
+        setSaving(true);
+        const body = {
+          imageUrl,
+          caption: caption.trim(),
+          order: baseOrder + i,
+        };
+        const res = await fetch("/api/admin/gallery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          throw new Error(json.error || `Save failed for “${file.name}”`);
+        }
+
+        setImages((prev) => [...prev, json]);
       }
 
-      const imageUrl = uploadJson.url as string;
-
-      setSaving(true);
-      const body = {
-        imageUrl,
-        caption: caption.trim(),
-        order: order ? Number(order) : 0,
-      };
-      const res = await fetch("/api/admin/gallery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error || "Save failed");
-      }
-
-      setImages((prev) => [...prev, json]);
       setCaption("");
       setOrder("");
-      setFile(null);
-      (document.getElementById("gallery-file") as HTMLInputElement | null)?.value && ((document.getElementById("gallery-file") as HTMLInputElement).value = "");
+      setFiles([]);
+      const input = document.getElementById("gallery-file") as HTMLInputElement | null;
+      if (input) input.value = "";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setUploading(false);
       setSaving(false);
+      setUploadStep(null);
     }
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this image from gallery?")) return;
     try {
-      const res = await fetch(`/api/admin/gallery/${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        throw new Error("Delete failed");
+      const res = await fetch(`/api/admin/gallery/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const json = (await res.json().catch(() => ({}))) as { error?: string };
+
+      if (res.status === 404) {
+        setImages((prev) => prev.filter((img) => img.id !== id));
+        router.refresh();
+        return;
       }
+
+      if (!res.ok) {
+        throw new Error(json.error || "Delete failed");
+      }
+
       setImages((prev) => prev.filter((img) => img.id !== id));
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Delete failed");
     }
@@ -132,19 +188,23 @@ export function GalleryManager({ initialImages }: Props) {
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-ieee-navy">Add gallery image</h2>
+        <h2 className="text-lg font-semibold text-ieee-navy">Add gallery images</h2>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="gallery-file">
-            Image file
+            Image files
           </label>
           <input
             id="gallery-file"
             type="file"
             accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            multiple
+            onChange={(e) => validateAndSetFiles(e.target.files)}
             className="block w-full text-sm text-gray-700"
           />
-          <p className="mt-1 text-xs text-gray-500">Max size 15MB. JPG/PNG/WebP recommended.</p>
+          <p className="mt-1 text-xs text-gray-500">
+            Up to {MAX_GALLERY_BATCH} images at once; each file at most 15MB. JPG/PNG/WebP recommended.
+            {files.length > 0 ? ` ${files.length} file${files.length === 1 ? "" : "s"} selected.` : ""}
+          </p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Caption (optional)</label>
@@ -165,6 +225,9 @@ export function GalleryManager({ initialImages }: Props) {
             className="w-32 rounded border border-gray-300 px-3 py-2 text-sm"
             placeholder="0"
           />
+          <p className="mt-1 text-xs text-gray-500">
+            With multiple images, order increases by 1 for each file (e.g. 10 → 10, 11, 12…).
+          </p>
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
@@ -172,7 +235,13 @@ export function GalleryManager({ initialImages }: Props) {
           disabled={uploading || saving}
           className="rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90 disabled:opacity-50"
         >
-          {uploading || saving ? "Uploading…" : "Add to gallery"}
+          {uploading || saving
+            ? uploadStep
+              ? `Uploading ${uploadStep.current} of ${uploadStep.total}…`
+              : "Uploading…"
+            : files.length > 1
+              ? `Add ${files.length} to gallery`
+              : "Add to gallery"}
         </button>
       </form>
 
