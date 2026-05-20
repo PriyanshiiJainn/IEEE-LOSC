@@ -29,14 +29,7 @@ export function ReportCard({ report }: { report: EventReportItem }) {
 
         {report.pdfUrl && (
           <div className="mt-5">
-            <div className="rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
-              <iframe
-                src={report.pdfUrl}
-                title={`${report.title} PDF`}
-                className="w-full h-[600px] border-0"
-              />
-            </div>
-            <div className="flex flex-wrap gap-3 mt-3">
+            <div className="flex flex-wrap gap-3">
               <a
                 href={report.pdfUrl}
                 target="_blank"

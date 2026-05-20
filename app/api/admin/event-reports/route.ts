@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth-utils";
 import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 const createSchema = z.object({
-  eventId: z.string().min(1),
+  eventId: z.string().min(1).optional().nullable(),
   title: z.string().min(1).max(200),
   content: z.string(),
   coverImageUrl: optionalMediaUrlSchema,
@@ -32,15 +32,18 @@ export async function POST(request: Request) {
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   try {
-    const data = {
-      ...parsed.data,
-      publishedAt: parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null,
-    };
-    // One report per event (eventId is unique). Upsert so MOM PDF can be added to an existing entry.
-    const report = await prisma.eventReport.upsert({
-      where: { eventId: parsed.data.eventId },
-      create: data,
-      update: data,
+    const { eventId, publishedAt, title, content, coverImageUrl, pdfUrl, isMom } =
+      parsed.data;
+    const report = await prisma.eventReport.create({
+      data: {
+        title,
+        content,
+        coverImageUrl: coverImageUrl ?? null,
+        pdfUrl: pdfUrl ?? null,
+        isMom: isMom ?? false,
+        eventId: eventId || null,
+        publishedAt: publishedAt ? new Date(publishedAt) : null,
+      },
     });
     revalidatePath("/event-reports");
     revalidatePath("/admin/event-reports");

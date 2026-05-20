@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth-utils";
 import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 const updateSchema = z.object({
-  eventId: z.string().min(1).optional(),
+  eventId: z.string().min(1).optional().nullable(),
   title: z.string().min(1).max(200).optional(),
   content: z.string().optional(),
   coverImageUrl: optionalMediaUrlSchema,
@@ -26,19 +26,12 @@ export async function PATCH(
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   try {
-    if (parsed.data.eventId) {
-      const conflict = await prisma.eventReport.findFirst({
-        where: { eventId: parsed.data.eventId, NOT: { id } },
-      });
-      if (conflict) {
-        return NextResponse.json(
-          { error: "Another report already exists for the selected event." },
-          { status: 400 },
-        );
-      }
-    }
-
-    const data: Record<string, unknown> = { ...parsed.data };
+    const data: Record<string, unknown> = {
+      ...parsed.data,
+      ...(parsed.data.eventId !== undefined && {
+        eventId: parsed.data.eventId || null,
+      }),
+    };
     if (parsed.data.publishedAt !== undefined)
       data.publishedAt = parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null;
     const report = await prisma.eventReport.update({

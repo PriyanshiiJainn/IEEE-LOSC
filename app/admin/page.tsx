@@ -23,7 +23,7 @@ export default async function AdminDashboardPage() {
   const manageSections = [
     { href: "/admin/events", label: "Events", description: "Add, edit, delete events. Set registration open/closed.", count: eventsCount },
     { href: "/admin/team", label: "Team", description: "Add, edit, delete team members (Faculty, Core, Functional).", count: teamCount },
-    { href: "/admin/event-reports", label: "MOM", description: "Add, edit, delete Minutes of Meeting entries (linked to events).", count: null },
+    { href: "/admin/event-reports", label: "MOM", description: "Add, edit, delete MOM and event reports (optional event link, PDF upload).", count: null },
     { href: "/admin/recent-activity", label: "Recent Activities", description: "Add, edit, delete recent activities with PDF uploads.", count: null },
     { href: "/admin/flash", label: "Flash banner", description: "Set one active banner on the home page (link to event or URL).", count: null },
     { href: "/admin/about", label: "About", description: "Edit About us and About Optica (home page content).", count: null },

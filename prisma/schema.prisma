@@ -48,7 +48,7 @@ model Event {
 
   flashAnnouncement FlashAnnouncement?
   registrations     EventRegistration[]
-  report            EventReport?
+  reports           EventReport[]
 }
 
 model FlashAnnouncement {
@@ -78,11 +78,11 @@ model EventRegistration {
   @@index([eventId])
 }
 
-// Event reports (separate tab)
+// Event reports & MOM (standalone or optionally linked to an event)
 model EventReport {
   id          String   @id @default(cuid())
-  eventId     String   @unique
-  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId     String?
+  event       Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
   title       String
   content     String   @db.Text
   coverImageUrl String?
@@ -91,6 +91,8 @@ model EventReport {
   publishedAt DateTime?
   createdAt   DateTime @updatedAt
   updatedAt   DateTime @updatedAt
+
+  @@index([eventId])
 }
 
 // Team: faculty advisor, core, functional; post-wise

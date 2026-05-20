@@ -24,6 +24,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Claude / local tooling
+.claude/
+
 # IDE & OS
 .idea
 .vscode/*

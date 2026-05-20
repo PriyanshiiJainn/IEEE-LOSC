@@ -63,14 +63,14 @@ export type EventItem = {
 
 export type EventReportItem = {
   id: string;
-  eventId: string;
+  eventId: string | null;
   title: string;
   content: string;
   coverImageUrl: string | null;
   pdfUrl: string | null;
   isMom: boolean;
   publishedAt: Date | null;
-  event: { id: string; title: string };
+  event: { id: string; title: string } | null;
 };
 
 export type RecentActivityItem = {
@@ -131,7 +131,7 @@ export async function getEventReports(): Promise<EventReportItem[]> {
     include: { event: { select: { id: true, title: true } } },
     orderBy: { publishedAt: "desc" },
   });
-  return rows.map((r) => ({ ...r, event: r.event }));
+  return rows.map((r) => ({ ...r, event: r.event ?? null }));
 }
 
 export async function getEventById(id: string): Promise<EventItem | null> {

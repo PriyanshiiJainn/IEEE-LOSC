@@ -4,14 +4,14 @@ import { useState } from "react";
 
 export type Report = {
   id: string;
-  eventId: string;
+  eventId: string | null;
   title: string;
   content: string;
   coverImageUrl: string | null;
   pdfUrl: string | null;
   isMom: boolean;
   publishedAt: Date | string | null;
-  event: { id: string; title: string };
+  event: { id: string; title: string } | null;
 };
 
 type Props = {
@@ -28,14 +28,14 @@ export function EventReportsManager({ initialReports, events }: Props) {
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [selectedPdfName, setSelectedPdfName] = useState("");
-  const empty = { eventId: events[0]?.id ?? "", title: "", content: "", coverImageUrl: "", pdfUrl: "", publishedAt: "" };
+  const empty = { eventId: "", title: "", content: "", coverImageUrl: "", pdfUrl: "", publishedAt: "" };
   const [form, setForm] = useState(empty);
-  const existingForSelectedEvent = reports.find((r) => r.eventId === form.eventId);
 
   function openAddMom() {
     setMode("MOM");
     setEditing(null);
-    setForm({ ...empty, eventId: events[0]?.id ?? "" });
+    setForm({ ...empty, pdfUrl: "" });
+    setSelectedPdfName("");
     setError("");
     setOpen(true);
   }
@@ -43,7 +43,8 @@ export function EventReportsManager({ initialReports, events }: Props) {
   function openAddEventReport() {
     setMode("EVENT");
     setEditing(null);
-    setForm({ ...empty, eventId: events[0]?.id ?? "", pdfUrl: "" });
+    setForm({ ...empty, pdfUrl: "" });
+    setSelectedPdfName("");
     setError("");
     setOpen(true);
   }
@@ -51,7 +52,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
     setMode(r.isMom ? "MOM" : "EVENT");
     setEditing(r);
     setForm({
-      eventId: r.eventId,
+      eventId: r.eventId ?? "",
       title: r.title,
       content: r.content,
       coverImageUrl: r.coverImageUrl ?? "",
@@ -98,7 +99,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
         return;
       }
       const body = {
-        eventId: form.eventId,
+        eventId: form.eventId || null,
         title: form.title,
         content: form.content,
         coverImageUrl: form.coverImageUrl || null,
@@ -110,22 +111,16 @@ export function EventReportsManager({ initialReports, events }: Props) {
         const res = await fetch(`/api/admin/event-reports/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
         if (!res.ok) throw new Error(await res.text());
         const updated = await res.json();
-        setReports((prev) => prev.map((p) => (p.id === updated.id ? { ...updated, event: editing.event } : p)));
+        const ev = updated.eventId ? events.find((e) => e.id === updated.eventId) : null;
+        setReports((prev) =>
+          prev.map((p) => (p.id === updated.id ? { ...updated, event: ev ?? null } : p)),
+        );
       } else {
         const res = await fetch("/api/admin/event-reports", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
         if (!res.ok) throw new Error(await res.text());
         const created = await res.json();
-        const ev = events.find((e) => e.id === created.eventId);
-        const eventMeta = ev ?? { id: created.eventId, title: "" };
-        setReports((prev) => {
-          const idx = prev.findIndex((p) => p.eventId === created.eventId);
-          if (idx >= 0) {
-            const next = [...prev];
-            next[idx] = { ...created, event: prev[idx]?.event ?? eventMeta };
-            return next;
-          }
-          return [{ ...created, event: eventMeta }, ...prev];
-        });
+        const ev = created.eventId ? events.find((e) => e.id === created.eventId) : null;
+        setReports((prev) => [{ ...created, event: ev ?? null }, ...prev]);
       }
       setOpen(false);
     } catch (err) {
@@ -160,7 +155,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
           <div key={r.id} className="flex items-center justify-between rounded border border-gray-200 bg-white px-4 py-3">
             <div>
               <span className="font-medium">{r.title}</span>
-              <span className="ml-2 text-sm text-gray-500">{r.event?.title}</span>
+              {r.event?.title && <span className="ml-2 text-sm text-gray-500">{r.event.title}</span>}
               <span className="ml-2 text-xs text-gray-500">{r.isMom ? "MOM" : "Event Report"}</span>
               {r.pdfUrl && <span className="ml-2 text-xs text-green-600">PDF attached</span>}
             </div>
@@ -193,16 +188,21 @@ export function EventReportsManager({ initialReports, events }: Props) {
               {editing ? `Edit ${mode === "MOM" ? "MOM" : "Event Report"}` : mode === "MOM" ? "Add MOM" : "Add Event Report"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-3">
-              {!editing && existingForSelectedEvent && (
-                <p className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-                  This event already has a {existingForSelectedEvent.isMom ? "MOM" : "report"} entry. Saving will update it
-                  {mode === "MOM" && !existingForSelectedEvent.isMom ? " and attach the MOM PDF." : "."}
-                </p>
-              )}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Event</label>
-                <select value={form.eventId} onChange={(e) => setForm((f) => ({ ...f, eventId: e.target.value }))} required className="w-full rounded border border-gray-300 px-3 py-2 text-sm">
-                  {events.map((e) => <option key={e.id} value={e.id}>{e.title}</option>)}
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Link to event <span className="font-normal text-gray-500">(optional)</span>
+                </label>
+                <select
+                  value={form.eventId}
+                  onChange={(e) => setForm((f) => ({ ...f, eventId: e.target.value }))}
+                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                >
+                  <option value="">None — standalone entry</option>
+                  {events.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.title}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -216,7 +216,7 @@ export function EventReportsManager({ initialReports, events }: Props) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  PDF {mode === "MOM" ? "(required for MOM)" : "(optional)"}
+                  PDF {mode === "MOM" ? "(required for MOM)" : "(optional for event report)"}
                 </label>
                 <div className="flex flex-wrap items-center gap-3">
                   <input
