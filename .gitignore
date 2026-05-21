@@ -27,6 +27,39 @@ yarn-error.log*
 # Claude / local tooling
 .claude/
 
+# Cursor & other AI assistants (not part of the app)
+.cursor/
+.cursorrules
+.cursorignore
+AGENTS.md
+.aider*
+.continue/
+.windsurfrules
+.copilot/
+*.canvas.tsx
+agent-transcripts/
+**/agent-transcripts/
+
+# AI / agent scratch & plans
+*.plan.md
+PLAN.md
+scratch/
+temp/
+tmp/
+
+# Local Windows / shell scripts (machine-specific)
+*.bat
+*.cmd
+*.ps1
+!scripts/**/*.ps1
+
+# Database dumps & backups — NOT prisma/migrations/**/*.sql (those stay tracked)
+/*.sql
+backup*.sql
+*.sql.gz
+*.dump
+*.bak
+
 # IDE & OS
 .idea
 .vscode/*
