@@ -24,6 +24,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Docker (local testing only — not needed on the college production server)
+
+
 # Claude / local tooling
 .claude/
 

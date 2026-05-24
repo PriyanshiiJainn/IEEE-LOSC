@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { noCacheJson } from "@/lib/cache-headers";
 
 export async function GET() {
   const admin = await requireAdmin();
@@ -8,5 +9,5 @@ export async function GET() {
   const submissions = await prisma.contactSubmission.findMany({
     orderBy: { createdAt: "desc" },
   });
-  return NextResponse.json(submissions);
+  return noCacheJson(submissions);
 }

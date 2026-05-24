@@ -10,6 +10,12 @@ const noCacheHeaders = [
 ];
 
 const nextConfig = {
+  images: {
+    // Allow Vercel Blob URLs for image optimisation when BLOB_READ_WRITE_TOKEN is set
+    remotePatterns: [
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
+  },
   async headers() {
     return [
       { source: "/api/:path*", headers: noCacheHeaders },

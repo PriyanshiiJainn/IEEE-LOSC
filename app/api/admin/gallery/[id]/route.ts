@@ -48,6 +48,7 @@ export async function PATCH(
   });
 
   revalidatePath("/gallery");
+  revalidatePath("/admin/gallery");
 
   return NextResponse.json(image);
 }
@@ -77,6 +78,7 @@ export async function DELETE(
   }
 
   revalidatePath("/gallery");
+  revalidatePath("/admin/gallery");
 
   return NextResponse.json({ ok: true });
 }

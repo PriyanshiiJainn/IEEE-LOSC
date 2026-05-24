@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { noCacheJson } from "@/lib/cache-headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -41,7 +42,7 @@ export async function GET() {
   const activities = await db.recentActivity.findMany({
     orderBy: { publishedAt: "desc" },
   });
-  return NextResponse.json(activities);
+  return noCacheJson(activities);
 }
 
 export async function POST(request: Request) {

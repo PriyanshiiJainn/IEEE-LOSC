@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { noCacheJson } from "@/lib/cache-headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -49,7 +50,7 @@ export async function GET() {
   const members = await prisma.teamMember.findMany({
     orderBy: [{ classification: "asc" }, { order: "asc" }],
   });
-  return NextResponse.json(members);
+  return noCacheJson(members);
 }
 
 export async function POST(request: Request) {

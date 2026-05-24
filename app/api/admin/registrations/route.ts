@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { noCacheJson } from "@/lib/cache-headers";
 
 export async function GET(request: Request) {
   const admin = await requireAdmin();
@@ -12,5 +13,5 @@ export async function GET(request: Request) {
     include: { event: { select: { id: true, title: true } } },
     orderBy: { createdAt: "desc" },
   });
-  return NextResponse.json(registrations);
+  return noCacheJson(registrations);
 }

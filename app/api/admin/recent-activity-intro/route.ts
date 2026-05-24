@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { noCacheJson } from "@/lib/cache-headers";
 
 type RecentActivityIntroRow = {
   id: string;
@@ -29,7 +30,7 @@ export async function GET() {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const db = prisma as PrismaWithRecentActivityIntro;
   const row = await db.recentActivityIntro.findFirst();
-  return NextResponse.json(row);
+  return noCacheJson(row);
 }
 
 export async function PUT(request: Request) {

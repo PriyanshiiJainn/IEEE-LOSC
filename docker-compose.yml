@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: optica_db
+      MYSQL_USER: optica
+      MYSQL_PASSWORD: optica123
+    ports:
+      - "3307:3306"   # 3307 so it won't clash with any local MySQL instance
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "mysql://optica:optica123@db:3306/optica_db"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "docker-local-test-secret-minimum-32-chars!!"
+      NODE_ENV: "production"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    volumes:
+      - gallery_uploads:/app/public/gallery
+      - pdf_uploads:/app/public/pdfs
+
+volumes:
+  mysql_data:
+  gallery_uploads:
+  pdf_uploads:
