@@ -80,11 +80,12 @@ async function main() {
         { name: "Som Mudgil", classification: "CORE", post: "Treasurer", imageUrl: "/treasurer.jpeg", email: "22uec133@lnmiit.ac.in", phone: "+918957858317", order: 4 },
         { name: "Jyoti Tater", classification: "CORE", post: "Officer", imageUrl: "/Officer.jpeg", email: "22uec059@lnmiit.ac.in", phone: "+917073781288", order: 5 },
         { name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development (Lead)", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", order: 6 },
-        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Web Development (Member)", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 7 },
-        { name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation (Lead)", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", order: 8 },
-        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Content Creation (Member)", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 9 },
-        { name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management (Lead)", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", order: 10 },
-        { name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management (Member)", imageUrl: "/EventMember.jpeg", email: "24dec051@lnmiit.ac.in", phone: "+917217427440", order: 11 },
+        { name: "Chirag Bhargava", classification: "FUNCTIONAL", post: "Web Development (Member)", imageUrl: "/cropped-image.png", email: "24uec240@lnmiit.ac.in", phone: "+919509843753", order: 7 },
+        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Web Development (Member)", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 8 },
+        { name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation (Lead)", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", order: 9 },
+        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Content Creation (Member)", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 10 },
+        { name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management (Lead)", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", order: 11 },
+        { name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management (Member)", imageUrl: "/EventMember.jpeg", email: "24dec051@lnmiit.ac.in", phone: "+917217427440", order: 12 },
       ],
     });
     console.log("Seeded Team members.");
