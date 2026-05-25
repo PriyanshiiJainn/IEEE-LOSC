@@ -1,3 +1,8 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const noCacheHeaders = [
   {
@@ -10,6 +15,10 @@ const noCacheHeaders = [
 ];
 
 const nextConfig = {
+  outputFileTracingRoot: projectRoot,
+  turbopack: {
+    root: projectRoot,
+  },
   images: {
     // Allow Vercel Blob URLs for image optimisation when BLOB_READ_WRITE_TOKEN is set
     remotePatterns: [

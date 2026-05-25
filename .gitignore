@@ -27,6 +27,9 @@ yarn-error.log*
 # Docker (local testing only — not needed on the college production server)
 
 
+# Postman (local collections — sync via Postman, not git)
+postman/
+
 # Claude / local tooling
 .claude/
 
@@ -76,6 +79,10 @@ prisma/migrations/**/migration_lock.toml
 # Uploads (optional: commit sample or use .env for path)
 # public/uploads/*
 !public/uploads/.gitkeep
+
+# Uploaded PDFs (runtime content — not in git)
+public/pdfs/*
+!public/pdfs/.gitkeep
 
 # Vercel
 .vercel

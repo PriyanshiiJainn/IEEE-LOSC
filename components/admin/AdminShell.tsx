@@ -41,8 +41,14 @@ export function AdminShell({ children, session }: AdminShellProps) {
                   </Link>
                 ))}
               </nav>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-600">{session.user?.email}</span>
+                <Link
+                  href="/admin/account"
+                  className="text-sm text-gray-500 hover:text-ieee-red"
+                >
+                  Account
+                </Link>
                 <Link
                   href="/api/auth/signout"
                   className="text-sm text-gray-500 hover:text-ieee-red"
