@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
 import { revalidatePath } from "next/cache";
+import { noCacheJson } from "@/lib/cache-headers";
 
 type GalleryImageRow = {
   id: string;
@@ -37,7 +38,7 @@ export async function GET() {
   const images = await db.galleryImage.findMany({
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });
-  return NextResponse.json(images);
+  return noCacheJson(images);
 }
 
 export async function POST(request: Request) {
@@ -62,6 +63,7 @@ export async function POST(request: Request) {
   });
 
   revalidatePath("/gallery");
+  revalidatePath("/admin/gallery");
 
   return NextResponse.json(image);
 }

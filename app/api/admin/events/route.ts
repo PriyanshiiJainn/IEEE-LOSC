@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
 import { optionalMediaUrlSchema } from "@/lib/media-url";
+import { noCacheJson } from "@/lib/cache-headers";
 
 const createSchema = z.object({
   title: z.string().min(1).max(200),
@@ -22,7 +23,7 @@ export async function GET() {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const events = await prisma.event.findMany({ orderBy: { date: "desc" } });
-  return NextResponse.json(events);
+  return noCacheJson(events);
 }
 
 export async function POST(request: Request) {

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { noCacheJson } from "@/lib/cache-headers";
 
 const updateSchema = z.object({
   aboutUs: z.string(),
@@ -14,7 +15,7 @@ export async function GET() {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const row = await prisma.aboutContent.findFirst();
-  return NextResponse.json(row);
+  return noCacheJson(row);
 }
 
 export async function PUT(request: Request) {

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
 import { optionalMediaUrlSchema } from "@/lib/media-url";
+import { noCacheJson } from "@/lib/cache-headers";
 
 const createSchema = z.object({
   eventId: z.string().min(1).optional().nullable(),
@@ -22,7 +23,7 @@ export async function GET() {
     include: { event: { select: { id: true, title: true } } },
     orderBy: { publishedAt: "desc" },
   });
-  return NextResponse.json(reports);
+  return noCacheJson(reports);
 }
 
 export async function POST(request: Request) {

@@ -256,6 +256,8 @@ export function GalleryManager({ initialImages }: Props) {
               <img
                 src={img.imageUrl}
                 alt={img.caption}
+                loading="lazy"
+                decoding="async"
                 className="h-40 w-full rounded-md object-cover"
               />
               <label className="block text-xs font-medium text-gray-600" htmlFor={`gallery-caption-${img.id}`}>

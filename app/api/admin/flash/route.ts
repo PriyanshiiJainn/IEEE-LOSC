@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { noCacheJson } from "@/lib/cache-headers";
 
 const createSchema = z.object({
   eventId: z.string().optional().nullable(),
@@ -19,7 +20,7 @@ export async function GET() {
     include: { event: { select: { id: true, title: true } } },
     orderBy: { updatedAt: "desc" },
   });
-  return NextResponse.json(items);
+  return noCacheJson(items);
 }
 
 export async function POST(request: Request) {
