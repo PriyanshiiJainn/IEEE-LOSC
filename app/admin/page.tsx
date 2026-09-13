@@ -8,14 +8,17 @@ export default async function AdminDashboardPage() {
   if (!session) redirect("/admin/login");
 
   let eventsCount = 0, teamCount = 0, submissionsCount = 0, registrationsCount = 0;
+  let contactPeopleCount = 0;
   let dbReachable = true;
   try {
-    [eventsCount, teamCount, submissionsCount, registrationsCount] = await Promise.all([
-      prisma.event.count(),
-      prisma.teamMember.count(),
-      prisma.contactSubmission.count(),
-      prisma.eventRegistration.count(),
-    ]);
+    [eventsCount, teamCount, submissionsCount, registrationsCount, contactPeopleCount] =
+      await Promise.all([
+        prisma.event.count(),
+        prisma.teamMember.count(),
+        prisma.contactSubmission.count(),
+        prisma.eventRegistration.count(),
+        prisma.contactPerson.count(),
+      ]);
   } catch {
     dbReachable = false;
   }
@@ -28,6 +31,8 @@ export default async function AdminDashboardPage() {
     { href: "/admin/flash", label: "Flash banner", description: "Set one active banner on the home page (link to event or URL).", count: null },
     { href: "/admin/about", label: "About", description: "Edit About us and About Optica (home page content).", count: null },
     { href: "/admin/gallery", label: "Gallery", description: "Add and manage images shown on the public gallery page.", count: null },
+    { href: "/admin/contact-people", label: "Contact people", description: "Add, edit, delete the people listed on the public contact page.", count: contactPeopleCount },
+    { href: "/admin/footer", label: "Footer", description: "Edit the footer text and the other links shown in the footer.", count: null },
   ];
 
   const viewSections = [

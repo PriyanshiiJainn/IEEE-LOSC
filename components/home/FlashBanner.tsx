@@ -9,7 +9,9 @@ export function FlashBanner({ flash }: { flash: FlashItem }) {
   return (
     <section className="absolute bottom-0 mt-4 w-full overflow-hidden bg-[#5c0612]">
       <div className="relative h-10 w-full">
-        <div className="absolute top-1/2 whitespace-nowrap banner-slide">
+        {/* `pre` not `nowrap`: the marquee still needs one unbroken line, but
+            the spacing the admin typed is kept instead of collapsed. */}
+        <div className="absolute top-1/2 whitespace-pre banner-slide">
           {href ? (
             <Link
               href={href}

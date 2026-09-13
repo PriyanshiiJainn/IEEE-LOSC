@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: ieee-losc-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ieee_losc
+    ports:
+      - "3306:3306"
+    volumes:
+      - ieee_losc_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  ieee_losc_mysql:

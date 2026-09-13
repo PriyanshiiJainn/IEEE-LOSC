@@ -68,9 +68,33 @@ async function main() {
     console.log("Seeded Footer links.");
   }
 
+  // --- Footer Settings (copyright line + links heading) ---
+  const existingFooterSettings = await prisma.footerSettings.count();
+  if (existingFooterSettings === 0) {
+    await prisma.footerSettings.create({
+      data: {
+        copyrightText: "LNMIIT Optica Student Chapter © LNMIIT 2026",
+        linksHeading: "Other links",
+      },
+    });
+    console.log("Seeded Footer settings.");
+  }
+
+  // --- Academic years ---
+  for (const year of ["2025-26", "2026-27"]) {
+    await prisma.academicYear.upsert({
+      where: { year },
+      update: {},
+      create: { year },
+    });
+  }
+  console.log("Seeded Academic years.");
+
   // --- Team Members ---
   const existingTeam = await prisma.teamMember.count();
   if (existingTeam === 0) {
+    // The seeded roster is the AY 2025-26 team.
+    const seedTeamYear = "2025-26";
     await prisma.teamMember.createMany({
       data: [
         { name: "Harshvardhan Kumar", classification: "FACULTY_ADVISOR", post: "Advisor of LOSC, Assistant Professor, ECE & Head of Silicon Photonics Research Group, LNMIIT", imageUrl: "/faculty_advisor.jpeg", email: "harshvardhan.kumar@lnmiit.ac.in", phone: "+917276373776", order: 0 },
@@ -79,13 +103,13 @@ async function main() {
         { name: "Sonali Rana", classification: "CORE", post: "Secretary", imageUrl: "/Secretary.jpeg", email: "25mec003@lnmiit.ac.in", phone: "+919418240014", order: 3 },
         { name: "Som Mudgil", classification: "CORE", post: "Treasurer", imageUrl: "/treasurer.jpeg", email: "22uec133@lnmiit.ac.in", phone: "+918957858317", order: 4 },
         { name: "Jyoti Tater", classification: "CORE", post: "Officer", imageUrl: "/officer.jpeg", email: "22uec059@lnmiit.ac.in", phone: "+917073781288", order: 5 },
-        { name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development (Lead)", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", order: 6 },
-        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Web Development (Member)", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 7 },
-        { name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation (Lead)", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", order: 8 },
-        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Content Creation (Member)", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 9 },
-        { name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management (Lead)", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", order: 10 },
-        { name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management (Member)", imageUrl: "/EventMember.jpeg", email: "24dec051@lnmiit.ac.in", phone: "+917217427440", order: 11 },
-      ],
+        { name: "Priyanshi Jain", classification: "FUNCTIONAL", post: "Web Development (Lead)", category: "Web Development Team", imageUrl: "/WebdLead.jpeg", email: "24uec249@lnmiit.ac.in", phone: "+919119147959", order: 6 },
+        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Web Development (Member)", category: "Web Development Team", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 7 },
+        { name: "Nandini Sharma", classification: "FUNCTIONAL", post: "Content Creation (Lead)", category: "Content Creation Team", imageUrl: "/ContentLead.jpeg", email: "24dec034@lnmiit.ac.in", phone: "+918822796132", order: 8 },
+        { name: "Vanshita Chotwani", classification: "FUNCTIONAL", post: "Content Creation (Member)", category: "Content Creation Team", imageUrl: "/WebdMember.jpeg", email: "24uec222@lnmiit.ac.in", phone: "+919782801181", order: 9 },
+        { name: "Riddhima Agarwal", classification: "FUNCTIONAL", post: "Event Management (Lead)", category: "Event Management Team", imageUrl: "/EventLead.jpeg", email: "24uec076@lnmiit.ac.in", phone: "+916377284431", order: 10 },
+        { name: "Amrit Mishra", classification: "FUNCTIONAL", post: "Event Management (Member)", category: "Event Management Team", imageUrl: "/EventMember.jpeg", email: "24dec051@lnmiit.ac.in", phone: "+917217427440", order: 11 },
+      ].map((m) => ({ ...m, academicYear: seedTeamYear })),
     });
     console.log("Seeded Team members.");
   }

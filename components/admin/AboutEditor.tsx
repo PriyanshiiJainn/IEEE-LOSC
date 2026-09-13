@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MarkdownField } from "@/components/admin/MarkdownField";
 
 type About = { id: string; aboutUs: string; aboutOptica: string; recentUpdates: string } | null;
 
@@ -34,39 +35,16 @@ export function AboutEditor({ initial }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">About us</label>
-        <textarea
-          value={aboutUs}
-          onChange={(e) => setAboutUs(e.target.value)}
-          required
-          rows={6}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-        />
-        <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph, Enter for line break</p>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">About Optica</label>
-        <textarea
-          value={aboutOptica}
-          onChange={(e) => setAboutOptica(e.target.value)}
-          required
-          rows={6}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-        />
-        <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph, Enter for line break</p>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Recent Updates</label>
-        <textarea
-          value={recentUpdates}
-          onChange={(e) => setRecentUpdates(e.target.value)}
-          required
-          rows={6}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-        />
-        <p className="mt-1 text-xs text-gray-400">One update per line. Each line appears as a bullet on the About page.</p>
-      </div>
+      <MarkdownField label="About us" value={aboutUs} onChange={setAboutUs} required rows={8} />
+      <MarkdownField label="About Optica" value={aboutOptica} onChange={setAboutOptica} required rows={8} />
+      <MarkdownField
+        label="Recent Updates"
+        value={recentUpdates}
+        onChange={setRecentUpdates}
+        required
+        rows={8}
+        hint="Start a line with &quot;- &quot; if you want it to show as a bullet."
+      />
       {message === "success" && <p className="text-sm text-green-600">Saved.</p>}
       {message === "error" && <p className="text-sm text-red-600">Save failed.</p>}
       <button

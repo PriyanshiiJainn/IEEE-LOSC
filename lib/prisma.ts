@@ -6,7 +6,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 // Bump when Prisma schema changes so dev hot-reload picks up a new client.
-const PRISMA_SCHEMA_VERSION = "20260520120000";
+const PRISMA_SCHEMA_VERSION = "20260913150000";
 
 export const prisma =
   globalForPrisma.prismaSchemaVersion === PRISMA_SCHEMA_VERSION && globalForPrisma.prisma

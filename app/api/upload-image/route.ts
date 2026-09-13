@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-utils";
 import { noCacheJson } from "@/lib/cache-headers";
-import { isImageUpload, saveUploadedFile } from "@/lib/upload-storage";
+import {
+  isImageUpload,
+  isImageUploadFolder,
+  saveUploadedFile,
+} from "@/lib/upload-storage";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,6 +22,14 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("image") as File | null;
+
+    // Callers may target a folder under public/; gallery stays the default so
+    // existing upload forms keep working unchanged.
+    const requestedFolder = formData.get("folder");
+    if (requestedFolder !== null && !isImageUploadFolder(requestedFolder)) {
+      return NextResponse.json({ error: "Unknown upload folder" }, { status: 400 });
+    }
+    const folder = isImageUploadFolder(requestedFolder) ? requestedFolder : "gallery";
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -37,7 +49,7 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const { url } = await saveUploadedFile("gallery", buffer, file.name, file.type || undefined);
+    const { url } = await saveUploadedFile(folder, buffer, file.name, file.type || undefined);
 
     return noCacheJson({
       message: "Upload successful",

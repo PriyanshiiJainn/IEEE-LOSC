@@ -48,7 +48,7 @@ export default function GalleryClient({ images }: Props) {
                   onClick={() => setFullImage(image.src)}
                 />
               </div>
-              <p className="mt-3 text-center text-ieee-red font-medium px-2 text-sm sm:text-base">
+              <p className="mt-3 text-center text-ieee-red font-medium px-2 text-sm sm:text-base whitespace-pre-wrap break-words">
                 {image.caption}
               </p>
             </div>

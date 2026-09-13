@@ -1,7 +1,16 @@
 import fs from "fs/promises";
 import path from "path";
 
-export type UploadFolder = "pdfs" | "gallery";
+export type UploadFolder = "pdfs" | "gallery" | "team";
+
+/** Folders the image upload endpoint will write to. */
+export const IMAGE_UPLOAD_FOLDERS = ["gallery", "team"] as const;
+
+export type ImageUploadFolder = (typeof IMAGE_UPLOAD_FOLDERS)[number];
+
+export function isImageUploadFolder(value: unknown): value is ImageUploadFolder {
+  return typeof value === "string" && (IMAGE_UPLOAD_FOLDERS as readonly string[]).includes(value);
+}
 
 export const MAX_PDF_BYTES = 25 * 1024 * 1024; // 25MB
 
@@ -14,10 +23,17 @@ export function buildUploadFilename(originalName: string): string {
   return `${Date.now()}-${sanitizeUploadFilename(originalName)}`;
 }
 
-export function isPdfUpload(file: File, buffer: Buffer): boolean {
-  if (file.type === "application/pdf") return true;
-  if (file.name.toLowerCase().endsWith(".pdf")) return true;
-  return buffer.length >= 4 && buffer.subarray(0, 4).toString("utf8") === "%PDF";
+/**
+ * A real PDF, judged by its contents rather than its name.
+ *
+ * The declared type and the .pdf extension are both trivially wrong — renaming
+ * notes.txt to notes.pdf used to be enough to get it stored and then embedded
+ * in the viewer on the public page, where it simply fails to display. The
+ * "%PDF" signature is the thing that actually decides it; a few bytes of
+ * leading junk are tolerated the way PDF readers do.
+ */
+export function isPdfUpload(_file: File, buffer: Buffer): boolean {
+  return buffer.subarray(0, 1024).includes("%PDF");
 }
 
 export function isImageUpload(file: File): boolean {

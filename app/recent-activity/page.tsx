@@ -13,8 +13,10 @@ export default async function RecentActivityPage() {
         Recent Activities
       </h1>
 
+      {/* Body text is left-aligned: centring every line is the page's choice to
+          make, not something to impose on whatever the admin typed. */}
       {intro?.content && (
-        <div className="max-w-3xl mx-auto text-gray-800 mb-12 leading-relaxed text-center">
+        <div className="max-w-3xl mx-auto text-gray-800 mb-12 leading-relaxed">
           <MarkdownContent>{intro.content}</MarkdownContent>
         </div>
       )}
@@ -32,7 +34,7 @@ export default async function RecentActivityPage() {
 
             return (
               <article key={activity.id}>
-                <h3 className="text-xl font-semibold text-ieee-navy">{activity.title}</h3>
+                <h3 className="text-xl font-semibold text-ieee-navy whitespace-pre-wrap break-words">{activity.title}</h3>
                 {dateStr && <p className="text-sm text-gray-500 mt-1">{dateStr}</p>}
 
                 <div className="text-gray-800 mt-3 leading-relaxed">

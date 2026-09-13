@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { ACADEMIC_YEAR_PATTERN } from "@/lib/utils";
 
 const emptyToNull = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : v);
 const normalizeImageUrl = (v: unknown) => {
@@ -35,6 +36,8 @@ const normalizeImageUrl = (v: unknown) => {
 const createSchema = z.object({
   name: z.string().min(1).max(200),
   classification: z.enum(["FACULTY_ADVISOR", "CORE", "FUNCTIONAL"]),
+  academicYear: z.string().regex(ACADEMIC_YEAR_PATTERN, "Use the format 2026-27").optional(),
+  category: z.preprocess(emptyToNull, z.string().max(100).nullable()).optional(),
   post: z.preprocess(emptyToNull, z.string().max(100).nullable()).optional(),
   imageUrl: z.preprocess((v) => normalizeImageUrl(emptyToNull(v)), z.string().nullable()).optional(),
   email: z.preprocess(emptyToNull, z.string().email().nullable()).optional(),
@@ -43,11 +46,13 @@ const createSchema = z.object({
   order: z.number().int().optional(),
 });
 
-export async function GET() {
+export async function GET(request: Request) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const academicYear = new URL(request.url).searchParams.get("academicYear");
   const members = await prisma.teamMember.findMany({
-    orderBy: [{ classification: "asc" }, { order: "asc" }],
+    where: academicYear ? { academicYear } : undefined,
+    orderBy: [{ academicYear: "desc" }, { classification: "asc" }, { order: "asc" }],
   });
   return NextResponse.json(members);
 }

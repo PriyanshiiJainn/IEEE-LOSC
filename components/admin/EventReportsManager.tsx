@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MarkdownField } from "@/components/admin/MarkdownField";
 
 export type Report = {
   id: string;
@@ -209,11 +210,14 @@ export function EventReportsManager({ initialReports, events }: Props) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                 <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} required className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                <textarea value={form.content} onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))} required rows={5} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" placeholder={mode === "MOM" ? "Write the meeting summary..." : "Write the event report summary..."} />
-                <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph</p>
-              </div>
+              <MarkdownField
+                label="Content"
+                value={form.content}
+                onChange={(v) => setForm((f) => ({ ...f, content: v }))}
+                required
+                rows={6}
+                placeholder={mode === "MOM" ? "Write the meeting summary..." : "Write the event report summary..."}
+              />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   PDF {mode === "MOM" ? "(required for MOM)" : "(optional for event report)"}

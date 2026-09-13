@@ -46,10 +46,10 @@ export function EventCard({ event }: { event: EventItem }) {
           Featured
         </span>
       )}
-      <h3 className="font-semibold text-ieee-navy">{event.title}</h3>
+      <h3 className="font-semibold text-ieee-navy whitespace-pre-wrap break-words">{event.title}</h3>
       <p className="text-sm text-gray-700 mt-1">{dateStr}</p>
-      {event.time && <p className="text-sm text-gray-700">{event.time}</p>}
-      {event.venue && <p className="text-sm text-gray-800 mt-1">{event.venue}</p>}
+      {event.time && <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">{event.time}</p>}
+      {event.venue && <p className="text-sm text-gray-800 mt-1 whitespace-pre-wrap break-words">{event.venue}</p>}
       <div className="text-sm text-gray-800 mt-2 flex-1">
         <MarkdownContent>{event.description}</MarkdownContent>
       </div>

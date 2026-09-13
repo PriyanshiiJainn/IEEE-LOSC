@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
+import { ACADEMIC_YEAR_PATTERN } from "@/lib/utils";
 
 const emptyToNull = (v: unknown) => (typeof v === "string" && v.trim() === "" ? null : v);
 const normalizeImageUrl = (v: unknown) => {
@@ -35,6 +36,8 @@ const normalizeImageUrl = (v: unknown) => {
 const updateSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   classification: z.enum(["FACULTY_ADVISOR", "CORE", "FUNCTIONAL"]).optional(),
+  academicYear: z.string().regex(ACADEMIC_YEAR_PATTERN, "Use the format 2026-27").optional(),
+  category: z.preprocess(emptyToNull, z.string().max(100).nullable()).optional(),
   post: z.preprocess(emptyToNull, z.string().max(100).nullable()).optional(),
   imageUrl: z.preprocess((v) => normalizeImageUrl(emptyToNull(v)), z.string().nullable()).optional(),
   email: z.preprocess(emptyToNull, z.string().email().nullable()).optional(),

@@ -21,6 +21,8 @@ export function AdminShell({ children, session }: AdminShellProps) {
     { href: "/admin/flash", label: "Flash" },
     { href: "/admin/about", label: "About" },
     { href: "/admin/gallery", label: "Gallery" },
+    { href: "/admin/contact-people", label: "Contacts" },
+    { href: "/admin/footer", label: "Footer" },
     { href: "/admin/submissions", label: "Submissions" },
   ];
 

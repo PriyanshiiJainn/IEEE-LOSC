@@ -20,7 +20,7 @@ export function ReportCard({ report }: { report: EventReportItem }) {
         />
       )}
       <div className="p-6">
-        <h3 className="text-xl font-semibold text-ieee-navy">{report.title}</h3>
+        <h3 className="text-xl font-semibold text-ieee-navy whitespace-pre-wrap break-words">{report.title}</h3>
         {dateStr && <p className="text-sm text-gray-500 mt-1">{dateStr}</p>}
 
         <div className="text-gray-800 mt-4 leading-relaxed">

@@ -17,8 +17,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // A missing or malformed body is the caller's mistake, not a server fault:
+  // parse it separately so it answers 400 rather than falling into the 500 below.
+  let formData: FormData;
   try {
-    const formData = await req.formData();
+    formData = await req.formData();
+  } catch {
+    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+  }
+
+  try {
     const file = formData.get("pdf") as File | null;
 
     if (!file) {

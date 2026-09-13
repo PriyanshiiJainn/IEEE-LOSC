@@ -31,7 +31,7 @@ export default async function EventRegisterPage({ params }: Props) {
         <Link href="/events" className="text-sm text-ieee-red hover:underline mb-6 inline-block">
           Back to events
         </Link>
-        <h1 className="text-[clamp(1.5rem,4vw,2.5rem)] font-heading text-ieee-navy mb-2">{event.title}</h1>
+        <h1 className="text-[clamp(1.5rem,4vw,2.5rem)] font-heading text-ieee-navy mb-2 whitespace-pre-wrap break-words">{event.title}</h1>
         <p className="text-gray-800 mb-4">
           {new Date(event.date).toLocaleDateString("en-IN", {
             day: "numeric",
@@ -57,7 +57,7 @@ export default async function EventRegisterPage({ params }: Props) {
       <Link href="/events" className="text-sm text-ieee-red hover:underline mb-6 inline-block">
         Back to events
       </Link>
-      <h1 className="text-[clamp(1.5rem,4vw,2.5rem)] font-heading text-ieee-navy mb-2">Register for {event.title}</h1>
+      <h1 className="text-[clamp(1.5rem,4vw,2.5rem)] font-heading text-ieee-navy mb-2 whitespace-pre-wrap break-words">Register for {event.title}</h1>
       <p className="text-gray-800 mb-6">
         {new Date(event.date).toLocaleDateString("en-IN", {
           day: "numeric",

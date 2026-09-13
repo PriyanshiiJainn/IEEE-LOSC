@@ -20,34 +20,11 @@ function normalizeImageSrc(imageUrl: string | null) {
 export function TeamCard({
   member,
   nameClassName,
-  splitName,
 }: {
   member: TeamMemberItem;
   nameClassName?: string;
-  splitName?: boolean;
 }) {
   const imageSrc = normalizeImageSrc(member.imageUrl);
-
-  const renderedName = member.name.includes("\n")
-    ? member.name.split("\n").map((line, i, arr) => (
-        <span key={i}>
-          {line}
-          {i < arr.length - 1 && <br />}
-        </span>
-      ))
-    : splitName
-      ? (() => {
-          const lastIdx = member.name.trim().lastIndexOf(" ");
-          if (lastIdx <= 0) return member.name;
-          return (
-            <>
-              {member.name.slice(0, lastIdx)}
-              <br />
-              {member.name.slice(lastIdx + 1)}
-            </>
-          );
-        })()
-      : member.name;
 
   return (
     <article className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-md p-3 transition h-full flex flex-col">
@@ -56,8 +33,9 @@ export function TeamCard({
       </div>
 
       <div className="p-3 text-center flex flex-col">
+        {/* The name breaks where the admin put a line break, nowhere else. */}
         <h3 className={`font-semibold text-ieee-navy text-lg min-h-[3.5rem] flex items-center justify-center leading-tight ${nameClassName ?? ""}`}>
-          <span className="text-center">{renderedName}</span>
+          <span className="text-center whitespace-pre-wrap break-words">{member.name}</span>
         </h3>
 
         {member.post && (

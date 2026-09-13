@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MarkdownField } from "@/components/admin/MarkdownField";
 
 type Event = {
   id: string;
@@ -182,17 +183,13 @@ export function EventsManager({ initialEvents, categories }: Props) {
                   className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea
-                  value={form.description as string}
-                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                  required
-                  rows={3}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-                />
-                <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph, Enter for line break</p>
-              </div>
+              <MarkdownField
+                label="Description"
+                value={form.description as string}
+                onChange={(v) => setForm((f) => ({ ...f, description: v }))}
+                required
+                rows={5}
+              />
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>

@@ -95,11 +95,21 @@ model EventReport {
   @@index([eventId])
 }
 
-// Team: faculty advisor, core, functional; post-wise
+// Academic years a team can be published for. Admin-managed, so a year can
+// exist (and be offered on the team page) before any member is added to it.
+model AcademicYear {
+  id        String   @id @default(cuid())
+  year      String   @unique // e.g. 2026-27
+  createdAt DateTime @default(now())
+}
+
+// Team: faculty advisor, core, functional; post-wise, per academic year
 model TeamMember {
   id           String   @id @default(cuid())
   name         String
   classification String // FACULTY_ADVISOR | CORE | FUNCTIONAL
+  academicYear String   @default("2025-26") // e.g. 2025-26, 2026-27
+  category     String?  // sub-team heading within the classification, e.g. "Web Development Team"
   post         String?  // e.g. Chair, Vice-Chair, Secretary
   imageUrl     String?  @db.Text
   email        String?
@@ -108,6 +118,8 @@ model TeamMember {
   order        Int      @default(0)
   createdAt    DateTime @updatedAt
   updatedAt    DateTime @updatedAt
+
+  @@index([academicYear])
 }
 
 // Contact form submissions (public form)
@@ -155,4 +167,26 @@ model GalleryImage {
   caption   String
   order     Int      @default(0)
   createdAt DateTime @default(now())
+}
+
+// Footer copyright / chapter line (single row, admin-editable)
+model FooterSettings {
+  id            String   @id @default(cuid())
+  copyrightText String   @db.Text
+  linksHeading  String   @default("Other links")
+  updatedAt     DateTime @updatedAt
+}
+
+// People listed on the public contact page. Kept separate from TeamMember so
+// an admin can list whoever should be contacted, in whatever order, without
+// that choice being tied to the team roster.
+model ContactPerson {
+  id          String   @id @default(cuid())
+  name        String
+  designation String?
+  email       String?
+  phone       String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

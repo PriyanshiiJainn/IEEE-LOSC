@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MarkdownField } from "@/components/admin/MarkdownField";
 
 export type Activity = {
   id: string;
@@ -131,21 +132,13 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
   return (
     <div>
       <form onSubmit={handleIntroSave} className="mb-6 space-y-2 rounded border border-gray-200 bg-white p-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Intro paragraph shown on Recent Activities page
-          </label>
-          <textarea
-            value={introContent}
-            onChange={(e) => setIntroContent(e.target.value)}
-            rows={4}
-            className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
-            placeholder="Write the introductory paragraph for the Recent Activities page..."
-          />
-          <p className="mt-1 text-xs text-gray-400">
-            Supports markdown for basic formatting.
-          </p>
-        </div>
+        <MarkdownField
+          label="Intro paragraph shown on Recent Activities page"
+          value={introContent}
+          onChange={setIntroContent}
+          rows={5}
+          placeholder="Write the introductory paragraph for the Recent Activities page..."
+        />
         {introError && <p className="text-sm text-red-600">{introError}</p>}
         <button
           type="submit"
@@ -179,11 +172,14 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                 <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} required className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
-                <textarea value={form.content} onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))} required rows={5} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" placeholder="Describe the activity..." />
-                <p className="mt-1 text-xs text-gray-400">Supports markdown: **bold**, - bullets, blank line for new paragraph</p>
-              </div>
+              <MarkdownField
+                label="Content"
+                value={form.content}
+                onChange={(v) => setForm((f) => ({ ...f, content: v }))}
+                required
+                rows={6}
+                placeholder="Describe the activity..."
+              />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">PDF</label>
                 <div className="flex items-center gap-3">

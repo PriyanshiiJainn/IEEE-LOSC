@@ -16,16 +16,20 @@ const WEBINARS_EMPTY =
 export default async function EventsPage() {
   const events = await getEvents();
 
+  // Admin stores the category as "WEBINAR" / "INVITED_TALK"; older rows may
+  // hold free text like "Webinars" or "Invited Talks". Reduce both to letters
+  // only so a webinar lands in the Webinars section either way — comparing
+  // against the plural labels alone matched nothing, so these two sections
+  // always looked empty while their events sat in the general grid.
+  const key = (category: string) => category.toLowerCase().replace(/[^a-z]/g, "");
+  const isWebinar = (category: string) => key(category).startsWith("webinar");
+  const isInvitedTalk = (category: string) => key(category).startsWith("invitedtalk");
+
   const general = events.filter(
-    (e) =>
-      !["invited talks", "webinars"].includes(e.category.toLowerCase()),
+    (e) => !isWebinar(e.category) && !isInvitedTalk(e.category),
   );
-  const invitedTalks = events.filter(
-    (e) => e.category.toLowerCase() === "invited talks",
-  );
-  const webinars = events.filter(
-    (e) => e.category.toLowerCase() === "webinars",
-  );
+  const invitedTalks = events.filter((e) => isInvitedTalk(e.category));
+  const webinars = events.filter((e) => isWebinar(e.category));
 
   return (
     <section className="container mx-auto px-6 md:px-12 lg:px-20 py-12 md:py-16">
