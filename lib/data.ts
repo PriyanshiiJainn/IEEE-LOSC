@@ -14,7 +14,10 @@ type EventWithOptionalRegistrationStatus = EventItem & {
 
 type PrismaWithExtendedModels = typeof prisma & {
   recentActivity: {
-    findMany: (args: { orderBy: { publishedAt: "asc" | "desc" } }) => Promise<RecentActivityItem[]>;
+    findMany: (args: {
+      orderBy: { publishedAt: "asc" | "desc" };
+      include?: { images?: boolean | { orderBy?: { order: "asc" | "desc" } } };
+    }) => Promise<RecentActivityItem[]>;
   };
   recentActivityIntro: {
     findFirst: () => Promise<{ id: string; content: string } | null>;
@@ -67,6 +70,7 @@ export type EventItem = {
   venue: string | null;
   category: string;
   brochureUrl: string | null;
+  imageUrl: string | null;
   isFeatured: boolean;
   registrationClosed: boolean;
   registrationStatus: string;
@@ -84,12 +88,19 @@ export type EventReportItem = {
   event: { id: string; title: string } | null;
 };
 
+export type RecentActivityImage = {
+  id: string;
+  imageUrl: string;
+  order: number;
+};
+
 export type RecentActivityItem = {
   id: string;
   title: string;
   content: string;
   pdfUrl: string | null;
   publishedAt: Date | null;
+  images: RecentActivityImage[];
 };
 
 export type GalleryImageItem = {
@@ -277,7 +288,11 @@ export async function getRecentActivities(): Promise<RecentActivityItem[]> {
   const db = prisma as PrismaWithExtendedModels;
   return fromDb(
     "getRecentActivities",
-    () => db.recentActivity.findMany({ orderBy: { publishedAt: "desc" } }),
+    () =>
+      db.recentActivity.findMany({
+        orderBy: { publishedAt: "desc" },
+        include: { images: { orderBy: { order: "asc" } } },
+      }),
     [],
   );
 }

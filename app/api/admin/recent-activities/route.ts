@@ -4,46 +4,25 @@ import { noCacheJson } from "@/lib/cache-headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
-import { optionalMediaUrlSchema } from "@/lib/media-url";
+import { optionalMediaUrlSchema, normalizeMediaUrl } from "@/lib/media-url";
 
-type RecentActivityRow = {
-  id: string;
-  title: string;
-  content: string;
-  pdfUrl: string | null;
-  publishedAt: Date | null;
-};
-
-type PrismaWithRecentActivities = typeof prisma & {
-  recentActivity: {
-    findMany: (args: { orderBy: { publishedAt: "asc" | "desc" } }) => Promise<RecentActivityRow[]>;
-    create: (args: {
-      data: {
-        title: string;
-        content: string;
-        pdfUrl?: string | null;
-        publishedAt: Date | null;
-      };
-    }) => Promise<RecentActivityRow>;
-  };
-};
+export async function GET() {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const activities = await prisma.recentActivity.findMany({
+    orderBy: { publishedAt: "desc" },
+    include: { images: { orderBy: { order: "asc" } } },
+  });
+  return noCacheJson(activities);
+}
 
 const createSchema = z.object({
   title: z.string().min(1).max(200),
   content: z.string(),
   pdfUrl: optionalMediaUrlSchema,
   publishedAt: z.string().optional().nullable(),
+  imageUrls: z.array(z.string()).optional().default([]),
 });
-
-export async function GET() {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const db = prisma as PrismaWithRecentActivities;
-  const activities = await db.recentActivity.findMany({
-    orderBy: { publishedAt: "desc" },
-  });
-  return noCacheJson(activities);
-}
 
 export async function POST(request: Request) {
   const admin = await requireAdmin();
@@ -52,12 +31,20 @@ export async function POST(request: Request) {
   const parsed = createSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   try {
-    const data = {
-      ...parsed.data,
-      publishedAt: parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null,
-    };
-    const db = prisma as PrismaWithRecentActivities;
-    const activity = await db.recentActivity.create({ data });
+    const { imageUrls, ...rest } = parsed.data;
+    const activity = await prisma.recentActivity.create({
+      data: {
+        ...rest,
+        publishedAt: rest.publishedAt ? new Date(rest.publishedAt) : null,
+        images: {
+          create: imageUrls
+            .map((url) => normalizeMediaUrl(url))
+            .filter((url): url is string => url !== null)
+            .map((imageUrl, idx) => ({ imageUrl, order: idx })),
+        },
+      },
+      include: { images: { orderBy: { order: "asc" } } },
+    });
     revalidatePath("/recent-activity");
     revalidatePath("/admin/recent-activity");
     return NextResponse.json(activity);

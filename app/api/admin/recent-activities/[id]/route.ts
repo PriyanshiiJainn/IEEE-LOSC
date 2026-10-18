@@ -3,31 +3,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-utils";
-import { optionalMediaUrlSchema } from "@/lib/media-url";
-
-type RecentActivityRow = {
-  id: string;
-  title: string;
-  content: string;
-  pdfUrl: string | null;
-  publishedAt: Date | null;
-};
-
-type PrismaWithRecentActivities = typeof prisma & {
-  recentActivity: {
-    update: (args: {
-      where: { id: string };
-      data: Record<string, unknown>;
-    }) => Promise<RecentActivityRow>;
-    delete: (args: { where: { id: string } }) => Promise<RecentActivityRow>;
-  };
-};
+import { optionalMediaUrlSchema, normalizeMediaUrl } from "@/lib/media-url";
 
 const updateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   content: z.string().optional(),
   pdfUrl: optionalMediaUrlSchema,
   publishedAt: z.string().optional().nullable(),
+  /** When present, fully replaces the activity's image list. */
+  imageUrls: z.array(z.string()).optional(),
 });
 
 export async function PATCH(
@@ -41,13 +25,42 @@ export async function PATCH(
   const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   try {
-    const data: Record<string, unknown> = { ...parsed.data };
-    if (parsed.data.publishedAt !== undefined)
-      data.publishedAt = parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null;
-    const db = prisma as PrismaWithRecentActivities;
-    const activity = await db.recentActivity.update({
+    const { imageUrls, ...rest } = parsed.data;
+
+    const data: Record<string, unknown> = { ...rest };
+    if (rest.publishedAt !== undefined)
+      data.publishedAt = rest.publishedAt ? new Date(rest.publishedAt) : null;
+
+    // If imageUrls was sent, replace all images in a transaction
+    if (imageUrls !== undefined) {
+      const normalized = imageUrls
+        .map((url) => normalizeMediaUrl(url))
+        .filter((url): url is string => url !== null);
+
+      const activity = await prisma.$transaction(async (tx) => {
+        await tx.recentActivityImage.deleteMany({ where: { activityId: id } });
+        if (normalized.length > 0) {
+          await tx.recentActivityImage.createMany({
+            data: normalized.map((imageUrl, idx) => ({ activityId: id, imageUrl, order: idx })),
+          });
+        }
+        return tx.recentActivity.update({
+          where: { id },
+          data,
+          include: { images: { orderBy: { order: "asc" } } },
+        });
+      });
+
+      revalidatePath("/recent-activity");
+      revalidatePath("/admin/recent-activity");
+      return NextResponse.json(activity);
+    }
+
+    // No imageUrls — just update activity fields
+    const activity = await prisma.recentActivity.update({
       where: { id },
       data,
+      include: { images: { orderBy: { order: "asc" } } },
     });
     revalidatePath("/recent-activity");
     revalidatePath("/admin/recent-activity");
@@ -65,8 +78,7 @@ export async function DELETE(
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  const db = prisma as PrismaWithRecentActivities;
-  await db.recentActivity.delete({ where: { id } });
+  await prisma.recentActivity.delete({ where: { id } });
   revalidatePath("/recent-activity");
   revalidatePath("/admin/recent-activity");
   return NextResponse.json({ ok: true });
