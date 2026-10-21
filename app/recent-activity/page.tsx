@@ -40,7 +40,7 @@ export default async function RecentActivityPage() {
             >
               {/* ── Card header: title + date + content ── */}
               <div className="px-6 py-6 md:px-8 md:py-8">
-                <h2 className="text-2xl md:text-3xl font-bold text-ieee-navy leading-snug">
+                <h2 className="text-2xl md:text-3xl font-bold text-ieee-navy leading-snug whitespace-pre-wrap break-words">
                   {activity.title}
                 </h2>
 

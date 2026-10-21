@@ -16,16 +16,7 @@ const HERO_DESCRIPTION =
 export default async function EventsPage() {
   const events = await getEvents();
 
-  const key = (category: string) => category.toLowerCase().replace(/[^a-z]/g, "");
-  const isWebinar = (category: string) => key(category).startsWith("webinar");
-  const isInvitedTalk = (category: string) => key(category).startsWith("invitedtalk");
-
-  const general = events.filter(
-    (e) => !isWebinar(e.category) && !isInvitedTalk(e.category),
-  );
-  const invitedTalks = events.filter((e) => isInvitedTalk(e.category));
-  const webinars = events.filter((e) => isWebinar(e.category));
-
+  const general = events;
   return (
     <section className="container mx-auto px-6 md:px-12 lg:px-20 py-12 md:py-16">
       <h1 className="text-[clamp(1.75rem,5vw,3rem)] font-heading text-ieee-navy text-center mb-6">
