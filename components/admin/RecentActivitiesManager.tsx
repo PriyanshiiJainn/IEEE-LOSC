@@ -138,8 +138,8 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
     }
   }
 
-  function removeImage(url: string) {
-    setPendingImages((prev) => prev.filter((u) => u !== url));
+  function removeImage(index: number) {
+    setPendingImages((prev) => prev.filter((_, i) => i !== index));
   }
 
   // ── PDF upload ───────────────────────────────────────────────────────────────
@@ -339,7 +339,7 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
                 {pendingImages.length > 0 && (
                   <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
                     {pendingImages.map((url, idx) => (
-                      <div key={url} className="relative group aspect-square">
+                      <div key={`${idx}-${url}`} className="relative aspect-square">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={url}
@@ -348,8 +348,8 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
                         />
                         <button
                           type="button"
-                          onClick={() => removeImage(url)}
-                          className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeImage(idx)}
+                          className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-xs shadow"
                           title="Remove image"
                         >
                           ×

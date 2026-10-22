@@ -81,7 +81,7 @@ export default async function RecentActivityPage() {
                       <img
                         src={img.imageUrl}
                         alt={`${activity.title} — photo ${idx + 1}`}
-                        className="w-full h-full object-cover block"
+                        className="w-full h-full max-h-[600px] object-cover block"
                       />
                     </div>
                   ))}
