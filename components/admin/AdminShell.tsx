@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 
 type AdminShellProps = {
@@ -51,12 +52,18 @@ export function AdminShell({ children, session }: AdminShellProps) {
                 >
                   Account
                 </Link>
-                <Link
-                  href="/api/auth/signout"
+                {/* Not the /api/auth/signout page: its form and redirect are built
+                    from NEXTAUTH_URL, which points at the internal host in prod. */}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await signOut({ redirect: false });
+                    window.location.href = "/admin/login";
+                  }}
                   className="text-sm text-gray-500 hover:text-ieee-red"
                 >
                   Sign out
-                </Link>
+                </button>
               </div>
             </div>
           </header>
