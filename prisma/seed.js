@@ -21,12 +21,22 @@ async function main() {
   const adminEmail = "admin@ieee.lnmiit.ac.in";
   const adminPassword = "admin123";
   const hash = await bcrypt.hash(adminPassword, 12);
-  await prisma.user.upsert({
-    where: { email: adminEmail },
-    update: { passwordHash: hash, name: "Admin", role: "ADMIN" },
-    create: { email: adminEmail, passwordHash: hash, name: "Admin", role: "ADMIN" },
-  });
-  console.log("Admin login — Email:", adminEmail, "| Password:", adminPassword);
+  // The seed runs on every container start, so an existing admin keeps the
+  // password they set. SEED_RESET_ADMIN_PASSWORD=true restores the default
+  // for a locked-out admin.
+  const resetPassword = process.env.SEED_RESET_ADMIN_PASSWORD === "true";
+  const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+  if (!existingAdmin) {
+    await prisma.user.create({
+      data: { email: adminEmail, passwordHash: hash, name: "Admin", role: "ADMIN" },
+    });
+    console.log("Admin login — Email:", adminEmail, "| Password:", adminPassword);
+  } else if (resetPassword) {
+    await prisma.user.update({ where: { email: adminEmail }, data: { passwordHash: hash } });
+    console.log("Admin password reset to the default for", adminEmail);
+  } else {
+    console.log("Admin user exists; password left unchanged.");
+  }
 
   // --- About Content ---
   const existingAbout = await prisma.aboutContent.findFirst();
@@ -81,14 +91,14 @@ async function main() {
   }
 
   // --- Academic years ---
-  for (const year of ["2025-26", "2026-27"]) {
-    await prisma.academicYear.upsert({
-      where: { year },
-      update: {},
-      create: { year },
+  // Only on a fresh database, so a year the admin deleted stays deleted.
+  const existingYears = await prisma.academicYear.count();
+  if (existingYears === 0) {
+    await prisma.academicYear.createMany({
+      data: ["2025-26", "2026-27"].map((year) => ({ year })),
     });
+    console.log("Seeded Academic years.");
   }
-  console.log("Seeded Academic years.");
 
   // --- Team Members ---
   const existingTeam = await prisma.teamMember.count();
