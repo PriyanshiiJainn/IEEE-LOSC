@@ -13,6 +13,7 @@ const updateSchema = z.object({
   venue: z.string().max(200).optional().nullable(),
   category: z.enum(["WORKSHOP", "HACKATHON", "QUIZ", "WEBINAR", "INVITED_TALK"]).optional(),
   brochureUrl: optionalMediaUrlSchema,
+  imageUrl: optionalMediaUrlSchema,
   isFeatured: z.boolean().optional(),
   registrationClosed: z.boolean().optional(),
   registrationStatus: z.enum(["OPEN", "SOON", "CLOSED"]).optional(),

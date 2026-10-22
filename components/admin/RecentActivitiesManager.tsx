@@ -3,12 +3,19 @@
 import { useState } from "react";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 
+export type ActivityImage = {
+  id: string;
+  imageUrl: string;
+  order: number;
+};
+
 export type Activity = {
   id: string;
   title: string;
   content: string;
   pdfUrl: string | null;
   publishedAt: Date | string | null;
+  images: ActivityImage[];
 };
 
 type Props = {
@@ -16,35 +23,74 @@ type Props = {
   initialIntro?: { id: string; content: string } | null;
 };
 
+type Form = {
+  title: string;
+  content: string;
+  pdfUrl: string;
+  publishedAt: string;
+};
+
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
+
+function makeEmpty(): Form {
+  return { title: "", content: "", pdfUrl: "", publishedAt: "" };
+}
+
+function toForm(a: Activity): Form {
+  return {
+    title: a.title,
+    content: a.content,
+    pdfUrl: a.pdfUrl ?? "",
+    publishedAt: a.publishedAt ? new Date(a.publishedAt).toISOString().slice(0, 10) : "",
+  };
+}
+
 export function RecentActivitiesManager({ initialActivities, initialIntro }: Props) {
-  const [activities, setActivities] = useState(initialActivities);
+  const [activities, setActivities] = useState<Activity[]>(initialActivities);
   const [editing, setEditing] = useState<Activity | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [form, setForm] = useState<Form>(makeEmpty());
+
+  // Pending image URLs collected before save
+  const [pendingImages, setPendingImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-  const empty = { title: "", content: "", pdfUrl: "", publishedAt: "" };
-  const [form, setForm] = useState(empty);
+  const [uploadError, setUploadError] = useState("");
+
+  // PDF upload state
+  const [pdfUploading, setPdfUploading] = useState(false);
+
+  // Intro section
   const [introContent, setIntroContent] = useState(initialIntro?.content ?? "");
   const [introSaving, setIntroSaving] = useState(false);
   const [introError, setIntroError] = useState("");
 
   function openAdd() {
     setEditing(null);
-    setForm({ ...empty });
-    setOpen(true);
-  }
-  function openEdit(a: Activity) {
-    setEditing(a);
-    setForm({
-      title: a.title,
-      content: a.content,
-      pdfUrl: a.pdfUrl ?? "",
-      publishedAt: a.publishedAt ? new Date(a.publishedAt).toISOString().slice(0, 10) : "",
-    });
+    setForm(makeEmpty());
+    setPendingImages([]);
+    setError("");
+    setUploadError("");
     setOpen(true);
   }
 
+  function openEdit(a: Activity) {
+    setEditing(a);
+    setForm(toForm(a));
+    setPendingImages(a.images.map((img) => img.imageUrl));
+    setError("");
+    setUploadError("");
+    setOpen(true);
+  }
+
+  function closeModal() {
+    setOpen(false);
+    setError("");
+    setUploadError("");
+  }
+
+  // ── Intro save ───────────────────────────────────────────────────────────────
   async function handleIntroSave(e: React.FormEvent) {
     e.preventDefault();
     setIntroError("");
@@ -63,28 +109,58 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
     }
   }
 
-  async function handlePdfUpload(file: File) {
+  // ── Image upload ─────────────────────────────────────────────────────────────
+  async function handleImageUpload(file: File | null | undefined) {
+    if (!file) return;
+    setUploadError("");
+    if (file.size > MAX_IMAGE_BYTES) {
+      setUploadError("Image is too large. Max 15 MB.");
+      return;
+    }
     setUploading(true);
-    setError("");
     try {
-      const formData = new FormData();
-      formData.append("pdf", file);
-      const res = await fetch("/api/upload", {
+      const fd = new FormData();
+      fd.append("image", file);
+      fd.append("folder", "recent-activity");
+      const res = await fetch("/api/upload-image", {
         method: "POST",
-        body: formData,
+        body: fd,
         cache: "no-store",
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Upload failed");
-      const data = await res.json();
-      setForm((f) => ({ ...f, pdfUrl: data.url }));
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || "Upload failed");
+      setPendingImages((prev) => [...prev, json.url as string]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "PDF upload failed");
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(false);
     }
   }
 
+  function removeImage(index: number) {
+    setPendingImages((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  // ── PDF upload ───────────────────────────────────────────────────────────────
+  async function handlePdfUpload(file: File) {
+    setPdfUploading(true);
+    setError("");
+    try {
+      const fd = new FormData();
+      fd.append("pdf", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd, credentials: "include" });
+      if (!res.ok) throw new Error("PDF upload failed");
+      const data = await res.json();
+      setForm((f) => ({ ...f, pdfUrl: data.url }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "PDF upload failed");
+    } finally {
+      setPdfUploading(false);
+    }
+  }
+
+  // ── Form submit ──────────────────────────────────────────────────────────────
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -95,19 +171,29 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
         content: form.content,
         pdfUrl: form.pdfUrl || null,
         publishedAt: form.publishedAt || null,
+        imageUrls: pendingImages,
       };
+
       if (editing) {
-        const res = await fetch(`/api/admin/recent-activities/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const res = await fetch(`/api/admin/recent-activities/${editing.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
         if (!res.ok) throw new Error(await res.text());
-        const updated = await res.json();
+        const updated: Activity = await res.json();
         setActivities((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
       } else {
-        const res = await fetch("/api/admin/recent-activities", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const res = await fetch("/api/admin/recent-activities", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
         if (!res.ok) throw new Error(await res.text());
-        const created = await res.json();
+        const created: Activity = await res.json();
         setActivities((prev) => [created, ...prev]);
       }
-      setOpen(false);
+      closeModal();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed");
     } finally {
@@ -115,6 +201,7 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
     }
   }
 
+  // ── Delete ───────────────────────────────────────────────────────────────────
   async function handleDelete(id: string) {
     if (!confirm("Delete this activity?")) return;
     setLoading(true);
@@ -129,8 +216,10 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
     }
   }
 
+  // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <div>
+      {/* Intro editor */}
       <form onSubmit={handleIntroSave} className="mb-6 space-y-2 rounded border border-gray-200 bg-white p-4">
         <MarkdownField
           label="Intro paragraph shown on Recent Activities page"
@@ -148,40 +237,155 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
           {introSaving ? "Saving…" : "Save intro"}
         </button>
       </form>
-      <button type="button" onClick={openAdd} className="mb-4 rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90">Add activity</button>
+
+      <button
+        type="button"
+        onClick={openAdd}
+        className="mb-4 rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90"
+      >
+        + Add activity
+      </button>
+
+      {/* Activity list */}
       <div className="space-y-2">
         {activities.map((a) => (
-          <div key={a.id} className="flex items-center justify-between rounded border border-gray-200 bg-white px-4 py-3">
-            <div>
+          <div
+            key={a.id}
+            className="flex items-center justify-between rounded border border-gray-200 bg-white px-4 py-3"
+          >
+            <div className="min-w-0 flex-1">
               <span className="font-medium">{a.title}</span>
-              {a.pdfUrl && <span className="ml-2 text-xs text-green-600">PDF attached</span>}
+              <span className="ml-2 text-xs text-gray-400">
+                {a.images.length > 0 ? `${a.images.length} image${a.images.length > 1 ? "s" : ""}` : "no images"}
+              </span>
+              {a.pdfUrl && <span className="ml-2 text-xs text-green-600">PDF</span>}
             </div>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => openEdit(a)} className="text-sm text-ieee-red hover:underline">Edit</button>
-              <button type="button" onClick={() => handleDelete(a.id)} className="text-sm text-red-600 hover:underline">Delete</button>
+            <div className="flex shrink-0 gap-2 ml-4">
+              <button
+                type="button"
+                onClick={() => openEdit(a)}
+                className="text-sm text-ieee-red hover:underline"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(a.id)}
+                className="text-sm text-red-600 hover:underline"
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
+        {activities.length === 0 && (
+          <p className="rounded border border-dashed border-gray-300 bg-white px-4 py-8 text-center text-sm text-gray-500">
+            No activities yet. Add one to get started.
+          </p>
+        )}
       </div>
+
+      {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-lg bg-white p-6 shadow-lg">
-            <h2 className="text-lg font-semibold mb-4">{editing ? "Edit activity" : "Add activity"}</h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">
+              {editing ? "Edit activity" : "Add activity"}
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} required className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
+                <input
+                  value={form.title}
+                  onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                  required
+                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                  placeholder="Activity title"
+                />
               </div>
+
+              {/* Published date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Published date
+                </label>
+                <input
+                  type="date"
+                  value={form.publishedAt}
+                  onChange={(e) => setForm((f) => ({ ...f, publishedAt: e.target.value }))}
+                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+                />
+              </div>
+
+              {/* Content */}
               <MarkdownField
-                label="Content"
+                label="Description"
                 value={form.content}
                 onChange={(v) => setForm((f) => ({ ...f, content: v }))}
                 required
                 rows={6}
-                placeholder="Describe the activity..."
+                placeholder="Describe the activity…"
               />
+
+              {/* ── Images section ──────────────────────────────────────── */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">PDF</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Images ({pendingImages.length})
+                </label>
+
+                {/* Thumbnail grid */}
+                {pendingImages.length > 0 && (
+                  <div className="mb-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                    {pendingImages.map((url, idx) => (
+                      <div key={`${idx}-${url}`} className="relative aspect-square">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={url}
+                          alt={`Image ${idx + 1}`}
+                          className="h-full w-full rounded border border-gray-200 object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white text-xs shadow"
+                          title="Remove image"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Upload button */}
+                <div className="flex items-center gap-3">
+                  <label
+                    className={`cursor-pointer rounded border border-dashed border-gray-300 px-3 py-2 text-sm text-gray-600 hover:border-ieee-red hover:text-ieee-red transition ${
+                      uploading ? "opacity-50 pointer-events-none" : ""
+                    }`}
+                  >
+                    {uploading ? "Uploading…" : "+ Upload image"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={uploading}
+                      onChange={(e) => {
+                        void handleImageUpload(e.target.files?.[0]);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  <p className="text-xs text-gray-400">JPG/PNG/WebP, max 15 MB each. Upload multiple one at a time.</p>
+                </div>
+                {uploadError && <p className="mt-1 text-xs text-red-600">{uploadError}</p>}
+              </div>
+
+              {/* ── PDF section ─────────────────────────────────────────── */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">PDF (optional)</label>
                 <div className="flex items-center gap-3">
                   <input
                     type="file"
@@ -192,22 +396,45 @@ export function RecentActivitiesManager({ initialActivities, initialIntro }: Pro
                     }}
                     className="text-sm"
                   />
-                  {uploading && <span className="text-xs text-gray-500">Uploading…</span>}
+                  {pdfUploading && <span className="text-xs text-gray-500">Uploading…</span>}
                 </div>
                 {form.pdfUrl && (
-                  <p className="mt-1 text-xs text-green-600">
-                    Attached: <a href={form.pdfUrl} target="_blank" rel="noopener noreferrer" className="underline">{form.pdfUrl}</a>
-                  </p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <p className="text-xs text-green-600 truncate">
+                      Attached:{" "}
+                      <a href={form.pdfUrl} target="_blank" rel="noopener noreferrer" className="underline">
+                        {form.pdfUrl}
+                      </a>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, pdfUrl: "" }))}
+                      className="text-xs text-red-600 hover:underline shrink-0"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 )}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Published date</label>
-                <input type="date" value={form.publishedAt} onChange={(e) => setForm((f) => ({ ...f, publishedAt: e.target.value }))} className="w-full rounded border border-gray-300 px-3 py-2 text-sm" />
-              </div>
+
               {error && <p className="text-sm text-red-600">{error}</p>}
+
+              {/* Action buttons */}
               <div className="flex gap-2 pt-2">
-                <button type="submit" disabled={loading || uploading} className="rounded bg-ieee-red px-3 py-2 text-sm font-medium text-white hover:bg-ieee-red/90 disabled:opacity-50">{loading ? "Saving…" : "Save"}</button>
-                <button type="button" onClick={() => setOpen(false)} className="rounded border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
+                <button
+                  type="submit"
+                  disabled={loading || uploading || pdfUploading}
+                  className="rounded bg-ieee-red px-4 py-2 text-sm font-medium text-white hover:bg-ieee-red/90 disabled:opacity-50"
+                >
+                  {loading ? "Saving…" : "Save"}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="rounded border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>

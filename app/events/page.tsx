@@ -6,30 +6,9 @@ export const dynamic = "force-dynamic";
 const HERO_TITLE = "Events";
 const HERO_DESCRIPTION =
   "We are the Optica Student Chapter at The LNM Institute of Information Technology (LNMIIT), Jaipur, a vibrant community of students passionate about technology, innovation, and professional growth. Through workshops, hackathons, webinars, expert talks, and hands-on sessions, we foster curiosity, collaboration, and continuous learning.";
-const INVITED_TALKS_HEADING = "Invited Talks";
-const INVITED_TALKS_EMPTY =
-  "A series of Invited Talks will be organized featuring distinguished experts and industry professionals from diverse technical domains. These sessions will provide valuable insights into emerging technologies, research advancements, and real-world applications.";
-const WEBINARS_HEADING = "Webinars";
-const WEBINARS_EMPTY =
-  "A series of Webinars will be organized to provide students with insights into emerging technologies and industry trends. These interactive online sessions will feature expert speakers who will share practical knowledge, real-world experiences, and career guidance.";
 
 export default async function EventsPage() {
   const events = await getEvents();
-
-  // Admin stores the category as "WEBINAR" / "INVITED_TALK"; older rows may
-  // hold free text like "Webinars" or "Invited Talks". Reduce both to letters
-  // only so a webinar lands in the Webinars section either way — comparing
-  // against the plural labels alone matched nothing, so these two sections
-  // always looked empty while their events sat in the general grid.
-  const key = (category: string) => category.toLowerCase().replace(/[^a-z]/g, "");
-  const isWebinar = (category: string) => key(category).startsWith("webinar");
-  const isInvitedTalk = (category: string) => key(category).startsWith("invitedtalk");
-
-  const general = events.filter(
-    (e) => !isWebinar(e.category) && !isInvitedTalk(e.category),
-  );
-  const invitedTalks = events.filter((e) => isInvitedTalk(e.category));
-  const webinars = events.filter((e) => isWebinar(e.category));
 
   return (
     <section className="container mx-auto px-6 md:px-12 lg:px-20 py-12 md:py-16">
@@ -41,52 +20,19 @@ export default async function EventsPage() {
         {HERO_DESCRIPTION}
       </p>
 
-      {general.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {general.map((event) => (
-            <div key={event.id} className="flex flex-col">
-              <span className="text-sm font-semibold uppercase tracking-wide text-ieee-red mb-2">
-                {event.category}
+      {/* All events in one full-width column, category label above each card */}
+      {events.length > 0 && (
+        <div className="space-y-6 mb-16">
+          {events.map((event) => (
+            <div key={event.id}>
+              <span className="inline-block text-sm font-semibold uppercase tracking-wide text-ieee-red mb-2">
+                {event.category.replace(/_/g, " ")}
               </span>
               <EventCard event={event} />
             </div>
           ))}
         </div>
       )}
-
-      <div className="mb-16">
-        <h2 className="text-2xl font-bold text-ieee-navy mb-8 border-b-2 border-ieee-red/30 pb-3">
-          {INVITED_TALKS_HEADING}
-        </h2>
-        {invitedTalks.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {invitedTalks.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-700 leading-relaxed">
-            {INVITED_TALKS_EMPTY}
-          </p>
-        )}
-      </div>
-
-      <div className="mb-16">
-        <h2 className="text-2xl font-bold text-ieee-navy mb-8 border-b-2 border-ieee-red/30 pb-3">
-          {WEBINARS_HEADING}
-        </h2>
-        {webinars.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {webinars.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-700 leading-relaxed">
-            {WEBINARS_EMPTY}
-          </p>
-        )}
-      </div>
     </section>
   );
 }

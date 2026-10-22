@@ -1,10 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 
-export type UploadFolder = "pdfs" | "gallery" | "team";
+export type UploadFolder = "pdfs" | "gallery" | "team" | "recent-activity" | "event-images";
 
 /** Folders the image upload endpoint will write to. */
-export const IMAGE_UPLOAD_FOLDERS = ["gallery", "team"] as const;
+export const IMAGE_UPLOAD_FOLDERS = ["gallery", "team", "recent-activity", "event-images"] as const;
 
 export type ImageUploadFolder = (typeof IMAGE_UPLOAD_FOLDERS)[number];
 

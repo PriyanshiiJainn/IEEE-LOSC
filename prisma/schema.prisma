@@ -40,6 +40,7 @@ model Event {
   venue       String?
   category    String   // WORKSHOP | HACKATHON | QUIZ | WEBINAR | INVITED_TALK
   brochureUrl       String?
+  imageUrl          String?  @db.Text // shown beside the event card
   isFeatured        Boolean  @default(false)
   registrationClosed Boolean @default(false)
   registrationStatus String   @default("OPEN") // OPEN | SOON | CLOSED
@@ -142,7 +143,21 @@ model RecentActivity {
   createdAt   DateTime @updatedAt
   updatedAt   DateTime @updatedAt
 
+  images      RecentActivityImage[]
+
   @@index([publishedAt])
+}
+
+// Photos attached to a recent activity, shown in `order`
+model RecentActivityImage {
+  id         String         @id @default(cuid())
+  activityId String
+  activity   RecentActivity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  imageUrl   String         @db.Text
+  order      Int            @default(0)
+  createdAt  DateTime       @default(now())
+
+  @@index([activityId])
 }
 
 // Intro text for Recent Activities page (single row)

@@ -33,8 +33,14 @@ services:
     volumes:
       - gallery_uploads:/app/public/gallery
       - pdf_uploads:/app/public/pdfs
+      - team_uploads:/app/public/team
+      - recent_activity_uploads:/app/public/recent-activity
+      - event_uploads:/app/public/event-images
 
 volumes:
   mysql_data:
   gallery_uploads:
   pdf_uploads:
+  team_uploads:
+  recent_activity_uploads:
+  event_uploads:

@@ -3,17 +3,6 @@ import { getAdminSession } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { RecentActivitiesManager, type Activity } from "@/components/admin/RecentActivitiesManager";
 
-type RecentActivityIntroRow = { id: string; content: string };
-
-type PrismaWithRecentActivity = typeof prisma & {
-  recentActivityIntro: {
-    findFirst: () => Promise<RecentActivityIntroRow | null>;
-  };
-  recentActivity: {
-    findMany: (args: { orderBy: { publishedAt: "asc" | "desc" } }) => Promise<Activity[]>;
-  };
-};
-
 export default async function AdminRecentActivityPage() {
   const session = await getAdminSession();
   if (!session) redirect("/admin/login");
@@ -21,12 +10,29 @@ export default async function AdminRecentActivityPage() {
   let activities: Activity[] = [];
   let dbReachable = true;
   let intro: { id: string; content: string } | null = null;
+
   try {
-    const db = prisma as PrismaWithRecentActivity;
-    intro = await db.recentActivityIntro.findFirst();
-    activities = await db.recentActivity.findMany({
-      orderBy: { publishedAt: "desc" },
-    });
+    const [rows, introRow] = await Promise.all([
+      prisma.recentActivity.findMany({
+        orderBy: { publishedAt: "desc" },
+        include: { images: { orderBy: { order: "asc" } } },
+      }),
+      prisma.recentActivityIntro.findFirst(),
+    ]);
+    // Map to the Activity shape the manager component expects
+    activities = rows.map((r) => ({
+      id: r.id,
+      title: r.title,
+      content: r.content,
+      pdfUrl: r.pdfUrl,
+      publishedAt: r.publishedAt,
+      images: r.images.map((img) => ({
+        id: img.id,
+        imageUrl: img.imageUrl,
+        order: img.order,
+      })),
+    }));
+    intro = introRow ? { id: introRow.id, content: introRow.content } : null;
   } catch {
     dbReachable = false;
   }
