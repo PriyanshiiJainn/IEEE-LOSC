@@ -35,7 +35,7 @@ services:
       - pdf_uploads:/app/public/pdfs
       - team_uploads:/app/public/team
       - recent_activity_uploads:/app/public/recent-activity
-      - event_uploads:/app/public/events
+      - event_uploads:/app/public/event-images
 
 volumes:
   mysql_data:

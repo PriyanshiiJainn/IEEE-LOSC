@@ -109,7 +109,7 @@ export function EventsManager({ initialEvents, categories }: Props) {
     try {
       const fd = new FormData();
       fd.append("image", file);
-      fd.append("folder", "events");
+      fd.append("folder", "event-images");
       const res = await fetch("/api/upload-image", {
         method: "POST",
         body: fd,
