@@ -103,6 +103,14 @@ export type RecentActivityItem = {
   images: RecentActivityImage[];
 };
 
+export type NoticeItem = {
+  id: string;
+  title: string;
+  content: string;
+  pdfUrl: string | null;
+  publishedAt: Date | null;
+};
+
 export type GalleryImageItem = {
   id: string;
   imageUrl: string;
@@ -329,6 +337,15 @@ export async function getContactPeople(): Promise<ContactPersonItem[]> {
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
       });
     },
+    [],
+  );
+}
+
+export async function getNotices(): Promise<NoticeItem[]> {
+  noStore();
+  return fromDb(
+    "getNotices",
+    () => prisma.notice.findMany({ orderBy: { publishedAt: "desc" } }),
     [],
   );
 }
