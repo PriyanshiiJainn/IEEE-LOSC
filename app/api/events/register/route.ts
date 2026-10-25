@@ -90,21 +90,10 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    if (code === "P1001" || code === "P1017" || code === "P2024") {
-      return NextResponse.json(
-        {
-          error:
-            "Database is not reachable. Check DATABASE_URL in .env, run migrations, and if using Neon, resume the project in the dashboard.",
-        },
-        { status: 503 },
-      );
-    }
-
+    // Setup details go to the server log; the visitor only needs to know to retry.
+    console.error("[events/register] could not save registration:", e);
     return NextResponse.json(
-      {
-        error:
-          "Registration could not be saved. Check that the database is set up and migrations have been run.",
-      },
+      { error: "Registration could not be saved right now. Please try again in a few minutes." },
       { status: 503 },
     );
   }

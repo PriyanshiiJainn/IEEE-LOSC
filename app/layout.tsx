@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { RouteRefresher } from "@/components/layout/RouteRefresher";
 
 /** Fresh DB-driven content on every request (footer, home, etc.). */
 export const dynamic = "force-dynamic";
@@ -34,6 +35,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col font-figtree">
         <SmoothScroll />
+        <RouteRefresher />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
