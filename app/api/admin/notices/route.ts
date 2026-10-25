@@ -7,7 +7,7 @@ import { optionalMediaUrlSchema } from "@/lib/media-url";
 import { noCacheJson } from "@/lib/cache-headers";
 
 const createSchema = z.object({
-  title: z.string().min(1).max(200),
+  title: z.string().min(1).max(191),
   content: z.string(),
   pdfUrl: optionalMediaUrlSchema,
   publishedAt: z.string().optional().nullable(),
@@ -36,7 +36,8 @@ export async function POST(request: Request) {
       },
     });
     revalidatePath("/notices");
-    revalidatePath("/admin/notices");
+    revalidatePath("/event-reports");
+    revalidatePath("/admin/event-reports");
     return NextResponse.json(notice);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to create notice";

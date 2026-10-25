@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth-utils";
 import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 const updateSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
+  title: z.string().min(1).max(191).optional(),
   content: z.string().optional(),
   pdfUrl: optionalMediaUrlSchema,
   publishedAt: z.string().optional().nullable(),
@@ -28,7 +28,8 @@ export async function PATCH(
       data.publishedAt = parsed.data.publishedAt ? new Date(parsed.data.publishedAt) : null;
     const notice = await prisma.notice.update({ where: { id }, data });
     revalidatePath("/notices");
-    revalidatePath("/admin/notices");
+    revalidatePath("/event-reports");
+    revalidatePath("/admin/event-reports");
     return NextResponse.json(notice);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to update notice";
@@ -45,6 +46,7 @@ export async function DELETE(
   const { id } = await params;
   await prisma.notice.delete({ where: { id } });
   revalidatePath("/notices");
-  revalidatePath("/admin/notices");
+  revalidatePath("/event-reports");
+  revalidatePath("/admin/event-reports");
   return NextResponse.json({ ok: true });
 }
