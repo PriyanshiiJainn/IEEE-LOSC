@@ -7,7 +7,7 @@ import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 const updateSchema = z.object({
   eventId: z.string().min(1).optional().nullable(),
-  title: z.string().min(1).max(200).optional(),
+  title: z.string().min(1).max(191).optional(),
   content: z.string().optional(),
   coverImageUrl: optionalMediaUrlSchema,
   pdfUrl: optionalMediaUrlSchema,
