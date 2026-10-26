@@ -4,6 +4,7 @@ import { z } from "zod";
 export const emailSchema = z
   .string()
   .min(1, "Email is required")
+  .max(191, "Email is too long")
   .email("Enter a valid email address");
 
 /** Phone: optional +, then 10–20 digits/spaces/dashes. At least 10 digits. */
@@ -19,15 +20,15 @@ export const phoneSchema = z
 
 export const eventRegistrationSchema = z.object({
   eventId: z.string().min(1, "Event is required"),
-  name: z.string().min(1, "Name is required").max(200),
+  name: z.string().min(1, "Name is required").max(191),
   rollNo: z.string().min(1, "Roll number is required").max(50),
   email: emailSchema,
   phone: phoneSchema,
 });
 
 export const contactFormSchema = z.object({
-  name: z.string().min(1, "Name is required").max(200),
+  name: z.string().min(1, "Name is required").max(191),
   email: emailSchema,
-  subject: z.string().max(300).optional(),
+  subject: z.string().max(191).optional(),
   message: z.string().min(1, "Message is required").max(5000),
 });

@@ -23,7 +23,7 @@ type PrismaWithGallery = typeof prisma & {
 };
 
 const updateSchema = z.object({
-  caption: z.string().max(300).optional(),
+  caption: z.string().max(191).optional(),
   order: z.number().int().optional(),
 });
 

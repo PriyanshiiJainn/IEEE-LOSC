@@ -17,7 +17,7 @@ export async function GET() {
 }
 
 const createSchema = z.object({
-  title: z.string().min(1).max(200),
+  title: z.string().min(1).max(191),
   content: z.string(),
   pdfUrl: optionalMediaUrlSchema,
   publishedAt: z.string().optional().nullable(),

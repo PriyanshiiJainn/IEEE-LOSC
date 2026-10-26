@@ -8,7 +8,7 @@ import { noCacheJson } from "@/lib/cache-headers";
 
 const createSchema = z.object({
   eventId: z.string().min(1).optional().nullable(),
-  title: z.string().min(1).max(200),
+  title: z.string().min(1).max(191),
   content: z.string(),
   coverImageUrl: optionalMediaUrlSchema,
   pdfUrl: optionalMediaUrlSchema,

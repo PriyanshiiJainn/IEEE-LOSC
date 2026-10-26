@@ -7,7 +7,7 @@ import { noCacheJson } from "@/lib/cache-headers";
 
 const createSchema = z.object({
   eventId: z.string().optional().nullable(),
-  title: z.string().min(1).max(200),
+  title: z.string().min(1).max(191),
   shortMessage: z.string().max(500).optional().nullable(),
   link: z.string().url().optional().nullable(),
   active: z.boolean().optional(),
