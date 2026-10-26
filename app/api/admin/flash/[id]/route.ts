@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth-utils";
 
 const updateSchema = z.object({
   eventId: z.string().optional().nullable(),
-  title: z.string().min(1).max(200).optional(),
+  title: z.string().min(1).max(191).optional(),
   shortMessage: z.string().max(500).optional().nullable(),
   link: z.string().url().optional().nullable(),
   active: z.boolean().optional(),

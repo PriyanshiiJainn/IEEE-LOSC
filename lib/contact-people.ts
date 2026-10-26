@@ -10,7 +10,7 @@ import { z } from "zod";
 const optionalText = z
   .string()
   .trim()
-  .max(200)
+  .max(191)
   .transform((v) => (v === "" ? null : v))
   .nullable()
   .optional();
@@ -19,7 +19,7 @@ const optionalText = z
 const optionalEmail = z
   .string()
   .trim()
-  .max(200)
+  .max(191)
   .transform((v) => (v === "" ? null : v))
   .nullable()
   .optional()
@@ -28,7 +28,7 @@ const optionalEmail = z
   });
 
 export const contactPersonSchema = z.object({
-  name: z.string().trim().min(1).max(200),
+  name: z.string().trim().min(1).max(191),
   designation: optionalText,
   email: optionalEmail,
   phone: optionalText,

@@ -35,7 +35,7 @@ const normalizeImageUrl = (v: unknown) => {
 };
 
 const createSchema = z.object({
-  name: z.string().min(1).max(200),
+  name: z.string().min(1).max(191),
   classification: z.enum(["FACULTY_ADVISOR", "CORE", "FUNCTIONAL"]),
   academicYear: z.string().regex(ACADEMIC_YEAR_PATTERN, "Use the format 2026-27").optional(),
   category: z.preprocess(emptyToNull, z.string().max(100).nullable()).optional(),

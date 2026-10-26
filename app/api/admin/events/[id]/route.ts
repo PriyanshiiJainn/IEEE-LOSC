@@ -6,11 +6,11 @@ import { requireAdmin } from "@/lib/auth-utils";
 import { optionalMediaUrlSchema } from "@/lib/media-url";
 
 const updateSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
+  title: z.string().min(1).max(191).optional(),
   description: z.string().optional(),
   date: z.string().optional(),
   time: z.string().max(50).optional().nullable(),
-  venue: z.string().max(200).optional().nullable(),
+  venue: z.string().max(191).optional().nullable(),
   category: z.enum(["WORKSHOP", "HACKATHON", "QUIZ", "WEBINAR", "INVITED_TALK"]).optional(),
   brochureUrl: optionalMediaUrlSchema,
   imageUrl: optionalMediaUrlSchema,

@@ -7,11 +7,11 @@ import { optionalMediaUrlSchema } from "@/lib/media-url";
 import { noCacheJson } from "@/lib/cache-headers";
 
 const createSchema = z.object({
-  title: z.string().min(1).max(200),
+  title: z.string().min(1).max(191),
   description: z.string(),
   date: z.string(), // ISO date
   time: z.string().max(50).optional(),
-  venue: z.string().max(200).optional(),
+  venue: z.string().max(191).optional(),
   category: z.enum(["WORKSHOP", "HACKATHON", "QUIZ", "WEBINAR", "INVITED_TALK"]),
   brochureUrl: optionalMediaUrlSchema,
   imageUrl: optionalMediaUrlSchema,

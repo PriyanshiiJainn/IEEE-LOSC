@@ -26,7 +26,7 @@ type PrismaWithGallery = typeof prisma & {
 
 const createSchema = z.object({
   imageUrl: z.string().min(1),
-  caption: z.string().max(300),
+  caption: z.string().max(191),
   order: z.number().int().optional(),
 });
 

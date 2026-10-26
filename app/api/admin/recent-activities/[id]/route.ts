@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth-utils";
 import { optionalMediaUrlSchema, normalizeMediaUrl } from "@/lib/media-url";
 
 const updateSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
+  title: z.string().min(1).max(191).optional(),
   content: z.string().optional(),
   pdfUrl: optionalMediaUrlSchema,
   publishedAt: z.string().optional().nullable(),
